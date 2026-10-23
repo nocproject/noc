@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
-from typing import Optional
 from collections.abc import Iterable
 import operator
 
@@ -58,7 +58,7 @@ class ObjectValidationPolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ObjectValidationPolicy"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ObjectValidationPolicy | None:
         return ObjectValidationPolicy.objects.filter(id=oid).first()
 
     def iter_problems(self, engine) -> Iterable[ProblemItem]:

@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import bson
@@ -99,11 +100,11 @@ class FirmwarePolicy(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["FirmwarePolicy"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> FirmwarePolicy | None:
         return FirmwarePolicy.objects.filter(id=oid).first()
 
     @classmethod
-    def get_status(cls, version: "Firmware", platform: Optional["Platform"] = None) -> str | None:
+    def get_status(cls, version: Firmware, platform: Platform | None = None) -> str | None:
         if not version:
             return None
         fps = cls.get_effective_policies(version, platform)
@@ -175,7 +176,7 @@ class FirmwarePolicy(Document):
             return sorted(versions, key=operator.attrgetter("version"))[-1]
         return None
 
-    def is_fw_match(self, firmware: "Firmware"):
+    def is_fw_match(self, firmware: Firmware):
         """
         Check if firmware match Policy
         :return:
@@ -192,8 +193,8 @@ class FirmwarePolicy(Document):
 
     @classmethod
     def get_effective_policies(
-        cls, version: "Firmware", platform: Optional["Platform"] = None
-    ) -> list["FirmwarePolicy"]:
+        cls, version: Firmware, platform: Platform | None = None
+    ) -> list[FirmwarePolicy]:
         """
 
         :return:
@@ -212,7 +213,7 @@ class FirmwarePolicy(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_firmwarepolicy")
 
-    def get_affected_firmwares(self) -> list["Firmware"]:
+    def get_affected_firmwares(self) -> list[Firmware]:
         return [
             fw
             for fw in Firmware.objects.filter(profile=self.firmware.profile)

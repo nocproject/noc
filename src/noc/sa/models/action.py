@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
 import re
 from collections import defaultdict
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -49,7 +50,7 @@ rx_empty_string = re.compile(r"\n{2,}")
 class ActionSetItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
-    action: "Action" = PlainReferenceField("sa.Action", required=True)
+    action: Action = PlainReferenceField("sa.Action", required=True)
     execute: str = StringField(
         # Success/Failed ?, from param
         choices=[
@@ -160,7 +161,7 @@ class Action(Document):
     access_level = IntField(default=15)
     # Optional handler for non-sa actions
     # script
-    handler: "Handler" = ReferenceField(Handler, required=False)
+    handler: Handler = ReferenceField(Handler, required=False)
     action_job: str = StringField(default="action_commands")
     # Job, Action cfg job, test SLA/ SLA by separate task
     action_set = EmbeddedDocumentListField(ActionSetItem)
@@ -176,12 +177,12 @@ class Action(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Action"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Action | None:
         return Action.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Action"]:
+    def get_by_name(cls, name: str) -> Action | None:
         return Action.objects.filter(name=name).first()
 
     def get_json_path(self) -> Path:
@@ -311,7 +312,7 @@ class Action(Document):
 
     def iter_configs(
         self, profile, match_ctx, **kwargs
-    ) -> tuple["ActionCommandConfig", dict[str, Any], dict[str, Any]]:
+    ) -> tuple[ActionCommandConfig, dict[str, Any], dict[str, Any]]:
         """Iterate over Action Commands Configurations"""
         # ActionSet First
         ctx = {}
@@ -492,7 +493,7 @@ class Action(Document):
             t_ctx |= ctx
             yield mo, scopes, t_ctx
 
-    def get_scope_config(self, name: str) -> Optional["ActionParameter"]:
+    def get_scope_config(self, name: str) -> ActionParameter | None:
         """Getting scope config"""
         for p in self.params:
             if p.scope and p.scope == name:
@@ -517,7 +518,7 @@ class Action(Document):
         domain: Any | None = None,
         managed_object: Any | None = None,
         **kwargs,
-    ) -> Iterable[tuple["Action", Any, dict[str, Any]]]:
+    ) -> Iterable[tuple[Action, Any, dict[str, Any]]]:
         """Return action ctx"""
         for mo, d_scopes, d_ctx in self.iter_domain_ctx(
             domain, managed_object=managed_object, **kwargs
@@ -585,9 +586,9 @@ class Action(Document):
 
     def get_job_by_actions(
         self,
-        actions: dict[Any, list[tuple["Action", dict[str, Any]]]],
+        actions: dict[Any, list[tuple[Action, dict[str, Any]]]],
         dry_run: bool = False,
-    ) -> "JobRequest":
+    ) -> JobRequest:
         """"""
         action_jobs = []
         for mo, aas in actions.items():
@@ -609,7 +610,7 @@ class Action(Document):
 
     def execute_actions(
         self,
-        actions: dict[Any, list[tuple["Action", dict[str, Any]]]],
+        actions: dict[Any, list[tuple[Action, dict[str, Any]]]],
         dry_run: bool = False,
         as_job: bool = False,
     ):

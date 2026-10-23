@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 import operator
 from threading import Lock
-from typing import Any, Optional
+from typing import Any
 
 # Third-party modules
 import bson
@@ -77,12 +78,12 @@ class Capability(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Capability"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Capability | None:
         return Capability.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Capability"]:
+    def get_by_name(cls, name: str) -> Capability | None:
         return Capability.objects.filter(name=name).first()
 
     @property

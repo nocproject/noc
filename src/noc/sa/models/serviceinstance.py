@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import logging
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -58,7 +59,7 @@ logger = logging.getLogger(__name__)
 
 
 class AddressItem(EmbeddedDocument):
-    pool: "Pool" = PlainReferenceField(Pool, required=False)
+    pool: Pool = PlainReferenceField(Pool, required=False)
     address: str = StringField(required=True)
     address_bin = IntField()
     is_active = BooleanField(default=True)
@@ -113,7 +114,7 @@ class ServiceInstance(Document):
     # Sources that approved data
     sources: list[InputSource] = ListField(EnumField(InputSource))
     # Object
-    managed_object: Optional["ManagedObject"] = ForeignKeyField(ManagedObject, required=False)
+    managed_object: ManagedObject | None = ForeignKeyField(ManagedObject, required=False)
     # For ETL services, Object id in remote system
     remote_id = StringField()
     # NRI port id, converted by portmapper to native name
@@ -162,7 +163,7 @@ class ServiceInstance(Document):
                 return a.address
 
     @property
-    def config(self) -> "ServiceInstanceTypeConfig":
+    def config(self) -> ServiceInstanceTypeConfig:
         """Return configuration on type"""
         cfg = self.service.profile.get_instance_config(self.type, self.name)
         return cfg or ServiceInstanceTypeConfig()
@@ -190,7 +191,7 @@ class ServiceInstance(Document):
         return f"[{self.type}] {name}"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ServiceInstance"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ServiceInstance | None:
         return ServiceInstance.objects.filter(id=oid).first()
 
     def on_save(self):
@@ -207,7 +208,7 @@ class ServiceInstance(Document):
         service,
         cfg: ServiceInstanceConfig,
         settings: ServiceInstanceTypeConfig | None = None,
-    ) -> "ServiceInstance":
+    ) -> ServiceInstance:
         settings = settings or ServiceInstanceTypeConfig()
         qs = cfg.get_queryset(service, settings)
         instance = ServiceInstance.objects.filter(qs).first()
@@ -224,7 +225,7 @@ class ServiceInstance(Document):
         service,
         config: ServiceInstanceConfig,
         **kwargs,
-    ) -> "ServiceInstance":
+    ) -> ServiceInstance:
         """Create Service Instance"""
         # First discovered
         return ServiceInstance(
@@ -287,7 +288,7 @@ class ServiceInstance(Document):
             # Clean Source, ETL - Remove Remote_id, NRI Port, Addresses
             ServiceInstance.objects.filter(id=self.id).update(sources=self.sources)
 
-    def refresh_managed_object(self, o: Optional["ManagedObject"] = None, bulk=None):
+    def refresh_managed_object(self, o: ManagedObject | None = None, bulk=None):
         """
         Update ManagedObject on instance
         Args:
@@ -325,7 +326,7 @@ class ServiceInstance(Document):
             ServiceSummary.refresh_object(oo)
 
     @classmethod
-    def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable["ServiceInstance"]:
+    def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable[ServiceInstance]:
         """Iterate over Object Instances"""
         from noc.inv.models.subinterface import SubInterface
 
@@ -393,7 +394,7 @@ class ServiceInstance(Document):
         return True
 
     @classmethod
-    def get_alarm_reference(cls, alarm: "ActiveAlarm") -> list[str]:
+    def get_alarm_reference(cls, alarm: ActiveAlarm) -> list[str]:
         """"""
         r = []
         if "mac" in alarm.vars:
@@ -403,7 +404,7 @@ class ServiceInstance(Document):
         return r
 
     @classmethod
-    def get_alarm_addresses(cls, alarm: "ActiveAlarm") -> list[str]:
+    def get_alarm_addresses(cls, alarm: ActiveAlarm) -> list[str]:
         """Convert Active Alarm to addresses"""
         r = []
         # Alarm Class Vars ?

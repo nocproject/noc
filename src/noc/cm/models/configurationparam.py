@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
 import re
 from dataclasses import dataclass
-from typing import Optional, NoReturn, Any
+from typing import NoReturn, Any
 from pathlib import Path
 
 # Third-party modules
@@ -80,7 +81,7 @@ class ParamSchema(BaseModel):
                 raise ValueError(f"Value is not match pattern: {value}")
         return value
 
-    def merge(self, schema: "ParamSchema") -> NoReturn: ...
+    def merge(self, schema: ParamSchema) -> NoReturn: ...
 
     @property
     def json_schema(self):
@@ -110,7 +111,7 @@ class ParamSchema(BaseModel):
 
 @dataclass
 class ScopeVariant:
-    scope: "ConfigurationScope"
+    scope: ConfigurationScope
     value: str | None = None
 
     def __str__(self):
@@ -133,7 +134,7 @@ class ScopeVariant:
         return self.value == other.value
 
     @classmethod
-    def from_code(cls, code: str) -> "ScopeVariant":
+    def from_code(cls, code: str) -> ScopeVariant:
         scope, *v = code.split("::")
         s = ConfigurationScope.get_by_name(scope.strip("@"))
         if not s:
@@ -165,13 +166,13 @@ class ParamData:
         return "".join(f"@{s.code}" for s in self.scopes)
 
     @property
-    def param(self) -> "ConfigurationParam":
+    def param(self) -> ConfigurationParam:
         return ConfigurationParam.get_by_code(self.code)
 
 
 class ScopeItem(EmbeddedDocument):
     meta = {"strict": False}
-    scope: "ConfigurationScope" = PlainReferenceField(ConfigurationScope, required=True)
+    scope: ConfigurationScope = PlainReferenceField(ConfigurationScope, required=True)
     is_required = BooleanField(default=True)
 
     def __str__(self):
@@ -244,14 +245,14 @@ class ConfigurationParam(Document):
     # Limitation
     schema = EmbeddedDocumentListField(ParamSchemaItem)
     choices = EmbeddedDocumentListField(ConfigurationParamChoiceItem)
-    choices_scope: Optional["ConfigurationScope"] = PlainReferenceField(
+    choices_scope: ConfigurationScope | None = PlainReferenceField(
         ConfigurationScope, required=False
     )
     # Threshold
     threshold_type = StringField(
         choices=["critical_min", "warning_min", "warning_max", "critical_max"]
     )
-    metric_type: Optional["MetricType"] = PlainReferenceField(MetricType, required=False)
+    metric_type: MetricType | None = PlainReferenceField(MetricType, required=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -261,12 +262,12 @@ class ConfigurationParam(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ConfigurationParam"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ConfigurationParam | None:
         return ConfigurationParam.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code) -> Optional["ConfigurationParam"]:
+    def get_by_code(cls, code) -> ConfigurationParam | None:
         return ConfigurationParam.objects.filter(code=code).first()
 
     def get_json_path(self) -> Path:
@@ -321,7 +322,7 @@ class ConfigurationParam(Document):
         return ParamSchema(**r)
 
     @classmethod
-    def clean_scope(cls, param: "ConfigurationParam", scope: str) -> str:
+    def clean_scope(cls, param: ConfigurationParam, scope: str) -> str:
         """
         Clean parameter scopes from string
         """

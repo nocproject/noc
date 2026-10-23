@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import orjson
@@ -89,7 +90,7 @@ class Target(BaseModel):
         return bi_hash(self.id)
 
     @classmethod
-    def default(cls) -> "Target":
+    def default(cls) -> Target:
         return Target(address=DEFAULT_TARGET_NAME, name=DEFAULT_TARGET_ADDRESS)
 
 
@@ -175,7 +176,7 @@ class Event(BaseModel):
         return "", ""
 
     @classmethod
-    def from_json(cls, data: dict[str, Any]) -> "Event":
+    def from_json(cls, data: dict[str, Any]) -> Event:
         """
         Build instance from clickhouse query
         :return:
@@ -233,9 +234,7 @@ class Event(BaseModel):
         return Event.model_validate(r)
 
     @classmethod
-    def get_by_id(
-        cls, event_id: str, /, client: ClickhouseClient | None = None
-    ) -> Optional["Event"]:
+    def get_by_id(cls, event_id: str, /, client: ClickhouseClient | None = None) -> Event | None:
         """
 
         :return:

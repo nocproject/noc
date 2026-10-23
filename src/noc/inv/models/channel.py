@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 
@@ -105,12 +105,12 @@ class Channel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Channel"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Channel | None:
         return Channel.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Channel"]:
+    def get_by_bi_id(cls, bi_id: int) -> Channel | None:
         return Channel.objects.filter(bi_id=bi_id).first()
 
     @property
@@ -191,7 +191,7 @@ class Channel(Document):
         return f"c:{self.id}"
 
     @classmethod
-    def from_resource(cls, resource: str) -> "tuple[Channel | None, str | None]":
+    def from_resource(cls, resource: str) -> tuple[Channel | None, str | None]:
         """
         Dereference from resource.
 

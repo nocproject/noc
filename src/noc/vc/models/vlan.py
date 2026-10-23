@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import random
 import datetime
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -66,11 +67,11 @@ class VLAN(Document):
     }
 
     name = StringField(default="")
-    profile: "VLANProfile" = PlainReferenceField(
+    profile: VLANProfile = PlainReferenceField(
         VLANProfile, required=True, default=VLANProfile.get_default_profile
     )
     vlan = IntField(min_value=1, max_value=4095)
-    l2_domain: "L2Domain" = PlainReferenceField(L2Domain, required=True)
+    l2_domain: L2Domain = PlainReferenceField(L2Domain, required=True)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
@@ -101,21 +102,21 @@ class VLAN(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["VLAN"]:
+    def get_by_id(cls, oid: str | ObjectId) -> VLAN | None:
         return VLAN.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["VLAN"]:
+    def get_by_bi_id(cls, bi_id: int) -> VLAN | None:
         return VLAN.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_domain_vlan_cache"), lock=lambda _: id_lock)
-    def get_by_vlan_num(cls, l2_domain: str, vlan_num: int) -> Optional["VLAN"]:
+    def get_by_vlan_num(cls, l2_domain: str, vlan_num: int) -> VLAN | None:
         return VLAN.objects.filter(l2_domain=l2_domain, vlan=vlan_num).first()
 
     @classmethod
-    def get_component(cls, managed_object, vlan=None, **kwargs) -> Optional["VLAN"]:
+    def get_component(cls, managed_object, vlan=None, **kwargs) -> VLAN | None:
         if not vlan:
             return None
         domain = managed_object.get_effective_l2_domain()
@@ -168,7 +169,7 @@ class VLAN(Document):
         keys: Iterable[int],
         domain: L2Domain,
         allow_create: bool = False,
-    ) -> Iterable[tuple[int, Optional["VLAN"], str | None]]:
+    ) -> Iterable[tuple[int, VLAN | None, str | None]]:
         """
         Iterate resource over requested keys
         Args:
@@ -227,7 +228,7 @@ class VLAN(Document):
         vlan_id: int,
         l2_domain: L2Domain,
         name: str | None = None,
-    ) -> "VLAN":
+    ) -> VLAN:
         """Create VLAN from Template"""
         vlan = VLAN(
             vlan=vlan_id,

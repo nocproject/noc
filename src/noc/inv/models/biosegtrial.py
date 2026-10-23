@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
-from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -63,7 +63,7 @@ class BioSegTrial(Document):
         attacker_object: ManagedObject | None = None,
         target_object: ManagedObject | None = None,
         reason="manual",
-    ) -> Optional["BioSegTrial"]:
+    ) -> BioSegTrial | None:
         if target.id == attacker.id:
             # Not trial same
             return None

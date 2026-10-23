@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
-from typing import Any, Optional
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -54,7 +55,7 @@ class Glyph(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Glyph"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Glyph | None:
         return Glyph.objects.filter(id=oid).first()
 
     @property

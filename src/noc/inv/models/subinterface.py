@@ -6,7 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Any
+from __future__ import annotations
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -81,7 +82,7 @@ class SubInterface(Document):
     l2_domain = PlainReferenceField(L2Domain, required=False)
     name = StringField()
     description = StringField(required=False)
-    profile: "InterfaceProfile" = PlainReferenceField(
+    profile: InterfaceProfile = PlainReferenceField(
         InterfaceProfile, default=InterfaceProfile.get_default_profile
     )
     mtu = IntField(required=False)
@@ -113,7 +114,7 @@ class SubInterface(Document):
         return f"{self.managed_object.name} {self.name}"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["SubInterface"]:
+    def get_by_id(cls, oid: str | ObjectId) -> SubInterface | None:
         return SubInterface.objects.filter(id=oid).first()
 
     @property
@@ -151,7 +152,7 @@ class SubInterface(Document):
         return Label.get_effective_setting(label, setting="enable_interface")
 
     @classmethod
-    def iter_effective_labels(cls, instance: "SubInterface") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: SubInterface) -> Iterable[list[str]]:
         if instance.tagged_vlans:
             yield Label.get_effective_vlanfilter_labels(
                 "subinterface_tagged_vlans", instance.tagged_vlans

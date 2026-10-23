@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import logging
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Callable, Iterable
 
 # from pathlib import Path
@@ -73,7 +74,7 @@ class ActionItem(EmbeddedDocument):
         ],
         default="A",
     )
-    handler: "Handler" = PlainReferenceField(Handler, required=False)
+    handler: Handler = PlainReferenceField(Handler, required=False)
     # End Commands Run
     allow_fail: bool = BooleanField(default=True)
     is_fatal: bool = BooleanField(default=False)
@@ -139,7 +140,7 @@ class AffectedRule(EmbeddedDocument):
 
     model_id: str = StringField(required=False)
     op: str = StringField(default="topology")
-    rule: Optional["ReactionRule"] = PlainReferenceField("sa.ReactionRule", required=False)
+    rule: ReactionRule | None = PlainReferenceField("sa.ReactionRule", required=False)
     # RollBack Rule
     # Affected DataStream
     # datastream = StringField(required=False)
@@ -222,8 +223,8 @@ class Match(EmbeddedDocument):
     exclude_labels = ListField(StringField())
     groups: list[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
     ex_groups: list[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
-    remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
-    wf_states: list["State"] = ListField(ReferenceField(State, required=True))
+    remote_system: RemoteSystem | None = ReferenceField(RemoteSystem, required=False)
+    wf_states: list[State] = ListField(ReferenceField(State, required=True))
 
     def clean(self):
         super().clean()
@@ -283,7 +284,7 @@ class ReactionRule(Document):
         ],
         default="a",
     )
-    replace_rule: Optional["ReactionRule"] = ReferenceField("self", required=False)
+    replace_rule: ReactionRule | None = ReferenceField("self", required=False)
     # Conditions
     # Register from Model
     object_model = StringField(
@@ -330,7 +331,7 @@ class ReactionRule(Document):
         choices=[("D", "disable"), ("R", "register"), ("G", "To Group")],
         default="D",
     )
-    notification_group: Optional["NotificationGroup"] = ForeignKeyField(
+    notification_group: NotificationGroup | None = ForeignKeyField(
         NotificationGroup, required=False
     )
     subject_template = StringField()
@@ -350,17 +351,17 @@ class ReactionRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ReactionRule"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ReactionRule | None:
         return ReactionRule.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ReactionRule"]:
+    def get_by_name(cls, name: str) -> ReactionRule | None:
         return ReactionRule.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["ReactionRule"]:
+    def get_by_bi_id(cls, bi_id: int) -> ReactionRule | None:
         return ReactionRule.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -382,7 +383,7 @@ class ReactionRule(Document):
     #     )
 
     @classmethod
-    def iter_rules(cls, model_id: str, operation: str, m_ctx: dict[str, Any]) -> Iterable["str"]:
+    def iter_rules(cls, model_id: str, operation: str, m_ctx: dict[str, Any]) -> Iterable[str]:
         """Iterate rule for object"""
         for rule_id, match in cls.get_rules_matcher(model_id, operation):
             if not match or match(m_ctx):
@@ -437,7 +438,7 @@ class ReactionRule(Document):
         ctx = o.get_matcher_ctx()
         return matcher(ctx)
 
-    def get_effective_rule(self) -> Optional["ReactionRule"]:
+    def get_effective_rule(self) -> ReactionRule | None:
         """Effective rule for Replace Rule settings"""
         return self
 
@@ -480,7 +481,7 @@ class ReactionRule(Document):
     def iter_affected_rules(
         self,
         domains: list[Any],
-    ) -> Iterable[tuple["ReactionRule", Any, "AffectedRule"]]:
+    ) -> Iterable[tuple[ReactionRule, Any, AffectedRule]]:
         """Iterate over affected Rules"""
         # self ?
         for model_id, oid in domains or []:

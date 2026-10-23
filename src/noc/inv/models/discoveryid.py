@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import bisect
 from threading import Lock
-from typing import Optional
 from collections.abc import Iterable
 
 # Third-party modules
@@ -47,7 +47,7 @@ class MACRange(EmbeddedDocument):
         return f"{self.first_mac} - {self.last_mac}"
 
     @classmethod
-    def from_str(cls, first: str, last: str) -> "MACRange":
+    def from_str(cls, first: str, last: str) -> MACRange:
         """
         Create MACRange from two macs.
 
@@ -99,7 +99,7 @@ class DiscoveryID(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["DiscoveryID"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> DiscoveryID | None:
         return DiscoveryID.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

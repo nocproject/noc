@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 import bson
@@ -72,7 +72,7 @@ class Division(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Division"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Division | None:
         return Division.objects.filter(id=oid).first()
 
     def __str__(self):

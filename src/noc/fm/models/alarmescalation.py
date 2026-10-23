@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import logging
 import operator
 from threading import Lock
 import datetime
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -94,7 +94,7 @@ class AlarmEscalation(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["AlarmEscalation"]:
+    def get_by_id(cls, oid: str | ObjectId) -> AlarmEscalation | None:
         return AlarmEscalation.objects.filter(id=oid).first()
 
     @property

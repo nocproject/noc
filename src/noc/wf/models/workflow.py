@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
 import logging
-from typing import Optional, Any
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -130,17 +131,17 @@ class Workflow(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Workflow"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Workflow | None:
         return Workflow.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Workflow"]:
+    def get_by_bi_id(cls, bi_id: int) -> Workflow | None:
         return Workflow.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Workflow"]:
+    def get_by_name(cls, name: str) -> Workflow | None:
         return Workflow.objects.filter(name=name).first()
 
     @classmethod

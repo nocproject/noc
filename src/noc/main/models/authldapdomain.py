@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 import cachetools
@@ -130,17 +130,17 @@ class AuthLDAPDomain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["AuthLDAPDomain"]:
+    def get_by_id(cls, oid: str | ObjectId) -> AuthLDAPDomain | None:
         return AuthLDAPDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["AuthLDAPDomain"]:
+    def get_by_name(cls, name: str) -> AuthLDAPDomain | None:
         return AuthLDAPDomain.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_domain(cls) -> Optional["AuthLDAPDomain"]:
+    def get_default_domain(cls) -> AuthLDAPDomain | None:
         return AuthLDAPDomain.objects.filter(is_default=True).first()
 
     def on_save(self):

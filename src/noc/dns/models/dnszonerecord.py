@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from django.db import models
@@ -35,7 +35,7 @@ class DNSZoneRecord(NOCModel):
         db_table = "dns_dnszonerecord"
         app_label = "dns"
 
-    zone: "DNSZone" = models.ForeignKey(DNSZone, verbose_name="Zone", on_delete=models.CASCADE)
+    zone: DNSZone = models.ForeignKey(DNSZone, verbose_name="Zone", on_delete=models.CASCADE)
     name = models.CharField(_("Name"), max_length=64, blank=True, null=True)
     ttl = models.IntegerField(_("TTL"), null=True, blank=True)
     type = models.CharField(_("Type"), max_length=16)
@@ -52,7 +52,7 @@ class DNSZoneRecord(NOCModel):
         )
 
     @classmethod
-    def get_by_id(cls, oid: int) -> Optional["DNSZoneRecord"]:
+    def get_by_id(cls, oid: int) -> DNSZoneRecord | None:
         return DNSZoneRecord.objects.filter(id=oid).first()
 
     def get_changed_instance(self):

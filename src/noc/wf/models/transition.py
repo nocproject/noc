@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import logging
-from typing import Any, Optional
+from typing import Any
 from threading import Lock
 from pathlib import Path
 
@@ -185,12 +186,12 @@ class Transition(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Transition"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Transition | None:
         return Transition.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Transition"]:
+    def get_by_bi_id(cls, bi_id: int) -> Transition | None:
         return Transition.objects.filter(bi_id=bi_id).first()
 
     def clean(self):
@@ -238,5 +239,5 @@ class Transition(Document):
     @cachetools.cachedmethod(
         operator.attrgetter("_active_transition_cache"), lock=lambda _: id_lock
     )
-    def get_active_transitions(cls, state: str, event: str) -> list["Transition"]:
+    def get_active_transitions(cls, state: str, event: str) -> list[Transition]:
         return list(Transition.objects.filter(from_state=state, event=event, is_active=True))

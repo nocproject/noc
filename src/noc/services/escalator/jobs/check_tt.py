@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import threading
 from collections import defaultdict
-from typing import Optional
 
 # NOC modules
 from noc.core.scheduler.job import Job
@@ -49,7 +49,7 @@ class CheckTTJob(Job):
     lock = ProcessLock(category="escalator", owner="escalator")
     object: TTSystem
 
-    def resolve_user(self, username: str) -> Optional["User"]:
+    def resolve_user(self, username: str) -> User | None:
         """
         Resolve user by TT System Credential
 

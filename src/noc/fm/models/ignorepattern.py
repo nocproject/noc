@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from bson import ObjectId
@@ -40,7 +40,7 @@ class IgnorePattern(Document):
         return f"{self.source}: {self.pattern}"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["IgnorePattern"]:
+    def get_by_id(cls, oid: str | ObjectId) -> IgnorePattern | None:
         return IgnorePattern.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -48,7 +48,7 @@ class IgnorePattern(Document):
             yield "cfgeventrules", f"ignore_pattern:{self.id}"
 
     @classmethod
-    def get_rule_config(cls, pattern: "IgnorePattern"):
+    def get_rule_config(cls, pattern: IgnorePattern):
         """Return MetricConfig for Metrics service"""
         if not pattern.is_active:
             raise KeyError("Rule not activated")

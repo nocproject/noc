@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from collections import namedtuple, defaultdict
 
 # Third-party modules
-from typing import Optional
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -121,13 +121,13 @@ class PrefixCheck(DiscoveryCheck):
             return False
         return self.is_enabled_for_object(self.object)
 
-    def get_interface_prefixes(self) -> list["DiscoveredPrefix"]:
+    def get_interface_prefixes(self) -> list[DiscoveredPrefix]:
         """
         Get prefixes from interface discovery artifact
         :return:
         """
 
-        def get_vlan(data) -> Optional["VLAN"]:
+        def get_vlan(data) -> VLAN | None:
             vlans = data.get("vlan_ids")
             if not vlans or len(vlans) > 1:
                 return None

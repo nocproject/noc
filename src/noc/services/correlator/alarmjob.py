@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import logging
 import datetime
 import operator
 import time
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -61,7 +62,7 @@ class ServiceItem:
         return self.status == ItemStatus.NEW
 
     @classmethod
-    def from_service(cls, svc: Service, to_processed: bool = False) -> "ServiceItem":
+    def from_service(cls, svc: Service, to_processed: bool = False) -> ServiceItem:
         """Create item from Service instance"""
         return ServiceItem(service=svc, service_status=svc.oper_status, to_processed=to_processed)
 
@@ -97,7 +98,7 @@ class Item:
         return {"alarm": self.alarm.id, "status": self.status.value}
 
     @classmethod
-    def from_alarm(cls, alarm, is_clear: bool = False) -> "Item":
+    def from_alarm(cls, alarm, is_clear: bool = False) -> Item:
         """Create Item from Alarm"""
         if not alarm:
             return Item(alarm=None, status=ItemStatus.ARCHIVED)
@@ -188,7 +189,7 @@ class AlarmJob:
         return self.__str__()
 
     @classmethod
-    def get_by_id(cls, oid: str, is_dirty: bool = False) -> Optional["AlarmJob"]:
+    def get_by_id(cls, oid: str, is_dirty: bool = False) -> AlarmJob | None:
         from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
 
         state = AlarmJobState.objects.filter(id=oid).as_pymongo()
@@ -197,7 +198,7 @@ class AlarmJob:
         return None
 
     @property
-    def leader_item(self) -> "Item":
+    def leader_item(self) -> Item:
         """Return first item"""
         if self.items[0].status == ItemStatus.ARCHIVED:
             raise ValueError("Not found Alarm Leader")
@@ -288,7 +289,7 @@ class AlarmJob:
         )
 
     @classmethod
-    def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> "AlarmJob":
+    def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> AlarmJob:
         """Ensure escalation Job"""
         from noc.fm.models.escalationprofile import EscalationProfile
         from noc.fm.models.alarmwatch import Effect
@@ -363,7 +364,7 @@ class AlarmJob:
                 ),
             )
 
-    def get_runner(self) -> "AlarmActionRunner":
+    def get_runner(self) -> AlarmActionRunner:
         """Getting runner"""
         return AlarmActionRunner(
             self.items,
@@ -566,7 +567,7 @@ class AlarmJob:
         static_delay: int | None = None,
         stub_tt_system: TTSystem | None = None,
         stub_user: User | None = None,
-    ) -> "AlarmJob":
+    ) -> AlarmJob:
         """Create Job from Request"""
         if not alarm and req.item:
             alarm = get_alarm(req.item.alarm)
@@ -614,7 +615,7 @@ class AlarmJob:
         dry_run: bool = False,
         sample: int = 0,
         static_delay: int | None = None,
-    ) -> "AlarmJob":
+    ) -> AlarmJob:
         """
         Restore Job State from Alarm:
         Args:
@@ -776,7 +777,7 @@ class AlarmJob:
         data: dict[str, Any],
         is_dirty: bool = False,
         stub_alarms: list[ActiveAlarm] | None = None,
-    ) -> Optional["AlarmJob"]:
+    ) -> AlarmJob | None:
         """"""
         if stub_alarms:
             items = [Item.from_alarm(a) for a in stub_alarms]
@@ -848,7 +849,7 @@ class AlarmJob:
         # self.run()
 
     @classmethod
-    def ensure_job(cls, tt_id: str) -> Optional["AlarmJob"]:
+    def ensure_job(cls, tt_id: str) -> AlarmJob | None:
         """ensure_tt_job"""
         job = cls.get_by_tt_id(tt_id)
         if job:
@@ -859,7 +860,7 @@ class AlarmJob:
         return AlarmJob.from_alarm(aa)
 
     @classmethod
-    def get_by_tt_id(cls, tt_id) -> Optional["AlarmJob"]:
+    def get_by_tt_id(cls, tt_id) -> AlarmJob | None:
         """Getting Alarm Job by TT ID"""
         return None
 

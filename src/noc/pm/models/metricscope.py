@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Callable
 from pathlib import Path
 
@@ -139,12 +140,12 @@ class MetricScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["MetricScope"]:
+    def get_by_id(cls, oid: str | ObjectId) -> MetricScope | None:
         return MetricScope.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_table_cache"), lock=lambda _: id_lock)
-    def get_by_table_name(cls, tname) -> Optional["MetricScope"]:
+    def get_by_table_name(cls, tname) -> MetricScope | None:
         return MetricScope.objects.filter(table_name=tname).first()
 
     def on_save(self):

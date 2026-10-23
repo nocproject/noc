@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -91,7 +91,7 @@ class AddressRange(NOCModel):
         return f"{self.vrf.name} (IPv{self.afi}): {self.from_address} -- {self.to_address}"
 
     @classmethod
-    def get_by_id(cls, oid: int) -> Optional["AddressRange"]:
+    def get_by_id(cls, oid: int) -> AddressRange | None:
         return AddressRange.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

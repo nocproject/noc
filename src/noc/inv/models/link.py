@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from collections import defaultdict
 import datetime
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -88,7 +88,7 @@ class Link(Document):
         return f"Stale link ({self.id})"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Link"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Link | None:
         return Link.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

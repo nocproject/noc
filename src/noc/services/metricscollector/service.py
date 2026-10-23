@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import asyncio
 import operator
 import re
@@ -14,7 +15,7 @@ import datetime
 import itertools
 from time import perf_counter
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 from collections import defaultdict
 
@@ -63,7 +64,7 @@ class CfgItem:
     preference: int
 
     @classmethod
-    def from_data(cls, rid, table, field, data) -> "CfgItem":
+    def from_data(cls, rid, table, field, data) -> CfgItem:
         return CfgItem(
             id=rid,
             ch_table=table,
@@ -126,7 +127,7 @@ class MetricsCollectorService(BaseService):
         remote_system: RemoteSystemConfig,
         collector: str,
         batch_delay: int | None = None,
-    ) -> Optional["RemoteSystemChannel"]:
+    ) -> RemoteSystemChannel | None:
         """
         Create channel for received data
             remote_system: External System for channel

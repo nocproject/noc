@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from enum import Enum
-from typing import Optional
 from collections.abc import Iterable
 
 
@@ -29,28 +29,28 @@ class EscalationPolicy(Enum):
         return self.value != 2
 
     @classmethod
-    def try_from_label(cls, label: str) -> Optional["EscalationPolicy"]:
+    def try_from_label(cls, label: str) -> EscalationPolicy | None:
         """
         Convert label to EscalationPolicy instance
         """
         return _LABEL_TO_POLICY.get(label)
 
     @classmethod
-    def try_from_choice(cls, choice: str) -> Optional["EscalationPolicy"]:
+    def try_from_choice(cls, choice: str) -> EscalationPolicy | None:
         """
         Convert model value to EscalationPolicy instance
         """
         return _LABEL_TO_POLICY.get(f"noc::escalation::{choice}")
 
     @classmethod
-    def get_default(cls) -> "EscalationPolicy":
+    def get_default(cls) -> EscalationPolicy:
         """
         Get default escalation policy
         """
         return EscalationPolicy.ROOT
 
     @classmethod
-    def get_effective_policy(cls, labels: Iterable[list[str]]) -> "EscalationPolicy":
+    def get_effective_policy(cls, labels: Iterable[list[str]]) -> EscalationPolicy:
         """
         Calculate effective policy from a sequence of labels
         """

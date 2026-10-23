@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 
 # Third-party modules
@@ -38,7 +39,7 @@ class Group:
     window: int = 0
 
     @classmethod
-    def from_config(cls, cfg) -> "Group":
+    def from_config(cls, cfg) -> Group:
         return Group(
             reference_template=Template(cfg["reference_template"]),
             alarm_class=AlarmClass.get_by_id(cfg["alarm_class"]) if cfg["alarm_class"] else None,
@@ -103,7 +104,7 @@ class AlarmRule:
         return severity
 
     @classmethod
-    def from_config(cls, config: dict[str, Any]) -> "AlarmRule":
+    def from_config(cls, config: dict[str, Any]) -> AlarmRule:
         """Generate rule from config"""
         rule = AlarmRule(name=config["name"], rid=config["id"])
         if config["match_expr"]:
@@ -183,7 +184,7 @@ class AlarmRule:
                 g_type=GroupType.RULE,
             )
 
-    def get_job(self, alarm: ActiveAlarm) -> Optional["AlarmActionRequest"]:
+    def get_job(self, alarm: ActiveAlarm) -> AlarmActionRequest | None:
         if not self.job_config:
             return None
         cfg = self.job_config

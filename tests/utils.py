@@ -20,9 +20,9 @@ def check_protocol(proto: Protocol, impl: type[object]) -> None:
         # Check method is callable
         assert callable(target_method), f"{name}: must be callable"
         # Protocol signature
-        proto_sig = inspect.signature(proto_value)
+        proto_sig = inspect.signature(proto_value, eval_str=True)
         # Implementation signature
-        target_sig = inspect.signature(target_method)
+        target_sig = inspect.signature(target_method, eval_str=True)
         # Compare parameters
         proto_params = list(proto_sig.parameters.values())
         target_params = list(target_sig.parameters.values())

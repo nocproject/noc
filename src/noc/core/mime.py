@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from enum import IntEnum
-from typing import Optional
 
 
 class ContentType(IntEnum):
@@ -31,7 +31,7 @@ class ContentType(IntEnum):
         return self.value in _IMAGE_TYPE
 
     @classmethod
-    def from_content_type(cls, ct: str) -> Optional["ContentType"]:
+    def from_content_type(cls, ct: str) -> ContentType | None:
         return _R_CONTENT_TYPE.get(ct)
 
 

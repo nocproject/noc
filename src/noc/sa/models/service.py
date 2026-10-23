@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import logging
 import operator
 from collections import defaultdict
 from threading import Lock
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -114,7 +115,7 @@ class StatusAffectedItem(EmbeddedDocument):
         return f"{self.source} ({self.service_status})"
 
     @property
-    def item(self) -> "AffectedItem":
+    def item(self) -> AffectedItem:
         """Return Affected"""
         return AffectedItem(
             id=self.id,
@@ -126,7 +127,7 @@ class StatusAffectedItem(EmbeddedDocument):
         )
 
     @classmethod
-    def from_item(cls, data: AffectedItem) -> "StatusAffectedItem":
+    def from_item(cls, data: AffectedItem) -> StatusAffectedItem:
         """Build item from data"""
         return StatusAffectedItem(
             id=str(data.id),
@@ -163,9 +164,9 @@ class ServiceDependency(EmbeddedDocument):
 
     meta = {"strict": False, "auto_create_index": False}
 
-    service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
+    service: Service | None = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
-    group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
+    group: ResourceGroup | None = ReferenceField(ResourceGroup, required=False)
     type = StringField(
         choices=[
             ("S", "Service (Using)"),
@@ -212,7 +213,7 @@ class ServiceDependency(EmbeddedDocument):
             return False
         return not (self.max_status and status > self.max_status)
 
-    def get_names(self, me: "Service", connected: "Service") -> list[str]:
+    def get_names(self, me: Service, connected: Service) -> list[str]:
         """Gen Connected instance name"""
         r = {""}
         if not self.name_template:
@@ -222,7 +223,7 @@ class ServiceDependency(EmbeddedDocument):
             r.add(tmpl.render(num=num, me=me, connected=connected))
         return sorted(r)
 
-    def is_match_service(self, svc: "Service") -> bool:
+    def is_match_service(self, svc: Service) -> bool:
         """port ?"""
         if self.service and self.service.id == svc.id:
             return True
@@ -291,11 +292,11 @@ class Service(Document):
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
-    state: "State" = PlainReferenceField(State)
+    state: State = PlainReferenceField(State)
     # Last state change
     state_changed = DateTimeField()
     # Parent service
-    parent: "Service" = PlainReferenceField("self", required=False)
+    parent: Service = PlainReferenceField("self", required=False)
     # Subscriber information
     subscriber: Subscriber | None = ReferenceField(Subscriber, required=False)
     # Oper Status Info
@@ -395,12 +396,12 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Service"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Service | None:
         return Service.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Service"]:
+    def get_by_bi_id(cls, bi_id: int) -> Service | None:
         return Service.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -410,7 +411,7 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_instance_cache"))
-    def get_by_instance(cls, address, port: str | None = None) -> Optional["Service"]:
+    def get_by_instance(cls, address, port: str | None = None) -> Service | None:
         if port:
             # Service.objects.filter(static_instances__match={"address": address, "port": port})
             si = ServiceInstance.objects.filter(addresses__address=address, port=port).first()
@@ -422,14 +423,14 @@ class Service(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
-    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> Optional["Service"]:
+    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> Service | None:
         return Service.objects.filter(
             m_q(remote_system=str(remote_system.id), remote_id=remote_id)
             | m_q(mappings__match={"remote_id": remote_id, "remote_system": remote_system.id})
         ).first()
 
     @classmethod
-    def get_by_managed_object_id(cls, mo_id: int) -> list["Service"]:
+    def get_by_managed_object_id(cls, mo_id: int) -> list[Service]:
         """"""
         return list(
             ServiceInstance.objects.filter(
@@ -500,7 +501,7 @@ class Service(Document):
                 yield "service", self.parent.id
 
     @property
-    def service_instances(self) -> list["ServiceInstance"]:
+    def service_instances(self) -> list[ServiceInstance]:
         return list(ServiceInstance.objects.filter(service=self.id))
 
     @property
@@ -555,7 +556,7 @@ class Service(Document):
             return "partial"
         return "full"
 
-    def get_nested(self) -> list["Service"]:
+    def get_nested(self) -> list[Service]:
         """Returns list of nested services"""
         r = [self]
         for d in Service.objects.filter(parent=self):
@@ -630,7 +631,7 @@ class Service(Document):
         return list(seen)
 
     def get_dependency_config(
-        self, dependency: "Service", link_type: str | None = None
+        self, dependency: Service, link_type: str | None = None
     ) -> ServiceDependency | None:
         """Return Dependency config as rule"""
         link_cfg = None
@@ -646,7 +647,7 @@ class Service(Document):
                 link_cfg = sd
         return link_cfg
 
-    def iter_dependent_services(self) -> Iterable[tuple["Service", str]]:
+    def iter_dependent_services(self) -> Iterable[tuple[Service, str]]:
         """
         Iterable over dependent service, that affected self changed: status_change
         """
@@ -656,7 +657,7 @@ class Service(Document):
         for svc in self.get_connected_my():
             yield svc, "S"
 
-    def iter_dependencies_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
+    def iter_dependencies_services(self, filter_match_status: bool = False) -> Iterable[Service]:
         """Iterate over service topology, with affected statuses"""
         for item in self.dependency_services:
             if filter_match_status and not item.is_match():
@@ -666,7 +667,7 @@ class Service(Document):
             if item.group and item.group.technology.service_model == "sa.Service":
                 yield from Service.objects.filter(effective_service_groups=item.group)
 
-    def iter_dependency_status(self) -> Iterable[tuple[Status, "Service"]]:
+    def iter_dependency_status(self) -> Iterable[tuple[Status, Service]]:
         """Iterate over dependency services status"""
         for svc, link_type in self.iter_dependent_services():
             cfg = self.get_dependency_config(svc, link_type=link_type)
@@ -974,7 +975,7 @@ class Service(Document):
             return Status.UNKNOWN
         return Status.UP
 
-    def get_connected_me(self) -> Iterable["Service"]:
+    def get_connected_me(self) -> Iterable[Service]:
         """Get connected services to me"""
         # Any config ?
         # From Config
@@ -1164,7 +1165,7 @@ class Service(Document):
             return self.profile.calculate_status_function
         return self.calculate_status_function
 
-    def get_effective_calculate_rules(self) -> list["CalculatedStatusRule"]:
+    def get_effective_calculate_rules(self) -> list[CalculatedStatusRule]:
         if self.calculate_status_function == "P":
             return self.profile.calculate_status_rules
         return self.calculate_status_rules
@@ -1287,7 +1288,7 @@ class Service(Document):
         return Label.get_effective_setting(label, "enable_service")
 
     @classmethod
-    def iter_effective_labels(cls, instance: "Service") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: Service) -> Iterable[list[str]]:
         yield list(instance.labels or [])
         yield list(ServiceProfile.iter_lazy_labels(instance.profile))
         for c in instance.iter_caps():
@@ -1396,7 +1397,7 @@ class Service(Document):
         # addresses
         # port
         # session_id ? register_session
-    ) -> Optional["ServiceInstance"]:
+    ) -> ServiceInstance | None:
         """
         Register Instance for Service
 
@@ -1447,7 +1448,7 @@ class Service(Document):
         service: str | None = None,
         remote_ref: str | None = None,
         **kwargs,
-    ) -> Optional["Service"]:
+    ) -> Service | None:
         logger.debug("Getting service by component: %s", kwargs)
         if service:
             return Service.get_by_id(service)
@@ -1477,7 +1478,7 @@ class Service(Document):
     def update_maintenance(
         cls,
         maintenance_id: str,
-        services: list["Service"],
+        services: list[Service],
         start: datetime.datetime,
         affected_topology: bool = False,
         remote_system: RemoteSystem | None = None,

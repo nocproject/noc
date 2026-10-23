@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from bson import ObjectId
@@ -68,7 +68,7 @@ class ObjectConnection(Document):
         return f"<{conns}>"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ObjectConnection"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ObjectConnection | None:
         return ObjectConnection.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

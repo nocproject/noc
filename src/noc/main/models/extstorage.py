@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 from pathlib import Path
 
@@ -57,12 +57,12 @@ class ExtStorage(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ExtStorage"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ExtStorage | None:
         return ExtStorage.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ExtStorage"]:
+    def get_by_name(cls, name: str) -> ExtStorage | None:
         return ExtStorage.objects.filter(name=name).first()
 
     @classmethod

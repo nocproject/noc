@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, EmbeddedDocumentListField
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 from bson import ObjectId
 import cachetools
@@ -48,12 +49,12 @@ class DataStreamConfig(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["DataStreamConfig"]:
+    def get_by_id(cls, oid: str | ObjectId) -> DataStreamConfig | None:
         return DataStreamConfig.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["DataStreamConfig"]:
+    def get_by_name(cls, name: str) -> DataStreamConfig | None:
         return DataStreamConfig.objects.filter(name=name).first()
 
     def iter_formats(

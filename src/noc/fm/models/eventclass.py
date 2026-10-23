@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -253,17 +253,17 @@ class EventClass(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["EventClass"]:
+    def get_by_id(cls, oid: str | ObjectId) -> EventClass | None:
         return EventClass.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["EventClass"]:
+    def get_by_name(cls, name: str) -> EventClass | None:
         return EventClass.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["EventClass"]:
+    def get_by_bi_id(cls, bi_id: int) -> EventClass | None:
         return EventClass.objects.filter(bi_id=bi_id).first()
 
     @property
@@ -411,7 +411,7 @@ class EventClass(Document):
         return safe_json_path(self.name)
 
     @classmethod
-    def get_event_config(cls, event_class: "EventClass"):
+    def get_event_config(cls, event_class: EventClass):
         """Build Category Rules"""
         r = {
             "id": str(event_class.id),

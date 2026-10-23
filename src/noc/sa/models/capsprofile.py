@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -42,7 +42,7 @@ class CapsSettings(EmbeddedDocument):
     # Add to Reference
     ref_scope = StringField(required=False)
     # Wildcard
-    set_label: Optional["Label"] = ReferenceField(Label, required=False)
+    set_label: Label | None = ReferenceField(Label, required=False)
     # ref_remote_system
     exposed = BooleanField(default=False)
     required = BooleanField(default=False)
@@ -261,7 +261,7 @@ class CapsProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["CapsProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> CapsProfile | None:
         return CapsProfile.objects.filter(id=oid).first()
 
     @classmethod

@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 from threading import Lock
 import operator
-from typing import Any, Optional
+from typing import Any
 
 # Third-party modules
 import bson
@@ -84,7 +85,7 @@ class Layer(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Layer"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Layer | None:
         return Layer.objects.filter(id=oid).first()
 
     @classmethod

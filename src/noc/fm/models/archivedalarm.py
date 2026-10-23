@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
-from typing import Optional
 from collections.abc import Iterable
 
 # Third-party modules
@@ -133,11 +133,11 @@ class ArchivedAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ArchivedAlarm"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ArchivedAlarm | None:
         return ArchivedAlarm.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_tt_id(cls, tt_id: str) -> Optional["ArchivedAlarm"]:
+    def get_by_tt_id(cls, tt_id: str) -> ArchivedAlarm | None:
         return ArchivedAlarm.objects.filter(escalation_tt=tt_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -272,7 +272,7 @@ class ArchivedAlarm(Document):
                 seen.add(a.managed_object)
                 yield a.managed_object
 
-    def iter_grouped(self) -> Iterable["ArchivedAlarm"]:
+    def iter_grouped(self) -> Iterable[ArchivedAlarm]:
         """
         Generator yielding all alarm in group
         """

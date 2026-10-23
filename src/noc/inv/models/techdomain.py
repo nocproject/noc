@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 import operator
 from pathlib import Path
 
@@ -114,17 +115,17 @@ class TechDomain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["TechDomain"]:
+    def get_by_id(cls, oid: str | ObjectId) -> TechDomain | None:
         return TechDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["TechDomain"]:
+    def get_by_code(cls, code: str) -> TechDomain | None:
         return TechDomain.objects.filter(code=code).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["TechDomain"]:
+    def get_by_bi_id(cls, bi_id: int) -> TechDomain | None:
         return TechDomain.objects.filter(bi_id=bi_id).first()
 
     @property

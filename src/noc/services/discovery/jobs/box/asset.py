@@ -6,13 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from collections import defaultdict
 import hashlib
 import base64
 from threading import Lock
 import operator
 import re
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -794,7 +795,7 @@ class AssetCheck(DiscoveryCheck):
                 )
 
     def register_unknown_part_no(
-        self, vendor: "Vendor", part_no: list[str] | str, descripton: str | None
+        self, vendor: Vendor, part_no: list[str] | str, descripton: str | None
     ):
         """
         Register missed part number
@@ -824,7 +825,7 @@ class AssetCheck(DiscoveryCheck):
                 r.append(n)
         return r
 
-    def get_vendor(self, v: str | None, o_type: str | None = "") -> Optional["Vendor"]:
+    def get_vendor(self, v: str | None, o_type: str | None = "") -> Vendor | None:
         """
         Get vendor instance or None. Create vendor if object type is XCVR.
         """
@@ -851,7 +852,7 @@ class AssetCheck(DiscoveryCheck):
         self.vendors[v] = o
         return o
 
-    def set_rule(self, rule: "ConnectionRule"):
+    def set_rule(self, rule: ConnectionRule):
         self.logger.debug("Setting connection rule '%s'", rule.name)
         # Compile context mappings
         self.rule_context = {}
@@ -934,7 +935,7 @@ class AssetCheck(DiscoveryCheck):
         t_c: str,
         serial: str,
         data: list[ObjectAttr],
-    ) -> Optional["Object"]:
+    ) -> Object | None:
         """
         Resolve object type
         """
@@ -996,7 +997,7 @@ class AssetCheck(DiscoveryCheck):
         part_no: list[str] | str,
         serial: str | None,
         cpe_id: str | None = None,
-    ) -> Optional["ObjectModel"]:
+    ) -> ObjectModel | None:
         """
         Try to resolve using model map
         """
@@ -1110,7 +1111,7 @@ class AssetCheck(DiscoveryCheck):
             # Move o2 to lost&found
             o2.put_into(self.lost_and_found)
 
-    def clean_serial(self, model: "ObjectModel", number: str | None, serial: str | None):
+    def clean_serial(self, model: ObjectModel, number: str | None, serial: str | None):
         # Empty value
         if not serial or serial == "None":
             new_serial = self.generate_serial(model, number)

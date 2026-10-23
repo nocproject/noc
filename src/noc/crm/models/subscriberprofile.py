@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -65,7 +65,7 @@ class SubscriberProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["SubscriberProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> SubscriberProfile | None:
         return SubscriberProfile.objects.filter(id=oid).first()
 
     @classmethod

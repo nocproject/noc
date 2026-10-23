@@ -6,12 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python
+from __future__ import annotations
 import datetime
 import operator
 import re
 import logging
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
@@ -151,7 +152,7 @@ class Maintenance(Document):
     )
     #
     # Reference to remote system object has been imported from
-    remote_system: Optional["RemoteSystem"] = PlainReferenceField(RemoteSystem)
+    remote_system: RemoteSystem | None = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Array remote objects and service ids
@@ -173,7 +174,7 @@ class Maintenance(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Maintenance"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Maintenance | None:
         return Maintenance.objects.filter(id=oid).first()
 
     @classmethod

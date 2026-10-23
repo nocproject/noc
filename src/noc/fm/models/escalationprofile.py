@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import operator
-from typing import Optional, Any
+from typing import Any
 from threading import Lock
 
 # Third-party modules
@@ -121,7 +122,7 @@ class EscalationItem(EmbeddedDocument):
         tt_login: str | None = None,
         pre_reason: str | None = None,
         promote_item: str | None = None,
-    ) -> list["ActionConfig"]:
+    ) -> list[ActionConfig]:
         """"""
         r = []
         if self.notification_group:
@@ -297,7 +298,7 @@ class EscalationProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["EscalationProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> EscalationProfile | None:
         return EscalationProfile.objects.filter(id=oid).first()
 
     def get_actions(
@@ -404,7 +405,7 @@ class EscalationProfile(Document):
         return self.escalations[0].delay
 
     @classmethod
-    def get_config(cls, profile: "EscalationProfile") -> dict[str, Any]:
+    def get_config(cls, profile: EscalationProfile) -> dict[str, Any]:
         """Build job config"""
         actions = []
         for e in profile.escalations:

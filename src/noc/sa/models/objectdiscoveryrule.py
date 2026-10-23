@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import re
 from itertools import filterfalse
 from functools import partial
-from typing import Optional, Any
+from typing import Any
 from threading import Lock
 
 # Third-party modules
@@ -230,7 +231,7 @@ class ObjectDiscoveryRule(Document):
     # Rule preference, processed from lesser to greater
     preference = IntField(required=True, default=100)
     network_ranges = EmbeddedDocumentListField(NetworkRange)
-    workflow: "Workflow" = PlainReferenceField(
+    workflow: Workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.DiscoveredObject")
     )
     sources = EmbeddedDocumentListField(SourceItem)  # Source match and priority
@@ -274,7 +275,7 @@ class ObjectDiscoveryRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ObjectDiscoveryRule"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ObjectDiscoveryRule | None:
         return ObjectDiscoveryRule.objects.filter(id=oid).first()
 
     @property
@@ -349,7 +350,7 @@ class ObjectDiscoveryRule(Document):
         checks: list[Any],
         data: list[Any] | None = None,
         sources: list[str] | None = None,
-    ) -> Optional["ObjectDiscoveryRule"]:
+    ) -> ObjectDiscoveryRule | None:
         """
         Return Effective rule by discovered data
 
@@ -464,7 +465,7 @@ class ObjectDiscoveryRule(Document):
         return any(c.is_match(labels, data, checks, groups) for c in self.conditions)
 
     @cachetools.cachedmethod(operator.attrgetter("_prefix_cache"), lock=lambda _: id_lock)
-    def get_prefixes(self, pool: Pool | None = None) -> list["IPv4"]:
+    def get_prefixes(self, pool: Pool | None = None) -> list[IPv4]:
         """Return configured prefixes"""
         r = []
         for net in self.network_ranges:

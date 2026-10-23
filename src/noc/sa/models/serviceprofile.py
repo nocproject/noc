@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import re
 from collections import defaultdict
 from threading import Lock
-from typing import Optional
 from collections.abc import Iterable
 from functools import partial
 
@@ -69,10 +69,10 @@ class DiagnosticSettings(EmbeddedDocument):
     show_in_display = BooleanField(default=True)
     state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
     # check_handler
-    handler: "Handler" = ReferenceField(Handler, required=False)
+    handler: Handler = ReferenceField(Handler, required=False)
     instance_checks = BooleanField(default=False)
     ctx: str = ListField(StringField(required=True))
-    alarm_class: Optional["AlarmClass"] = ReferenceField(AlarmClass, required=False)
+    alarm_class: AlarmClass | None = ReferenceField(AlarmClass, required=False)
     alarm_subject: str = StringField(max_length=256, required=False)
     # For instance ?
     failed_status = EnumField(Status, required=False)
@@ -158,7 +158,7 @@ class InstanceSettings(EmbeddedDocument):
             return f"{self.instance_type} ({self.refs_caps.name}): {self.name}"
         return f"{self.instance_type}: {self.name}"
 
-    def get_config(self) -> "ServiceInstanceTypeConfig":
+    def get_config(self) -> ServiceInstanceTypeConfig:
         return ServiceInstanceTypeConfig(
             allow_manual=self.allow_manual,
             only_one_instance=self.only_one_instance,
@@ -169,7 +169,7 @@ class InstanceSettings(EmbeddedDocument):
             refs_caps=self.refs_caps,
         )
 
-    def get_instance_type(self) -> type["ServiceInstanceConfig"]:
+    def get_instance_type(self) -> type[ServiceInstanceConfig]:
         return ServiceInstanceConfig.get_type(self.instance_type)
 
 
@@ -186,7 +186,7 @@ class CalculatedStatusRule(EmbeddedDocument):
 
     meta = {"strict": False, "auto_create_index": False}
 
-    group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
+    group: ResourceGroup | None = ReferenceField(ResourceGroup, required=False)
     type = StringField(
         choices=[
             ("S", "Service (Using)"),
@@ -304,8 +304,8 @@ class AlarmStatusRule(EmbeddedDocument):
     exclude_labels = ListField(StringField())
     affected_instance = BooleanField(default=False)  # Include ServiceInstance to
     required_reference = BooleanField(default=False)  # Required service component on Alarm
-    min_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Min Severity
-    max_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Max Severity
+    min_severity: AlarmSeverity | None = PlainReferenceField(AlarmSeverity)  # Min Severity
+    max_severity: AlarmSeverity | None = PlainReferenceField(AlarmSeverity)  # Max Severity
     # set_weight
     status = EnumField(Status, required=False)  # Default status by Severity
 
@@ -367,7 +367,7 @@ class ServiceProfile(Document):
         Workflow, default=partial(Workflow.get_default_workflow, "sa.ServiceProfile")
     )
     # Auto-assign interface profile when service binds to interface
-    interface_profile: "InterfaceProfile" = ReferenceField(InterfaceProfile)
+    interface_profile: InterfaceProfile = ReferenceField(InterfaceProfile)
     # Alarm weight
     weight: int = IntField(default=0)
     # Status Policies
@@ -470,12 +470,12 @@ class ServiceProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ServiceProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ServiceProfile | None:
         return ServiceProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["ServiceProfile"]:
+    def get_by_code(cls, code: str) -> ServiceProfile | None:
         return ServiceProfile.objects.filter(code=code).first()
 
     def on_save(self):
@@ -501,7 +501,7 @@ class ServiceProfile(Document):
         return Label.get_effective_setting(label, "enable_serviceprofile")
 
     @classmethod
-    def iter_lazy_labels(cls, service_profile: "ServiceProfile"):
+    def iter_lazy_labels(cls, service_profile: ServiceProfile):
         yield f"noc::serviceprofile::{service_profile.name}::="
 
     @classmethod
@@ -530,7 +530,7 @@ class ServiceProfile(Document):
 
     def get_instance_config(
         self, i_type: InstanceType, name: str | None = None
-    ) -> Optional["ServiceInstanceTypeConfig"]:
+    ) -> ServiceInstanceTypeConfig | None:
         """Getting instance Config"""
         if self.instance_policy == "A":
             cfg = ServiceInstanceTypeConfig()
@@ -561,7 +561,7 @@ class ServiceProfile(Document):
             type: service, client
         """
 
-    def get_rule_by_alarm(self, aa, is_reference: bool = False) -> Optional["AlarmStatusRule"]:
+    def get_rule_by_alarm(self, aa, is_reference: bool = False) -> AlarmStatusRule | None:
         if self.alarm_affected_policy in {"D"}:
             return None
         if self.alarm_affected_policy == "B" and not self.alarm_status_rules:
@@ -649,7 +649,7 @@ class ServiceProfile(Document):
         except KeyError:
             pass
 
-    def iter_configured_instances(self) -> Iterable["ServiceInstanceConfig"]:
+    def iter_configured_instances(self) -> Iterable[ServiceInstanceConfig]:
         """Get configuration"""
         for settings in self.instance_settings:
             yield settings.get_instance_type()

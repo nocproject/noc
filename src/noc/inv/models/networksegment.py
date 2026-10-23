@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import cachetools
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -174,12 +174,12 @@ class NetworkSegment(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["NetworkSegment"]:
+    def get_by_id(cls, oid: str | ObjectId) -> NetworkSegment | None:
         return NetworkSegment.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["NetworkSegment"]:
+    def get_by_bi_id(cls, bi_id: int) -> NetworkSegment | None:
         return NetworkSegment.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -383,7 +383,7 @@ class NetworkSegment(Document):
             return self.profile.horizontal_transit_policy
         return "D"
 
-    def get_effective_l2_domain(self) -> Optional["L2Domain"]:
+    def get_effective_l2_domain(self) -> L2Domain | None:
         if self.l2_domain or not self.parent:
             return self.l2_domain
         return self.parent.get_effective_l2_domain()

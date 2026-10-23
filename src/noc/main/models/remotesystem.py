@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import datetime
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import bson
@@ -233,22 +234,22 @@ class RemoteSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["RemoteSystem"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> RemoteSystem | None:
         return RemoteSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["RemoteSystem"]:
+    def get_by_name(cls, name: str) -> RemoteSystem | None:
         return RemoteSystem.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["RemoteSystem"]:
+    def get_by_bi_id(cls, bi_id: int) -> RemoteSystem | None:
         return RemoteSystem.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_api_key_cache"), lock=lambda _: id_lock)
-    def get_by_api_key(cls, api_key: str) -> Optional["RemoteSystem"]:
+    def get_by_api_key(cls, api_key: str) -> RemoteSystem | None:
         api_key = APIKey.get_by_api_key(api_key)
         if api_key:
             return RemoteSystem.objects.filter(api_key=api_key).first()
@@ -293,7 +294,7 @@ class RemoteSystem(Document):
         if config.datastream.enable_cfgmetricstarget:
             yield "cfgmetricstarget", f"main.RemoteSystem::{self.bi_id}"
 
-    def get_portmapper(self) -> "BasePortMapper":
+    def get_portmapper(self) -> BasePortMapper:
         """Getting portmapper functions"""
         p_name = self.portmapper_name or self.name
         return portmapper_loader.get(p_name)
@@ -485,7 +486,7 @@ class RemoteSystem(Document):
         scheduler.remove_job(jcls=self.JCLS_METRIC, key=self.id)
 
     @classmethod
-    def get_collector_config(cls, remote_system: "RemoteSystem") -> dict[str, Any]:
+    def get_collector_config(cls, remote_system: RemoteSystem) -> dict[str, Any]:
         """Collector config"""
         if remote_system.remote_collectors_policy != "D" and remote_system.api_key:
             return {
@@ -502,12 +503,12 @@ class RemoteSystem(Document):
         return {}
 
     @classmethod
-    def clean_reference(cls, remote_system: "RemoteSystem", remote_id: str):
+    def clean_reference(cls, remote_system: RemoteSystem, remote_id: str):
         """Build reference string. Maybe add aliases ?"""
         return f"{REFERENCE_CODE}:{remote_system.name}:{remote_id}"
 
     @classmethod
-    def from_reference(cls, reference: str) -> tuple["RemoteSystem", str]:
+    def from_reference(cls, reference: str) -> tuple[RemoteSystem, str]:
         if not reference.startswith(REFERENCE_CODE):
             raise ValueError("Unknown Reference format")
         _, name, remote_id = reference.split(":")
@@ -525,7 +526,7 @@ class RemoteSystem(Document):
         return self.enable_metrics or self.enable_fmevent
 
     @classmethod
-    def get_metric_config(cls, remote_system: "RemoteSystem"):
+    def get_metric_config(cls, remote_system: RemoteSystem):
         """Return MetricConfig for Target service"""
         enable_fmevent = remote_system.enable_fmevent and remote_system.event_sync_mode == "P"
         if not remote_system.enable_metrics and not enable_fmevent:

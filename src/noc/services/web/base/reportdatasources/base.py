@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 import time
 import re
@@ -358,7 +359,7 @@ class ReportDataSource:
         filters: list[dict[str, list[str] | str]] | None = None,
         rows: int | None = None,
         groups: list[str] | None = None,
-        user: Optional["User"] = None,
+        user: User | None = None,
     ):
         self.query_fields: list[str] = fields
         self.fields: dict[str, ReportField] = self.get_fields(fields)  # OrderedDict

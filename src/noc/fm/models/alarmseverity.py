@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 from pathlib import Path
 
@@ -78,16 +78,16 @@ class AlarmSeverity(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["AlarmSeverity"]:
+    def get_by_id(cls, oid: str | ObjectId) -> AlarmSeverity | None:
         return AlarmSeverity.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["AlarmSeverity"]:
+    def get_by_code(cls, code: str) -> AlarmSeverity | None:
         return AlarmSeverity.objects.filter(code=code).first()
 
     @classmethod
-    def get_from_labels(cls, labels: list[str]) -> Optional["AlarmSeverity"]:
+    def get_from_labels(cls, labels: list[str]) -> AlarmSeverity | None:
         """
 
         Args
@@ -101,7 +101,7 @@ class AlarmSeverity(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_order_cache"), lock=lambda _: id_lock)
-    def get_ordered(cls) -> list["AlarmSeverity"]:
+    def get_ordered(cls) -> list[AlarmSeverity]:
         """
         Returns list of severities ordered in acvending order
         :return:
@@ -125,7 +125,7 @@ class AlarmSeverity(Document):
         return severities, weights, alpha
 
     @classmethod
-    def get_severity(cls, severity) -> Optional["AlarmSeverity"]:
+    def get_severity(cls, severity) -> AlarmSeverity | None:
         """
         Returns Alarm Severity instance corresponding to numeric value
         """

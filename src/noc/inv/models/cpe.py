@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -153,12 +154,12 @@ class CPE(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["CPE"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> CPE | None:
         return CPE.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["CPE"]:
+    def get_by_bi_id(cls, bi_id: int) -> CPE | None:
         return CPE.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -172,7 +173,7 @@ class CPE(Document):
             ]
 
     @classmethod
-    def iter_effective_labels(cls, instance: "CPE") -> list[str]:
+    def iter_effective_labels(cls, instance: CPE) -> list[str]:
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
@@ -275,7 +276,7 @@ class CPE(Document):
     @classmethod
     def get_component(
         cls, managed_object, global_id: str | None = None, local_id: str | None = None, **kwargs
-    ) -> Optional["CPE"]:
+    ) -> CPE | None:
         if not global_id and not local_id:
             return None
         if global_id:
@@ -287,7 +288,7 @@ class CPE(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0, d_interval: int | None = None
+        cls, mo: ManagedObject, run: int = 0, d_interval: int | None = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected
@@ -350,7 +351,7 @@ class CPE(Document):
             )
 
     @classmethod
-    def get_metric_config(cls, cpe: "CPE"):
+    def get_metric_config(cls, cpe: CPE):
         """Return MetricConfig for Metrics service"""
         if not cpe.state or not cpe.state.is_productive:
             return {}
@@ -434,7 +435,7 @@ class CPE(Document):
         return f"/api/card/view/cpe/{obj_id}/"
 
     @classmethod
-    def get_metric_discovery_interval(cls, mo: "ManagedObject") -> int:
+    def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
         coll = cls._get_collection()
         r = coll.aggregate(
             [

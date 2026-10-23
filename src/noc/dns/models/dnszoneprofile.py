@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -73,12 +73,12 @@ class DNSZoneProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["DNSZoneProfile"]:
+    def get_by_id(cls, oid: int) -> DNSZoneProfile | None:
         return DNSZoneProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["DNSZoneProfile"]:
+    def get_by_name(cls, name: str) -> DNSZoneProfile | None:
         return DNSZoneProfile.objects.filter(name=name).first()
 
     def iter_changed_datastream(self, changed_fields=None):

@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import time
 import os
 import enum
@@ -17,7 +18,7 @@ import struct
 import asyncio
 import datetime
 from time import perf_counter
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Callable
 
 # Third-party modules
@@ -276,7 +277,7 @@ class ClassifierService(BaseService):
 
     async def register_mx_message(
         self,
-        event: "Event",
+        event: Event,
         event_config: EventConfig,
         resolved_vars: dict[str, Any],
         mo: ManagedObject | None,
@@ -362,7 +363,7 @@ class ClassifierService(BaseService):
         self,
         event: Event,
         raw_vars: dict[str, Any],
-    ) -> tuple[EventAction, Optional["EventConfig"], dict[str, Any] | None]:
+    ) -> tuple[EventAction, EventConfig | None, dict[str, Any] | None]:
         """
         Perform event classification.
         Classification steps are:

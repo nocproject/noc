@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import logging
 import asyncio
@@ -13,7 +14,6 @@ import operator
 from collections import defaultdict
 from itertools import chain
 from typing import (
-    Optional,
     Any,
     Protocol,
     runtime_checkable,
@@ -124,8 +124,8 @@ class ActiveAlarm(Document):
 
     timestamp = DateTimeField(required=True)
     last_update = DateTimeField(required=True)
-    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
-    alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject)
+    alarm_class: AlarmClass = PlainReferenceField(AlarmClass)
     # Calculated Severity
     severity = IntField(required=True)
     base_severity = IntField(required=False)
@@ -196,11 +196,11 @@ class ActiveAlarm(Document):
         return str(self.id)
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ActiveAlarm"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ActiveAlarm | None:
         return ActiveAlarm.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_tt_id(cls, tt_id: str) -> Optional["ActiveAlarm"]:
+    def get_by_tt_id(cls, tt_id: str) -> ActiveAlarm | None:
         return ActiveAlarm.objects.filter(log__tt_id=tt_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -416,7 +416,7 @@ class ActiveAlarm(Document):
         force: bool = False,
         source=None,
         dry_run: bool = False,
-    ) -> Optional["ArchivedAlarm"]:
+    ) -> ArchivedAlarm | None:
         """
         Clear alarm
         Args:
@@ -588,14 +588,14 @@ class ActiveAlarm(Document):
         return r
 
     @property
-    def components(self) -> "ComponentHub":
+    def components(self) -> ComponentHub:
         components = getattr(self, "_components", None)
         if components:
             return components
         self._components = ComponentHub(self.alarm_class, self.managed_object, self.vars)
         return self._components
 
-    def subscribe(self, user: "User"):
+    def subscribe(self, user: User):
         """
         Change alarm's subscribers
         """
@@ -607,7 +607,7 @@ class ActiveAlarm(Document):
         )
         self.save()
 
-    def unsubscribe(self, user: "User"):
+    def unsubscribe(self, user: User):
         """Remove alarm subscription for user"""
         self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
         self.log_message(
@@ -617,14 +617,14 @@ class ActiveAlarm(Document):
         )
         self.save()
 
-    def is_subscribed(self, user: "User") -> bool:
+    def is_subscribed(self, user: User) -> bool:
         return any(w.effect == Effect.SUBSCRIPTION and str(user.id) == w.key for w in self.watchers)
 
     @property
     def is_link_alarm(self) -> bool:
         return hasattr(self.components, "interface")
 
-    def acknowledge(self, user: "User", msg="", touch: bool = True):
+    def acknowledge(self, user: User, msg="", touch: bool = True):
         """Acknowledge alarm by user"""
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username
@@ -637,7 +637,7 @@ class ActiveAlarm(Document):
         if touch:
             self.touch_watch()
 
-    def unacknowledge(self, user: "User", msg="", touch: bool = True):
+    def unacknowledge(self, user: User, msg="", touch: bool = True):
         """Delete acknowledge alarm by user"""
         self.ack_ts = None
         self.ack_user = None
@@ -835,12 +835,12 @@ class ActiveAlarm(Document):
         return r
 
     @property
-    def effective_style(self) -> "Style":
+    def effective_style(self) -> Style:
         if self.custom_style:
             return self.custom_style
         return AlarmSeverity.get_severity(self.severity).style
 
-    def rewrite_alarm_class(self, alarm_class: "AlarmClass", dry_run: bool = False):
+    def rewrite_alarm_class(self, alarm_class: AlarmClass, dry_run: bool = False):
         """Replace Alarm Class on Active Alarm"""
         if alarm_class == self.alarm_class:
             return
@@ -858,7 +858,7 @@ class ActiveAlarm(Document):
         self.rewrite_alarm_class(ac, dry_run=dry_run)
 
     @property
-    def effective_alarm_class(self) -> "AlarmClass":
+    def effective_alarm_class(self) -> AlarmClass:
         """Calculate effective AlarmClass"""
         ac = None
         for w in self.watchers:
@@ -875,7 +875,7 @@ class ActiveAlarm(Document):
         """
         return bool(ActiveAlarm.objects.filter(root=self.id, rca_type=RCA_DOWNLINK_MERGE).first())
 
-    def get_root(self) -> "ActiveAlarm":
+    def get_root(self) -> ActiveAlarm:
         """
         Get top-level root alarm
         """
@@ -1230,7 +1230,7 @@ class ActiveAlarm(Document):
                 bulk.append(UpdateOne({"_id": root}, op))
         return bulk
 
-    def set_root(self, root_alarm: "ActiveAlarm", rca_type=RCA_OTHER):
+    def set_root(self, root_alarm: ActiveAlarm, rca_type=RCA_OTHER):
         """
         Set root cause
         """
@@ -1335,7 +1335,7 @@ class ActiveAlarm(Document):
         # self.clear_template = template
         self.safe_save(save_condition={"managed_object": {"$exists": True}, "id": self.id})
 
-    def iter_consequences(self) -> Iterable["ActiveAlarm"]:
+    def iter_consequences(self) -> Iterable[ActiveAlarm]:
         """
         Generator yielding all consequences alarm
         """
@@ -1343,7 +1343,7 @@ class ActiveAlarm(Document):
             yield a
             yield from a.iter_consequences()
 
-    def iter_groups(self) -> Iterable["ActiveAlarm"]:
+    def iter_groups(self) -> Iterable[ActiveAlarm]:
         """
         Generator yielding all groups
         """
@@ -1351,7 +1351,7 @@ class ActiveAlarm(Document):
             return
         yield from ActiveAlarm.objects.filter(reference__in=self.groups)
 
-    def iter_grouped(self) -> Iterable["ActiveAlarm"]:
+    def iter_grouped(self) -> Iterable[ActiveAlarm]:
         """
         Generator yielding all alarm in group
         """
@@ -1382,7 +1382,7 @@ class ActiveAlarm(Document):
                 yield a
 
     @classmethod
-    def iter_effective_labels(cls, instance: "ActiveAlarm"):
+    def iter_effective_labels(cls, instance: ActiveAlarm):
         yield instance.labels
         yield instance.alarm_class.labels
         if instance.managed_object:
@@ -1666,7 +1666,7 @@ class ActiveAlarm(Document):
 
 @runtime_checkable
 class AlarmComponent(Protocol):
-    def get_component(self, **kwargs) -> Optional["Generic"]: ...
+    def get_component(self, **kwargs) -> Generic | None: ...
 
 
 class ComponentHub:

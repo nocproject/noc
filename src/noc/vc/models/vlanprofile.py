@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -91,12 +91,12 @@ class VLANProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["VLANProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> VLANProfile | None:
         return VLANProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["VLANProfile"]:
+    def get_by_bi_id(cls, bi_id: int) -> VLANProfile | None:
         return VLANProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -105,7 +105,7 @@ class VLANProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls) -> "VLANProfile":
+    def get_default_profile(cls) -> VLANProfile:
         vp = VLANProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not vp:
             vp = VLANProfile(

@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import threading
 import random
 import string
 import logging
 import datetime
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Callable
 
 # Third-party modules
@@ -93,7 +94,7 @@ class ResourcePool(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ResourcePool"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ResourcePool | None:
         return ResourcePool.objects.filter(id=oid).first()
 
     @property
@@ -111,7 +112,7 @@ class ResourcePool(Document):
         return model.get_by_resource_pool(self)
 
     @classmethod
-    def acquire(cls, pools: list["ResourcePool"], owner: str | None = None):
+    def acquire(cls, pools: list[ResourcePool], owner: str | None = None):
         """
         # Set Lock
         with ResourcePool.acquire([pool1, ..., poolN]):
@@ -144,7 +145,7 @@ class ResourcePool(Document):
         return self.allocate
 
     @classmethod
-    def get_metrics(cls, pools: list["ResourcePool"]):
+    def get_metrics(cls, pools: list[ResourcePool]):
         """
         Getting metrics for pools: total, used (by count)
         1. Group by type

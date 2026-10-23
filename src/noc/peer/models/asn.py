@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 import operator
 
 # Third-party modules
@@ -49,10 +50,10 @@ class AS(NOCModel):
     asn = models.BigIntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
-    profile: "ASProfile" = DocumentReferenceField(
+    profile: ASProfile = DocumentReferenceField(
         ASProfile, null=False, blank=False, default=ASProfile.get_default_profile
     )
-    project: Optional["Project"] = models.ForeignKey(
+    project: Project | None = models.ForeignKey(
         Project,
         verbose_name="Project",
         null=True,
@@ -106,7 +107,7 @@ class AS(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["AS"]:
+    def get_by_id(cls, oid: int) -> AS | None:
         return AS.objects.filter(id=oid).first()
 
     @classmethod

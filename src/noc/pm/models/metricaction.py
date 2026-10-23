@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 from collections import defaultdict
 
 # Third-party modules
@@ -86,7 +87,7 @@ class MetricActionParam(EmbeddedDocument):
 
 
 class InputMapping(EmbeddedDocument):
-    metric_type: "MetricType" = PlainReferenceField(MetricType)
+    metric_type: MetricType = PlainReferenceField(MetricType)
     input_name = StringField(default="in")
 
     @property
@@ -103,7 +104,7 @@ class InputMapping(EmbeddedDocument):
 
 
 class AlarmConfig(EmbeddedDocument):
-    alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
+    alarm_class: AlarmClass = PlainReferenceField(AlarmClass)
     reference = StringField()
     activation_level = FloatField(default=1.0)
     deactivation_level = FloatField(default=1.0)
@@ -178,17 +179,17 @@ class MetricAction(Document):
     params = EmbeddedDocumentListField(MetricActionParam)
     compose_inputs = EmbeddedDocumentListField(InputMapping)
     compose_expression = StringField(default=None)
-    compose_metric_type: "MetricType" = PlainReferenceField(MetricType)
+    compose_metric_type: MetricType = PlainReferenceField(MetricType)
     activation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
     deactivation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
     key_expression: str = StringField(default=None)
-    alarm_config: "AlarmConfig" = EmbeddedDocumentField(AlarmConfig)
+    alarm_config: AlarmConfig = EmbeddedDocumentField(AlarmConfig)
 
     def __str__(self) -> str:
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["MetricAction"]:
+    def get_by_id(cls, oid: str | ObjectId) -> MetricAction | None:
         return MetricAction.objects.filter(id=oid).first()
 
     def clean(self):

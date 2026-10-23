@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -56,7 +56,7 @@ class TimePattern(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["TimePattern"]:
+    def get_by_id(cls, oid: int) -> TimePattern | None:
         return TimePattern.objects.filter(id=oid).first()
 
     @classmethod

@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from collections import defaultdict
 import operator
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -88,14 +89,14 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    vrf: "VRF" = CachedForeignKey(
+    vrf: VRF = CachedForeignKey(
         VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
     afi: str = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
     prefix: str = CIDRField(_("Prefix"))
     name: str = models.CharField(_("Name"), max_length=255, null=True, blank=True)
-    profile: "PrefixProfile" = DocumentReferenceField(PrefixProfile, null=False, blank=False)
-    asn: "AS" = CachedForeignKey(
+    profile: PrefixProfile = DocumentReferenceField(PrefixProfile, null=False, blank=False)
+    asn: AS = CachedForeignKey(
         AS,
         verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
@@ -103,7 +104,7 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    project: "Project" = CachedForeignKey(
+    project: Project = CachedForeignKey(
         Project,
         verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -112,7 +113,7 @@ class Prefix(NOCModel):
         related_name="prefix_set",
     )
     # VLAN bound to prefix
-    vlan: "VLAN" = DocumentReferenceField(VLAN, null=True, blank=True)
+    vlan: VLAN = DocumentReferenceField(VLAN, null=True, blank=True)
     description: str = models.TextField(_("Description"), blank=True, null=True)
     # Pools
     pools: list[PoolItem] | None = PydanticField(
@@ -128,7 +129,7 @@ class Prefix(NOCModel):
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
     tt: int = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
-    state: "State" = DocumentReferenceField(State, null=True, blank=True)
+    state: State = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
@@ -159,7 +160,7 @@ class Prefix(NOCModel):
         blank=False,
         null=False,
     )
-    default_address_profile: Optional["AddressProfile"] = DocumentReferenceField(
+    default_address_profile: AddressProfile | None = DocumentReferenceField(
         AddressProfile, null=True, blank=True
     )
     source = models.CharField(
@@ -199,11 +200,11 @@ class Prefix(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["Prefix"]:
+    def get_by_id(cls, oid: int) -> Prefix | None:
         return Prefix.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_resource_pool(cls, pool: ResourcePool) -> list["Prefix"]:
+    def get_by_resource_pool(cls, pool: ResourcePool) -> list[Prefix]:
         """Getting Prefixes for resource pool"""
         # Include VRF
         q = Q(pools__contains=[{"pool": str(pool.id)}])
@@ -245,7 +246,7 @@ class Prefix(NOCModel):
             return False
 
     @classmethod
-    def get_parent(cls, vrf, afi, prefix) -> Optional["Prefix"]:
+    def get_parent(cls, vrf, afi, prefix) -> Prefix | None:
         """
         Get nearest closing prefix
         """
@@ -522,7 +523,7 @@ class Prefix(NOCModel):
         )
 
     @property
-    def address_ranges(self) -> list["AddressRange"]:
+    def address_ranges(self) -> list[AddressRange]:
         """
         All prefix-related address ranges
         :return:
@@ -548,7 +549,7 @@ class Prefix(NOCModel):
             )
         )
 
-    def rebase(self, vrf, new_prefix) -> Optional["Prefix"]:
+    def rebase(self, vrf, new_prefix) -> Prefix | None:
         """
         Rebase prefix to a new location
         :return:
@@ -768,7 +769,7 @@ class Prefix(NOCModel):
         """
         self._disable_delete_protection = True
 
-    def get_effective_as(self) -> Optional["AS"]:
+    def get_effective_as(self) -> AS | None:
         """
         Return effective AS (first found upwards)
         :return: AS instance or None
@@ -779,7 +780,7 @@ class Prefix(NOCModel):
             return None
         return self.parent.get_effective_as()
 
-    def get_effective_address_profile(self) -> Optional["AddressProfile"]:
+    def get_effective_address_profile(self) -> AddressProfile | None:
         """Return effective Address Profile (first found upwards)"""
         if self.default_address_profile:
             return self.default_address_profile
@@ -803,7 +804,7 @@ class Prefix(NOCModel):
     def get_resource_pool_usage(
         cls,
         pools: list[ResourcePool],
-        domains: list["Prefix"] | None = None,
+        domains: list[Prefix] | None = None,
     ):
         """"""
         return 0.0

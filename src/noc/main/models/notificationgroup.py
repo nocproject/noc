@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -255,22 +256,22 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["NotificationGroup"]:
+    def get_by_id(cls, oid: int) -> NotificationGroup | None:
         return NotificationGroup.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["NotificationGroup"]:
+    def get_by_name(cls, name: str) -> NotificationGroup | None:
         return NotificationGroup.objects.filter(name=name).first()
 
     @classmethod
-    def get_groups_by_type(cls, message_type: MessageType) -> list["NotificationGroup"]:
+    def get_groups_by_type(cls, message_type: MessageType) -> list[NotificationGroup]:
         return list(
             NotificationGroup.objects.filter(message_types__message_type=message_type.value)
         )
 
     @classmethod
-    def get_groups_by_user(cls, user: User) -> list["NotificationGroup"]:
+    def get_groups_by_user(cls, user: User) -> list[NotificationGroup]:
         q = d_Q(subscription_settings__contains=[{"user": user.id}])
         for g in user.groups.filter():
             q |= d_Q(subscription_settings__contains=[{"group": g.id}])
@@ -279,9 +280,9 @@ class NotificationGroup(NOCModel):
     @classmethod
     def get_user_settings(
         cls,
-        group: "NotificationGroup",
+        group: NotificationGroup,
         user: User,
-    ) -> Optional["NotificationGroupUserSettings"]:
+    ) -> NotificationGroupUserSettings | None:
         """Getting user settings for group"""
         return NotificationGroupUserSettings.objects.filter(
             notification_group=group,
@@ -292,7 +293,7 @@ class NotificationGroup(NOCModel):
         self,
         message_type: MessageType,
         language: str | None = None,
-    ) -> Optional["Template"]:
+    ) -> Template | None:
         """Return effective template for Notification Group"""
         for mt in self.message_types or []:
             mt = MessageTypeItem.model_validate(mt)
@@ -305,7 +306,7 @@ class NotificationGroup(NOCModel):
     def get_subscription_setting(
         self,
         user: User,
-    ) -> Optional["SubscriptionSettingItem"]:
+    ) -> SubscriptionSettingItem | None:
         """"""
         for s in self.iter_subscription_settings:
             if (s.user and s.user == user.id) or (
@@ -319,7 +320,7 @@ class NotificationGroup(NOCModel):
         cls,
         o: Any,
         user: User | None = None,
-    ) -> list["NotificationGroupSubscription"]:
+    ) -> list[NotificationGroupSubscription]:
         if not user:
             return NotificationGroupSubscription.objects.filter(
                 model_id=get_model_id(o),
@@ -331,9 +332,7 @@ class NotificationGroup(NOCModel):
             watchers__contains=[get_subscriber_id(user)],
         )
 
-    def get_user_subscription(
-        self, o: Any, user: User
-    ) -> Optional["NotificationGroupSubscription"]:
+    def get_user_subscription(self, o: Any, user: User) -> NotificationGroupSubscription | None:
         """Getting subscription by user"""
         return NotificationGroupSubscription.objects.filter(
             notification_group=self,
@@ -423,7 +422,7 @@ class NotificationGroup(NOCModel):
 
     def get_active_user_contacts(
         self, user: User, ts: datetime.datetime | None = None
-    ) -> list["NotificationContact"]:
+    ) -> list[NotificationContact]:
         """Getting Active user Contacts for send notification"""
         r = []
         us = self.get_user_settings(self, user)
@@ -566,7 +565,7 @@ class NotificationGroup(NOCModel):
         title_tag: str | None = None,
         expired_at: datetime.datetime | None = None,
         suppress: bool | None = None,
-    ) -> "NotificationGroupUserSettings":
+    ) -> NotificationGroupUserSettings:
         """
         Update User settings for NotificationGroup
         Args:
@@ -611,7 +610,7 @@ class NotificationGroup(NOCModel):
         watchers: list[Any],
         suppresses: list[Any],
         remote_system: RemoteSystem | None = None,
-    ) -> "NotificationGroupSubscription":
+    ) -> NotificationGroupSubscription:
         """Update notification subscription"""
         n = NotificationGroupSubscription.objects.get(
             notification_group=self,
@@ -686,7 +685,7 @@ class NotificationGroup(NOCModel):
         cls,
         o: Any,
         remote_system: RemoteSystem | None = None,
-    ) -> Iterable["NotificationGroupSubscription"]:
+    ) -> Iterable[NotificationGroupSubscription]:
         """
         Object Subscription settings
         Args:
@@ -729,7 +728,7 @@ class NotificationGroup(NOCModel):
         message_type: str,
         ctx: dict[str, Any],
         meta: dict[str, Any],
-        template: Optional["Template"] = None,
+        template: Template | None = None,
         attachments=None,
     ):
         """
@@ -801,7 +800,7 @@ class NotificationGroup(NOCModel):
         message_type: str,
         meta: dict[MessageMeta, Any],
         ts: datetime.datetime | None = None,
-    ) -> Iterable[tuple[str, dict[str, bytes], Optional["Template"]]]:
+    ) -> Iterable[tuple[str, dict[str, bytes], Template | None]]:
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
         """
@@ -813,7 +812,7 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     def render_message(
-        cls, message_type: str, ctx: dict[str, Any], template: Optional["Template"] = None
+        cls, message_type: str, ctx: dict[str, Any], template: Template | None = None
     ) -> dict[str, str]:
         if not template and message_type in NOTIFICATION_DEFAULT_TEMPLATE:
             template = SystemTemplate.objects.filter(

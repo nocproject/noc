@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from django.db import models
@@ -42,7 +42,7 @@ class TimePatternTerm(NOCModel):
         return f"{self.time_pattern.name}: {self.term}"
 
     @classmethod
-    def get_by_id(cls, oid: int) -> Optional["TimePatternTerm"]:
+    def get_by_id(cls, oid: int) -> TimePatternTerm | None:
         return TimePatternTerm.objects.filter(id=oid).first()
 
     @classmethod

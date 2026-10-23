@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 from bson import ObjectId
@@ -51,7 +51,7 @@ class ForwardingInstance(Document):
         return f"{self.managed_object.name}: {self.name if self.name else 'default'}"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ForwardingInstance"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ForwardingInstance | None:
         return ForwardingInstance.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
 from collections import defaultdict
-from typing import Any, Optional
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -193,7 +194,7 @@ class Band(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField()
     parent = StringField()
-    orientation: "BandOrientation" = EnumField(BandOrientation)
+    orientation: BandOrientation = EnumField(BandOrientation)
     queries = EmbeddedDocumentListField(Query)
     condition_param = StringField(required=False)
     condition_value = StringField(required=False)
@@ -273,17 +274,17 @@ class Report(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Report"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Report | None:
         return Report.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Report"]:
+    def get_by_name(cls, name: str) -> Report | None:
         return Report.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["Report"]:
+    def get_by_code(cls, code: str) -> Report | None:
         return Report.objects.filter(code=code).first()
 
     def get_localization(self, field: str, lang: str | None = None):

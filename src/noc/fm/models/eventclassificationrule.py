@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 import re
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -184,7 +185,7 @@ class EventClassificationRule(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["EventClassificationRule"]:
+    def get_by_id(cls, oid: str | ObjectId) -> EventClassificationRule | None:
         return EventClassificationRule.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -285,7 +286,7 @@ class EventClassificationRule(Document):
             )
 
     @classmethod
-    def get_rule_config(cls, rule: "EventClassificationRule"):
+    def get_rule_config(cls, rule: EventClassificationRule):
         """Return MetricConfig for Metrics service"""
         rule_profiles = {p.name for p in rule.profiles}
         for x in rule.patterns:

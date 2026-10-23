@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import difflib
 import logging
 import os
@@ -17,7 +18,7 @@ import warnings
 from collections import defaultdict
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -471,17 +472,17 @@ class ManagedObject(NOCModel):
         app_label = "sa"
 
     name: str = CharField("Name", max_length=64, unique=True)
-    container: Optional["Object"] = DocumentReferenceField(Object, null=True, blank=True)
-    administrative_domain: "AdministrativeDomain" = CachedForeignKey(
+    container: Object | None = DocumentReferenceField(Object, null=True, blank=True)
+    administrative_domain: AdministrativeDomain = CachedForeignKey(
         AdministrativeDomain, verbose_name="Administrative Domain", on_delete=CASCADE
     )
-    segment: "NetworkSegment" = DocumentReferenceField(NetworkSegment, null=False, blank=False)
-    pool: "Pool" = DocumentReferenceField(Pool, null=False, blank=False)
+    segment: NetworkSegment = DocumentReferenceField(NetworkSegment, null=False, blank=False)
+    pool: Pool = DocumentReferenceField(Pool, null=False, blank=False)
     project = CachedForeignKey(
         Project, verbose_name="Project", on_delete=CASCADE, null=True, blank=True
     )
     # Workflow
-    state: "State" = DocumentReferenceField(State, null=True, blank=True)
+    state: State = DocumentReferenceField(State, null=True, blank=True)
     # Last state change
     state_changed = DateTimeField("State Changed", null=True, blank=True)
     # Timestamp expired
@@ -494,24 +495,24 @@ class ManagedObject(NOCModel):
     watcher_wait_ts = DateTimeField("Watcher Wait Ts", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
-    profile: "Profile" = DocumentReferenceField(
+    profile: Profile = DocumentReferenceField(
         Profile,
         null=False,
         blank=False,
         default=Profile.get_default_profile,
     )
-    vendor: Optional["Vendor"] = DocumentReferenceField(Vendor, null=True, blank=True)
-    platform: Optional["Platform"] = DocumentReferenceField(Platform, null=True, blank=True)
-    version: Optional["Firmware"] = DocumentReferenceField(Firmware, null=True, blank=True)
+    vendor: Vendor | None = DocumentReferenceField(Vendor, null=True, blank=True)
+    platform: Platform | None = DocumentReferenceField(Platform, null=True, blank=True)
+    version: Firmware | None = DocumentReferenceField(Firmware, null=True, blank=True)
     # Firmware version to upgrade
     # Empty, when upgrade not scheduled
     next_version: Firmware | None = DocumentReferenceField(Firmware, null=True, blank=True)
-    object_profile: "ManagedObjectProfile" = CachedForeignKey(
+    object_profile: ManagedObjectProfile = CachedForeignKey(
         ManagedObjectProfile, verbose_name="Object Profile", on_delete=CASCADE
     )
     description = CharField("Description", max_length=256, null=True, blank=True)
     # Access
-    auth_profile: Optional["AuthProfile"] = CachedForeignKey(
+    auth_profile: AuthProfile | None = CachedForeignKey(
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
@@ -583,7 +584,7 @@ class ManagedObject(NOCModel):
     # Reference to CPE
     cpe_id = DocumentReferenceField("inv.CPE", null=True, blank=True)
     # Reference to controller, when object is CPE
-    controller: "ManagedObject" = ForeignKey(
+    controller: ManagedObject = ForeignKey(
         "self", verbose_name="Controller", blank=True, null=True, on_delete=CASCADE
     )
     # Stencils
@@ -606,9 +607,9 @@ class ManagedObject(NOCModel):
     shape_title_template = CharField("Shape Name template", max_length=256, blank=True, null=True)
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
-    config_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
-    config_diff_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
-    config_validation_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
+    config_filter_handler: Handler = DocumentReferenceField(Handler, null=True, blank=True)
+    config_diff_filter_handler: Handler = DocumentReferenceField(Handler, null=True, blank=True)
+    config_validation_handler: Handler = DocumentReferenceField(Handler, null=True, blank=True)
     max_scripts = IntegerField(
         "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
     )
@@ -696,7 +697,7 @@ class ManagedObject(NOCModel):
     )
     periodic_discovery_telemetry_sample = IntegerField("Box Discovery Telemetry Sample", default=0)
     # TT system for this object
-    tt_system: "TTSystem" = DocumentReferenceField(TTSystem, null=True, blank=True)
+    tt_system: TTSystem = DocumentReferenceField(TTSystem, null=True, blank=True)
     # TT system queue for this object
     tt_queue = CharField(max_length=64, null=True, blank=True)
     # Object id in tt system
@@ -1000,7 +1001,7 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, oid: int) -> Optional["ManagedObject"]:
+    def get_by_id(cls, oid: int) -> ManagedObject | None:
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
@@ -1011,14 +1012,12 @@ class ManagedObject(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["ManagedObject"]:
+    def get_by_bi_id(cls, bi_id: int) -> ManagedObject | None:
         return ManagedObject.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
-    def get_by_mapping(
-        cls, remote_system: RemoteSystem, remote_id: str
-    ) -> Optional["ManagedObject"]:
+    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> ManagedObject | None:
         return ManagedObject.objects.filter(
             Q(remote_system=str(remote_system.id), remote_id=remote_id)
             | Q(
@@ -1031,7 +1030,7 @@ class ManagedObject(NOCModel):
     @classmethod
     def get_by_mappings(
         cls, remote_mappings: list[tuple[RemoteSystem, str]]
-    ) -> list["ManagedObject"]:
+    ) -> list[ManagedObject]:
         """
         Resolve object by multiple mappings
         Args:
@@ -1165,8 +1164,8 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def get_component(
-        cls, managed_object: "ManagedObject", mac=None, ipv4=None, vrf=None, **kwargs
-    ) -> Optional["ManagedObject"]:
+        cls, managed_object: ManagedObject, mac=None, ipv4=None, vrf=None, **kwargs
+    ) -> ManagedObject | None:
         from noc.inv.models.subinterface import SubInterface
         from noc.inv.models.forwardinginstance import ForwardingInstance
         from noc.inv.models.discoveryid import DiscoveryID
@@ -2116,7 +2115,7 @@ class ManagedObject(NOCModel):
             return self.object_profile.dynamic_classification_policy
         return self.dynamic_classification_policy
 
-    def get_effective_l2_domain(self) -> Optional["L2Domain"]:
+    def get_effective_l2_domain(self) -> L2Domain | None:
         if self.l2_domain:
             return self.l2_domain
         return self.segment.get_effective_l2_domain()
@@ -2332,7 +2331,7 @@ class ManagedObject(NOCModel):
         return Label.merge_labels(ManagedObject.iter_effective_labels(self))
 
     @classmethod
-    def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: ManagedObject) -> Iterable[list[str]]:
         from noc.sa.models.service import Service
 
         yield list(instance.labels or [])
@@ -2391,7 +2390,7 @@ class ManagedObject(NOCModel):
         return Label.get_effective_setting(label, "enable_managedobject")
 
     @classmethod
-    def uplinks_for_objects(cls, objects: list["ManagedObject"]) -> dict[int, list[int]]:
+    def uplinks_for_objects(cls, objects: list[ManagedObject]) -> dict[int, list[int]]:
         """
         Returns uplinks for list of objects
         :param objects: List of object
@@ -2687,7 +2686,7 @@ class ManagedObject(NOCModel):
         yield from Sensor.iter_collected_metrics(self, run=run, d_interval=d_interval)
 
     @classmethod
-    def get_metric_config(cls, mo: "ManagedObject"):
+    def get_metric_config(cls, mo: ManagedObject):
         """
         Return MetricConfig for Metrics service
         :return:
@@ -2880,7 +2879,7 @@ class ManagedObject(NOCModel):
         return max(min(r), config.discovery.min_metric_interval)
 
     @property
-    def interactions(self) -> "InteractionHub":
+    def interactions(self) -> InteractionHub:
         interactions = getattr(self, "_features", None)
         if interactions:
             return interactions
@@ -2971,7 +2970,7 @@ class ManagedObject(NOCModel):
         static_service_groups: list[ResourceGroup] | None = None,
         mappings: dict[RemoteSystem, str] | None = None,
         **data,
-    ) -> "ManagedObject":
+    ) -> ManagedObject:
         """
         Create Managed Object instance from Template
         """
@@ -3214,7 +3213,7 @@ class ManagedObject(NOCModel):
     def update_maintenance(
         cls,
         maintenance_id: str,
-        objects: list["ManagedObject"],
+        objects: list[ManagedObject],
         start: datetime.datetime,
         affected_topology: bool = False,
         remote_system: RemoteSystem | None = None,
@@ -3490,7 +3489,7 @@ class ManagedObjectWatchers(NOCModel):
         )
 
     @classmethod
-    def from_item(cls, managed_object, item: WatchItem) -> "ManagedObjectWatchers":
+    def from_item(cls, managed_object, item: WatchItem) -> ManagedObjectWatchers:
         return ManagedObjectWatchers(
             managed_object=managed_object,
             effect=item.effect.value,
@@ -3503,7 +3502,7 @@ class ManagedObjectWatchers(NOCModel):
         )
 
     @classmethod
-    def update_bulk(cls, updated: dict[int, list["WatchItem"]]):
+    def update_bulk(cls, updated: dict[int, list[WatchItem]]):
         """Update bulk query"""
         from psycopg2.extras import execute_values
         from django.db import connection as pg_connection

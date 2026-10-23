@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
-from typing import Optional
 import operator
 from pathlib import Path
 
@@ -55,12 +55,12 @@ class ConfigurationScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ConfigurationScope"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ConfigurationScope | None:
         return ConfigurationScope.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ConfigurationScope"]:
+    def get_by_name(cls, name: str) -> ConfigurationScope | None:
         return ConfigurationScope.objects.filter(name=name).first()
 
     def get_json_path(self) -> Path:

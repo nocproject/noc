@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -124,19 +125,19 @@ class Template(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["Template"]:
+    def get_by_id(cls, oid: int) -> Template | None:
         return Template.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Template"]:
+    def get_by_name(cls, name: str) -> Template | None:
         return Template.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_message_type_cache"), lock=lambda _: id_lock)
     def get_by_message_type(
         cls, m_type: MessageType, language: str | None = None
-    ) -> Optional["Template"]:
+    ) -> Template | None:
         default = None
         for tmpl in Template.objects.filter(message_type=m_type.value):
             if language and tmpl.language == language:

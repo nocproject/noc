@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -38,7 +38,7 @@ class DialPlan(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["DialPlan"]:
+    def get_by_id(cls, oid: str | ObjectId) -> DialPlan | None:
         return DialPlan.objects.filter(id=oid).first()
 
     def get_category(self, number):

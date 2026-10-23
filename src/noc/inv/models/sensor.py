@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import logging
 import operator
 import datetime
 from collections import defaultdict
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -95,19 +96,19 @@ class Sensor(Document):
         ],
     }
 
-    profile: "SensorProfile" = PlainReferenceField(
+    profile: SensorProfile = PlainReferenceField(
         SensorProfile, default=SensorProfile.get_default_profile
     )
-    object: "Object" = PlainReferenceField(Object)
-    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject, required=False)
-    agent: "Agent" = PlainReferenceField(Agent)
+    object: Object = PlainReferenceField(Object)
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject, required=False)
+    agent: Agent = PlainReferenceField(Agent)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("P", "Profile"), ("R", "By Rule"), ("D", "Disable")],
         default="P",
     )
     local_id = StringField()
-    state: "State" = PlainReferenceField(State)
+    state: State = PlainReferenceField(State)
     units: MeasurementUnits = PlainReferenceField(
         MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
     )
@@ -156,12 +157,12 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Sensor"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Sensor | None:
         return Sensor.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Sensor"]:
+    def get_by_bi_id(cls, bi_id: int) -> Sensor | None:
         return Sensor.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -192,9 +193,7 @@ class Sensor(Document):
             ]
 
     @classmethod
-    def get_component(
-        cls, managed_object, sensor: str | None = None, **kwargs
-    ) -> Optional["Sensor"]:
+    def get_component(cls, managed_object, sensor: str | None = None, **kwargs) -> Sensor | None:
         if not sensor:
             return None
         if sensor:
@@ -258,7 +257,7 @@ class Sensor(Document):
         return Label.get_effective_setting(label, setting="enable_sensor")
 
     @classmethod
-    def iter_effective_labels(cls, instance: "Sensor") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: Sensor) -> Iterable[list[str]]:
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
@@ -275,7 +274,7 @@ class Sensor(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0, d_interval: int | None = None
+        cls, mo: ManagedObject, run: int = 0, d_interval: int | None = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected by box or periodic
@@ -383,7 +382,7 @@ class Sensor(Document):
             )
 
     @classmethod
-    def get_metric_config(cls, sensor: "Sensor") -> dict[str, Any]:
+    def get_metric_config(cls, sensor: Sensor) -> dict[str, Any]:
         """Return MetricConfig for Metrics service"""
         if not sensor.state.is_productive or not sensor.profile.enable_collect:
             return {}
@@ -497,7 +496,7 @@ class Sensor(Document):
         return self.profile.get_css_class() if self.profile else None
 
 
-def sync_object(obj: "Object") -> None:
+def sync_object(obj: Object) -> None:
     """Synchronize sensors with object model"""
     # Get existing sensors
     obj_sensors: dict[str, Sensor] = {s.local_id: s for s in Sensor.objects.filter(object=obj.id)}

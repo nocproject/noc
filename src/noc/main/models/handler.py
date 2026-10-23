@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 import operator
 from pathlib import Path
 
@@ -142,7 +143,7 @@ class Handler(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Handler"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Handler | None:
         return Handler.objects.filter(id=oid).first()
 
     def get_handler(self):

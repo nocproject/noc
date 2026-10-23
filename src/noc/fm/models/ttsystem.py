@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -108,12 +108,12 @@ class TTSystem(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["TTSystem"]:
+    def get_by_id(cls, oid: str | ObjectId) -> TTSystem | None:
         return TTSystem.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["TTSystem"]:
+    def get_by_name(cls, name: str) -> TTSystem | None:
         return TTSystem.objects.filter(name=name).first()
 
     def get_tt_id(self, doc_id) -> str:
@@ -200,7 +200,7 @@ class TTSystem(Document):
         )
 
     @classmethod
-    def iter_lazy_labels(cls, ttsystem: "TTSystem"):
+    def iter_lazy_labels(cls, ttsystem: TTSystem):
         yield f"noc::ttsystem::{ttsystem.name}::="
 
     def can_escalate(self, obj) -> bool:

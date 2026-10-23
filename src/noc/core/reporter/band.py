@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -48,7 +49,7 @@ class Band:
     def __init__(
         self,
         name: str,
-        parent: Optional["Band"] = None,
+        parent: Band | None = None,
         orientation: BandOrientation = BandOrientation.HORIZONTAL,
         data: dict[str, Any] | None = None,
     ):
@@ -167,7 +168,7 @@ class Band:
             return list(self.data)
         return r[0].columns
 
-    def add_children(self, bands: list["Band"]):
+    def add_children(self, bands: list[Band]):
         """
         Add children Band
         Attrs:
@@ -176,12 +177,12 @@ class Band:
         for b in bands:
             self.add_child(b)
 
-    def add_child(self, band: "Band"):
+    def add_child(self, band: Band):
         """Add child band"""
         band.parent = self
         self.children_bands.append(band)
 
-    def get_path(self) -> list["Band"]:
+    def get_path(self) -> list[Band]:
         """Getting band path"""
         if self.parent:
             return [*self.parent.get_path(), self]
@@ -257,19 +258,19 @@ class Band:
     def get_data(self):
         return self.data or {}
 
-    def iter_nested_bands(self) -> Iterable["Band"]:
+    def iter_nested_bands(self) -> Iterable[Band]:
         """Iterable over nested bands"""
         for b in self.children_bands:
             yield b
             yield from b.iter_nested_bands()
 
-    def get_child_by_name(self, name: str) -> Optional["Band"]:
+    def get_child_by_name(self, name: str) -> Band | None:
         """Getting Band by name"""
         for c in self.children_bands:
             if c.name == name:
                 return c
 
-    def find_band_recursively(self, name: str) -> Optional["Band"]:
+    def find_band_recursively(self, name: str) -> Band | None:
         """Find Band from"""
         if self.name == name:
             return self
@@ -278,7 +279,7 @@ class Band:
                 return b
         return None
 
-    def get_data_band(self) -> "Band":
+    def get_data_band(self) -> Band:
         """
         Return Leaf Band. First Band without children
         """
@@ -289,12 +290,12 @@ class Band:
                 return band
 
     @classmethod
-    def from_report(cls, band: ReportBand, params: dict[str, Any] | None = None) -> "Band":
+    def from_report(cls, band: ReportBand, params: dict[str, Any] | None = None) -> Band:
         """Create Band from configuration"""
         return Band(name=band.name, orientation=band.orientation, data=params)
 
     @classmethod
-    def from_band(cls, band: "Band", data: dict[str, Any], parent: Optional["Band"] = None):
+    def from_band(cls, band: Band, data: dict[str, Any], parent: Band | None = None):
         b = Band(
             name=band.name, parent=parent or band.parent, orientation=band.orientation, data=data
         )
@@ -305,7 +306,7 @@ class Band:
             b.add_child(rb)
         return b
 
-    def iter_report_bands(self, name: str | None = None) -> Iterable["Band"]:
+    def iter_report_bands(self, name: str | None = None) -> Iterable[Band]:
         """
         Iterable bands for report.
 

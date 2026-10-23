@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from collections import defaultdict
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 from pathlib import Path
 
@@ -92,8 +93,8 @@ class DiagnosticCheck(EmbeddedDocument):
         ]
     )
     ctx = ListField(StringField(required=True))
-    address_caps: Optional["Capability"] = ReferenceField(Capability)
-    remote_system: Optional["RemoteSystem"] = PlainReferenceField(RemoteSystem, required=False)
+    address_caps: Capability | None = ReferenceField(Capability)
+    remote_system: RemoteSystem | None = PlainReferenceField(RemoteSystem, required=False)
     include_credential: bool = BooleanField(default=True)
 
     def __str__(self):
@@ -165,24 +166,24 @@ class ObjectDiagnosticConfig(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ObjectDiagnosticConfig"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ObjectDiagnosticConfig | None:
         return ObjectDiagnosticConfig.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["ObjectDiagnosticConfig"]:
+    def get_by_bi_id(cls, bi_id: int) -> ObjectDiagnosticConfig | None:
         return ObjectDiagnosticConfig.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ObjectDiagnosticConfig"]:
+    def get_by_name(cls, name: str) -> ObjectDiagnosticConfig | None:
         return ObjectDiagnosticConfig.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_active_diagnostic_cache"), lock=lambda _: id_lock
     )
-    def get_active_diagnostics(cls) -> list["ObjectDiagnosticConfig"]:
+    def get_active_diagnostics(cls) -> list[ObjectDiagnosticConfig]:
         return list(ObjectDiagnosticConfig.objects.filter())
 
     def is_allowed(self, labels: list[str]) -> bool:
@@ -231,7 +232,7 @@ class ObjectDiagnosticConfig(Document):
     def get_json_path(self) -> Path:
         return safe_json_path(self.name)
 
-    def get_config(self, o: Any) -> "DiagnosticConfig":
+    def get_config(self, o: Any) -> DiagnosticConfig:
         checks, d_ctx = [], []
         for c in self.checks:
             c_args = {}

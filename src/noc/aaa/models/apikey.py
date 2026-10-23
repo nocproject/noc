@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 import bson
@@ -66,12 +66,12 @@ class APIKey(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["APIKey"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> APIKey | None:
         return APIKey.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_api_key_cache"), lock=lambda _: id_lock)
-    def get_by_api_key(cls, api_key: str) -> Optional["APIKey"]:
+    def get_by_api_key(cls, api_key: str) -> APIKey | None:
         return APIKey.objects.filter(key=api_key).first()
 
     @classmethod

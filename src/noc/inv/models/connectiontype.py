@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 from threading import Lock
 import operator
 
@@ -129,12 +130,12 @@ class ConnectionType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ConnectionType"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ConnectionType | None:
         return ConnectionType.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ConnectionType"]:
+    def get_by_name(cls, name: str) -> ConnectionType | None:
         return ConnectionType.objects.filter(name=name).first()
 
     @property

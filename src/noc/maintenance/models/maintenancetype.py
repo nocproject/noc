@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 import bson
@@ -46,10 +46,10 @@ class MaintenanceType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["MaintenanceType"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> MaintenanceType | None:
         return MaintenanceType.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["MaintenanceType"]:
+    def get_by_name(cls, name: str) -> MaintenanceType | None:
         return MaintenanceType.objects.filter(name=name).first()

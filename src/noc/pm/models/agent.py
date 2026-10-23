@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import enum
 from threading import Lock
-from typing import Optional
 from collections.abc import Iterable
 
 # Third-party modules
@@ -112,7 +112,7 @@ class Agent(Document):
     )
     type: AgentType = EnumField(AgentType, default=AgentType.AUTO)
     zk_check_interval = IntField()
-    managed_object: Optional["ManagedObject"] = ForeignKeyField(ManagedObject, required=False)
+    managed_object: ManagedObject | None = ForeignKeyField(ManagedObject, required=False)
     # Agent identification
     # Auto-updated if profile.update_addresses is set
     serial = StringField()
@@ -149,12 +149,12 @@ class Agent(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Agent"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Agent | None:
         return Agent.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Agent"]:
+    def get_by_bi_id(cls, bi_id: int) -> Agent | None:
         return Agent.objects.filter(bi_id=bi_id).first()
 
     def get_effective_check_interval(self) -> int:
@@ -211,7 +211,7 @@ class Agent(Document):
         return 0
 
     @classmethod
-    def iter_effective_labels(cls, instance: "Agent") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: Agent) -> Iterable[list[str]]:
         yield list(instance.labels or [])
         state = instance.state or instance.profile.workflow.get_default_state()
         if state.labels:
@@ -224,7 +224,7 @@ class Agent(Document):
         return state.is_productive
 
     @classmethod
-    def get_metric_config(cls, agent: "Agent"):
+    def get_metric_config(cls, agent: Agent):
         """Return MetricConfig for Target service"""
         from noc.inv.models.sensor import Sensor
 

@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import cachetools
@@ -112,7 +113,7 @@ class ResourceItem(BaseModel):
     # Send workflow event
     event: str | None = None
 
-    def merge_data(self, ri: "ResourceItem", systems_priority: list[str] | None = None):
+    def merge_data(self, ri: ResourceItem, systems_priority: list[str] | None = None):
         """Merge data over Multiple Resource Item"""
         if not self.mappings:
             self.mappings = {}
@@ -276,7 +277,7 @@ class ModelTemplate(Document):
     groups = EmbeddedDocumentListField(GroupItem)
     labels: list[str] = ListField(StringField())  # Manual Set
     # instances
-    default_state: "State" = PlainReferenceField(State)
+    default_state: State = PlainReferenceField(State)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=300)
@@ -286,12 +287,12 @@ class ModelTemplate(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ModelTemplate"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ModelTemplate | None:
         return ModelTemplate.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["ModelTemplate"]:
+    def get_by_code(cls, code: str) -> ModelTemplate | None:
         return ModelTemplate.objects.filter(code=code).first()
 
     @property

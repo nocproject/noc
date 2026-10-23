@@ -13,7 +13,7 @@ import pytest
 
 # NOC modules
 from .util import get_all_models
-from noc.models import is_document
+from noc.models import is_document, DB_MODEL_TYPE
 
 
 def int_or_oid(x) -> str:
@@ -23,41 +23,34 @@ def int_or_oid(x) -> str:
 
 
 @pytest.mark.parametrize(
-    ("name", "is_classmethod", "args", "return_type"),
+    ("name", "args"),
     [
         pytest.param(
             "get_by_id",
-            True,
             [("oid", int_or_oid)],
-            "typing.Optional[ForwardRef('{model}')]",
             id="get_by_id",
         ),
         pytest.param(
             "get_by_name",
-            True,
             [("name", "str")],
-            "typing.Optional[ForwardRef('{model}')]",
             id="get_by_name",
         ),
         pytest.param(
             "get_by_bi_id",
-            True,
             [("bi_id", "int")],
-            "typing.Optional[ForwardRef('{model}')]",
             id="get_by_bi_id",
         ),
     ],
 )
 @pytest.mark.parametrize("model", get_all_models(), ids=lambda x: x.__name__)
-def test_get_by_signatures(name: str, is_classmethod: bool, args, return_type, model) -> None:
+def test_get_by_signatures(name: str, args, model: DB_MODEL_TYPE) -> None:
     method = getattr(model, name, None)
     if not method:
         pytest.skip(f"No {name} method")
     # Check classmethod
-    if is_classmethod:
-        assert method.__self__ is model, f"{name} must be @classmethod"
+    assert method.__self__ is model, f"{name} must be @classmethod"
     # Check parameters signature
-    sig = inspect.signature(method)
+    sig = inspect.signature(method, eval_str=True)
     for param_name, param_type in args:
         assert param_name in sig.parameters, f"Parameter `{param_name}` is missed"
         param = sig.parameters[param_name]
@@ -74,11 +67,6 @@ def test_get_by_signatures(name: str, is_classmethod: bool, args, return_type, m
             f"Parameter `{param_name}` must be `{param_type!s}`. Current is `{pa}`"
         )
     # Check return type signature
-    expected_types = [
-        "typing.Optional[ForwardRef('{model}')]".replace("{model}", model.__name__),
-        f"{model.__name__} | None",
-        f"'{model.__name__}' | None",
-    ]
-    assert str(sig.return_annotation) in expected_types, (
-        f"Return type must in {expected_types!r} (has {sig.return_annotation!s})"
+    assert sig.return_annotation == model | None, (
+        f"{name}: return type must be {model.__name__} | None (has {sig.return_annotation!r})"
     )

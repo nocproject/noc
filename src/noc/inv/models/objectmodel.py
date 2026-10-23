@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
 import re
 from uuid import UUID
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Iterable
 from pathlib import Path
 from enum import Enum
@@ -185,7 +186,7 @@ class ModeItem(EmbeddedDocument):
 
 class ProtocolVariantItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
-    protocol: "Protocol" = PlainReferenceField(Protocol, required=True)
+    protocol: Protocol = PlainReferenceField(Protocol, required=True)
     discriminator = StringField(required=False)
     direction = StringField(choices=[">", "<", "*"], default="*")
     data = EmbeddedDocumentListField(ModelAttr)
@@ -352,7 +353,7 @@ class ObjectModelConnection(EmbeddedDocument):
     def __str__(self):
         return self.name
 
-    def __eq__(self, other: "ObjectModelConnection"):
+    def __eq__(self, other: ObjectModelConnection):
         return (
             self.name == other.name
             and self.description == other.description
@@ -408,7 +409,7 @@ class ObjectModelConnection(EmbeddedDocument):
             raise ValidationError("Composite pins not match format: N-N")
         super().clean()
 
-    def get_protocols(self, context: str) -> list["ProtocolVariantItem"]:
+    def get_protocols(self, context: str) -> list[ProtocolVariantItem]:
         r = []
         for p in self.protocols:
             if context and p.cfg_context != context:
@@ -494,10 +495,10 @@ class ObjectModel(Document):
     uuid = UUIDField(binary=True)
     description = StringField()
     short_label = StringField(required=False)
-    vendor: "Vendor" = PlainReferenceField(Vendor)
+    vendor: Vendor = PlainReferenceField(Vendor)
     container_type = EnumField(ContainerType, default=ContainerType.NONE, required=False)
-    connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
-    configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
+    connection_rule: ConnectionRule = PlainReferenceField(ConnectionRule, required=False)
+    configuration_rule: ObjectConfigurationRule = PlainReferenceField(
         ObjectConfigurationRule, required=False
     )
     # Connection rule context
@@ -531,17 +532,17 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ObjectModel"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ObjectModel | None:
         return ObjectModel.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ObjectModel"]:
+    def get_by_name(cls, name: str) -> ObjectModel | None:
         return ObjectModel.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_uuid_cache"), lock=lambda _: id_lock)
-    def get_by_uuid(cls, uuid: UUID) -> Optional["ObjectModel"]:
+    def get_by_uuid(cls, uuid: UUID) -> ObjectModel | None:
         return ObjectModel.objects.filter(uuid=uuid).first()
 
     def get_short_label(self) -> str:
@@ -612,7 +613,7 @@ class ObjectModel(Document):
             return True
         return any(name in (c.input, c.output) for c in self.cross)
 
-    def iter_connection_proposals(self, name: str) -> Iterable[tuple["ObjectId", str]]:
+    def iter_connection_proposals(self, name: str) -> Iterable[tuple[ObjectId, str]]:
         """
         Iterate possible connections from given one.
 
@@ -630,7 +631,7 @@ class ObjectModel(Document):
         for cc in ModelConnectionsCache.objects.filter(type__in=c_types, gender=og):
             yield cc.model, cc.name
 
-    def get_model_connection(self, name: str) -> Optional["ObjectModelConnection"]:
+    def get_model_connection(self, name: str) -> ObjectModelConnection | None:
         for c in self.connections:
             if c.name == name or (c.internal_name and c.internal_name == name):
                 return c
@@ -638,7 +639,7 @@ class ObjectModel(Document):
 
     @classmethod
     def check_connection(
-        cls, lc: "ObjectModelConnection", rc: "ObjectModelConnection"
+        cls, lc: ObjectModelConnection, rc: ObjectModelConnection
     ) -> tuple[bool, str]:
         """
 
@@ -662,7 +663,7 @@ class ObjectModel(Document):
         return True, ""
 
     @classmethod
-    def get_model(cls, vendor: "Vendor", part_no: list[str] | str) -> Optional["ObjectModel"]:
+    def get_model(cls, vendor: Vendor, part_no: list[str] | str) -> ObjectModel | None:
         """
         Get ObjectModel by part part_no,
         Search order:
@@ -680,7 +681,7 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_model_cache"), lock=lambda _: id_lock)
-    def _get_model(cls, vendor: "Vendor", part_no: str) -> Optional["ObjectModel"]:
+    def _get_model(cls, vendor: Vendor, part_no: str) -> ObjectModel | None:
         """
         Get ObjectModel by part part_no,
         Search order:
@@ -1008,7 +1009,7 @@ class ModelConnectionsCache(Document):
             collection.insert(nc)
 
     @classmethod
-    def update_for_model(cls, model: "ObjectModel"):
+    def update_for_model(cls, model: ObjectModel):
         """
         Update connection cache for object model
         :param model: ObjectModel instance

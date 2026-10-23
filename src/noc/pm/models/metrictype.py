@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 import operator
 from threading import Lock
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Callable
 
 # Third-party modules
@@ -122,7 +123,7 @@ class MetricType(Document):
     # Global ID
     uuid = UUIDField(binary=True)
     # Metric scope reference
-    scope: "MetricScope" = PlainReferenceField(MetricScope)
+    scope: MetricScope = PlainReferenceField(MetricScope)
     # Database field name
     field_name = StringField()
     # Database field type
@@ -148,7 +149,7 @@ class MetricType(Document):
         MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
     )
     # Scale
-    scale: "Scale" = PlainReferenceField(Scale, default=Scale.get_default_scale)
+    scale: Scale = PlainReferenceField(Scale, default=Scale.get_default_scale)
     # Metric is delta scale
     is_delta = BooleanField(default=False)
     # Measure name, like 'kbit/s'
@@ -244,17 +245,17 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["MetricType"]:
+    def get_by_id(cls, oid: str | ObjectId) -> MetricType | None:
         return MetricType.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["MetricType"]:
+    def get_by_name(cls, name: str) -> MetricType | None:
         return MetricType.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_field_cache"), lock=lambda _: id_lock)
-    def get_by_field_name(cls, fname, scope: str | None = None) -> Optional["MetricType"]:
+    def get_by_field_name(cls, fname, scope: str | None = None) -> MetricType | None:
         if scope:
             scope = MetricScope.get_by_table_name(scope)
             return MetricType.objects.filter(field_name=fname, scope=scope).first()
@@ -262,7 +263,7 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["MetricType"]:
+    def get_by_bi_id(cls, bi_id: int) -> MetricType | None:
         return MetricType.objects.filter(bi_id=bi_id).first()
 
     @property
@@ -393,7 +394,7 @@ class MetricType(Document):
             yield "cfgmetrics", self.id
 
     @classmethod
-    def get_config(cls, metric_type: "MetricType"):
+    def get_config(cls, metric_type: MetricType):
         """Create config for Services"""
         rules = []
         for num, cm in enumerate(metric_type.collector_mappings):

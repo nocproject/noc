@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from pathlib import Path
 import operator
 import threading
-from typing import Optional
 
 # Third-party modules
 from bson import ObjectId
@@ -64,17 +64,17 @@ class Technology(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Technology"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Technology | None:
         return Technology.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Technology"]:
+    def get_by_bi_id(cls, bi_id: int) -> Technology | None:
         return Technology.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Technology"]:
+    def get_by_name(cls, name: str) -> Technology | None:
         return Technology.objects.filter(name=name).first()
 
     def get_json_path(self) -> Path:

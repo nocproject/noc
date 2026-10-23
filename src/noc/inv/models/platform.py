@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
-from typing import Optional
 import operator
 import uuid
 import datetime
@@ -111,12 +111,12 @@ class Platform(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Platform"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Platform | None:
         return Platform.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Platform"]:
+    def get_by_bi_id(cls, bi_id: int) -> Platform | None:
         return Platform.objects.filter(bi_id=bi_id).first()
 
     def to_json(self) -> str:
@@ -254,5 +254,5 @@ class Platform(Document):
         return Label.get_effective_setting(label, setting="enable_platform")
 
     @classmethod
-    def iter_lazy_labels(cls, platform: "Platform"):
+    def iter_lazy_labels(cls, platform: Platform):
         yield f"noc::platform::{platform.name}::="

@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Any, Optional
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -116,24 +117,24 @@ class MeasurementUnits(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["MeasurementUnits"]:
+    def get_by_id(cls, oid: str | ObjectId) -> MeasurementUnits | None:
         return MeasurementUnits.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["MeasurementUnits"]:
+    def get_by_name(cls, name: str) -> MeasurementUnits | None:
         return MeasurementUnits.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code: str) -> Optional["MeasurementUnits"]:
+    def get_by_code(cls, code: str) -> MeasurementUnits | None:
         return MeasurementUnits.objects.filter(code=code).first()
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_code_cache"), lock=lambda _: id_lock, key=lambda x: "default"
     )
-    def get_default_measurement_units(cls) -> "MeasurementUnits":
+    def get_default_measurement_units(cls) -> MeasurementUnits:
         return MeasurementUnits.objects.filter(name=cls.DEFAULT_MU_NAME).first()
 
     @property

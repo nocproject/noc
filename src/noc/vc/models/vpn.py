@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -85,12 +85,12 @@ class VPN(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["VPN"]:
+    def get_by_id(cls, oid: str | ObjectId) -> VPN | None:
         return VPN.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["VPN"]:
+    def get_by_bi_id(cls, bi_id: int) -> VPN | None:
         return VPN.objects.filter(bi_id=bi_id).first()
 
     def clean(self):

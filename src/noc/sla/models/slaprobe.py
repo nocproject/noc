@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import re
 import operator
 import datetime
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 from threading import Lock
 
@@ -112,12 +113,12 @@ class SLAProbe(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["SLAProbe"]:
+    def get_by_id(cls, oid: str | ObjectId) -> SLAProbe | None:
         return SLAProbe.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["SLAProbe"]:
+    def get_by_bi_id(cls, bi_id: int) -> SLAProbe | None:
         return SLAProbe.objects.filter(bi_id=bi_id).first()
 
     @property
@@ -156,7 +157,7 @@ class SLAProbe(Document):
             return si.managed_object
 
     @classmethod
-    def iter_effective_labels(cls, probe: "SLAProbe") -> list[str]:
+    def iter_effective_labels(cls, probe: SLAProbe) -> list[str]:
         return probe.labels + probe.profile.labels
 
     @classmethod
@@ -170,7 +171,7 @@ class SLAProbe(Document):
         sla_probe: str | None = None,
         target_address: str | None = None,
         **kwargs,
-    ) -> Optional["SLAProbe"]:
+    ) -> SLAProbe | None:
         if not sla_probe or target_address:
             return None
         if sla_probe:
@@ -243,7 +244,7 @@ class SLAProbe(Document):
             )
 
     @classmethod
-    def get_metric_config(cls, sla_probe: "SLAProbe"):
+    def get_metric_config(cls, sla_probe: SLAProbe):
         """
         Return MetricConfig for Metrics service
         :return:

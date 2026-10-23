@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 from functools import partial
 
 # Third-party modules
@@ -32,7 +32,7 @@ class AgentProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     zk_check_interval = IntField(default=60)
-    workflow: "Workflow" = PlainReferenceField(
+    workflow: Workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "pm.AgentProfile")
     )
     update_addresses = BooleanField(default=True)
@@ -48,12 +48,12 @@ class AgentProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["AgentProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> AgentProfile | None:
         return AgentProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls) -> "AgentProfile":
+    def get_default_profile(cls) -> AgentProfile:
         sp = AgentProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not sp:
             sp = AgentProfile(

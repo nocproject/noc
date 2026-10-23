@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 from django.db import models
@@ -92,5 +92,5 @@ class Project(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda x: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["Project"]:
+    def get_by_id(cls, oid: int) -> Project | None:
         return Project.objects.filter(id=oid).first()

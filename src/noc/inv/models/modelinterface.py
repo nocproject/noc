@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
-from typing import Optional, Any
+from typing import Any
 from pathlib import Path
 
 # Third-party modules
@@ -130,12 +131,12 @@ class ModelInterface(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ModelInterface"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ModelInterface | None:
         return ModelInterface.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["ModelInterface"]:
+    def get_by_name(cls, name: str) -> ModelInterface | None:
         return ModelInterface.objects.filter(name=name).first()
 
     def get_attr(self, name: str) -> ModelInterfaceAttr | None:
@@ -198,7 +199,7 @@ class ModelInterface(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_attr_cache"), lock=lambda _: id_lock)
-    def get_interface_attr(cls, interface: str, key: str) -> "ModelInterfaceAttr":
+    def get_interface_attr(cls, interface: str, key: str) -> ModelInterfaceAttr:
         mi = ModelInterface.objects.filter(name=interface).first()
         if not mi:
             raise ModelDataError(f"Invalid interface '{interface}'")

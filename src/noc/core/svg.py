@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import xml.etree.ElementTree as ET
-from typing import Optional, TextIO
+from typing import TextIO
 from collections.abc import Iterable
 from io import StringIO
 from copy import deepcopy
@@ -31,12 +32,12 @@ class SVG:
     HIGHLIGHT_STYLE = {"opacity": "0.5"}
     SELECTABLE_CLS = "selectable"
 
-    def __init__(self: "SVG") -> None:
+    def __init__(self: SVG) -> None:
         self._tree: ET.ElementTree
         self._defs: dict[str, ET.Element] = {}
 
     @classmethod
-    def init(cls: type["SVG"]) -> "SVG":
+    def init(cls: type[SVG]) -> SVG:
         """
         Create root if necessary.
 
@@ -48,7 +49,7 @@ class SVG:
         return svg
 
     @classmethod
-    def read(cls: type["SVG"], fp: TextIO) -> "SVG":
+    def read(cls: type[SVG], fp: TextIO) -> SVG:
         """
         Read from open file.
 
@@ -63,7 +64,7 @@ class SVG:
         return svg
 
     @classmethod
-    def from_string(cls: type["SVG"], data: str) -> "SVG":
+    def from_string(cls: type[SVG], data: str) -> SVG:
         """
         Create SVG from string.
 
@@ -76,7 +77,7 @@ class SVG:
         return cls.read(StringIO(data))
 
     @classmethod
-    def get_placeholder(cls: type["SVG"], width: float, height: float) -> "SVG":
+    def get_placeholder(cls: type[SVG], width: float, height: float) -> SVG:
         data = f"""<?xml version="1.0" encoding="utf-8"?>
     <svg viewBox="0 0 {width} {height}" width="{width}mm" height="{height}mm" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="{width}" height="{height}" style="stroke: rgb(255, 0, 0); stroke-width: 0.5px; fill: rgb(255, 255, 255);"/>
@@ -86,7 +87,7 @@ class SVG:
         return cls.from_string(data)
 
     @classmethod
-    def from_file(cls: type["SVG"], path: str | Path) -> "SVG":
+    def from_file(cls: type[SVG], path: str | Path) -> SVG:
         """
         Create SVG from file.
 
@@ -99,7 +100,7 @@ class SVG:
         with open(path) as fp:
             return cls.read(fp)
 
-    def to_string(self: "SVG") -> str:
+    def to_string(self: SVG) -> str:
         """
         Convert to string containing XML.
 
@@ -110,7 +111,7 @@ class SVG:
         return ET.tostring(self._tree.getroot(), encoding="unicode", method=None)
 
     @classmethod
-    def parse(cls: type["SVG"], fp: TextIO) -> ET.ElementTree:
+    def parse(cls: type[SVG], fp: TextIO) -> ET.ElementTree:
         """
         Parse SVG from file.
 
@@ -126,7 +127,7 @@ class SVG:
             raise ValueError(str(e)) from e
 
     @classmethod
-    def get_parser(cls: type["SVG"]) -> ET.XMLParser:
+    def get_parser(cls: type[SVG]) -> ET.XMLParser:
         """
         Get XMLParser instance.
 
@@ -135,7 +136,7 @@ class SVG:
         """
         return ET.XMLParser()
 
-    def clone(self: "SVG") -> "SVG":
+    def clone(self: SVG) -> SVG:
         """
         Clone SVG.
 
@@ -146,7 +147,7 @@ class SVG:
         svg._tree = deepcopy(self._tree)
         return svg
 
-    def get_tree(self: "SVG") -> ET.ElementTree:
+    def get_tree(self: SVG) -> ET.ElementTree:
         """
         Get element tree.
 
@@ -187,7 +188,7 @@ class SVG:
                 return False
         return True
 
-    def get_defs(self: "SVG") -> ET.Element | None:
+    def get_defs(self: SVG) -> ET.Element | None:
         """
         Get `<defs>` element.
 
@@ -197,7 +198,7 @@ class SVG:
         """
         return self._tree.find(self.DEFS)
 
-    def append_def(self: "SVG", el: ET.Element) -> None:
+    def append_def(self: SVG, el: ET.Element) -> None:
         """
         Append new definition.
 
@@ -226,9 +227,9 @@ class SVG:
         self._defs[el_id] = el
 
     def embed(
-        self: "SVG",
+        self: SVG,
         element_id: str,
-        source: Optional["SVG"],
+        source: SVG | None,
         additional: Iterable[str] | None = None,
         **kwargs,
     ) -> None:
@@ -295,7 +296,7 @@ class SVG:
         for c in src._tree.getroot():
             el.append(c)
 
-    def place(self: "SVG", source: "SVG", /, x: float, y: float, **kwargs: str) -> None:
+    def place(self: SVG, source: SVG, /, x: float, y: float, **kwargs: str) -> None:
         """
         Place item to the end of SVG.
 
@@ -324,7 +325,7 @@ class SVG:
         for c in source.root:
             g.append(c)
 
-    def add_prefix(self: "SVG", prefix: str) -> None:
+    def add_prefix(self: SVG, prefix: str) -> None:
         """
         Add prefix to `id` of all nested elements.
 
@@ -342,7 +343,7 @@ class SVG:
         _add_prefix(self._tree.getroot())
 
     @classmethod
-    def get_transform_origin(cls: type["SVG"], el: ET.Element) -> tuple[float, float] | None:
+    def get_transform_origin(cls: type[SVG], el: ET.Element) -> tuple[float, float] | None:
         """
         Calculate effective transform origin for element.
 
@@ -381,7 +382,7 @@ class SVG:
         return None
 
     @classmethod
-    def get_transform(cls: type["SVG"], source: ET.Element) -> str:
+    def get_transform(cls: type[SVG], source: ET.Element) -> str:
         """
         Calculate `transform` property.
 

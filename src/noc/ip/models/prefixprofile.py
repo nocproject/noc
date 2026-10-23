@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 from functools import partial
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -86,9 +86,7 @@ class PrefixProfile(Document):
     pools = EmbeddedDocumentListField(PoolItem)
     # Template.subject to render Prefix.name
     name_template = ForeignKeyField(Template)
-    default_address_profile: Optional["AddressProfile"] = ReferenceField(
-        AddressProfile, required=False
-    )
+    default_address_profile: AddressProfile | None = ReferenceField(AddressProfile, required=False)
     # Discovery policies
     prefix_discovery_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
     address_discovery_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
@@ -123,12 +121,12 @@ class PrefixProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["PrefixProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> PrefixProfile | None:
         return PrefixProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["PrefixProfile"]:
+    def get_by_bi_id(cls, bi_id: int) -> PrefixProfile | None:
         return PrefixProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -140,7 +138,7 @@ class PrefixProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls) -> "PrefixProfile":
+    def get_default_profile(cls) -> PrefixProfile:
         pp = AddressProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not pp:
             wf = Workflow.get_default_workflow("ip.Prefix")

@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from collections import defaultdict
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 
 # Third-party modules
@@ -185,7 +186,7 @@ class ManagedObjectProfile(NOCModel):
         Style, verbose_name=_("Style"), blank=True, null=True, on_delete=models.CASCADE
     )
     # Workflow
-    workflow: "Workflow" = DocumentReferenceField(
+    workflow: Workflow = DocumentReferenceField(
         Workflow,
         null=False,
         blank=False,
@@ -739,7 +740,7 @@ class ManagedObjectProfile(NOCModel):
         choices=[("D", "Disable"), ("R", "By Rule")],
         default="R",
     )
-    match_rules: list["MatchRule"] = PydanticField(
+    match_rules: list[MatchRule] = PydanticField(
         _("Match Dynamic Rules"),
         schema=MatchRules,
         blank=True,
@@ -776,12 +777,12 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["ManagedObjectProfile"]:
+    def get_by_id(cls, oid: int) -> ManagedObjectProfile | None:
         return ManagedObjectProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["ManagedObjectProfile"]:
+    def get_by_bi_id(cls, bi_id: int) -> ManagedObjectProfile | None:
         return ManagedObjectProfile.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -1126,7 +1127,7 @@ class ManagedObjectProfile(NOCModel):
         return Label.get_effective_setting(label, setting="enable_managedobjectprofile")
 
     @classmethod
-    def iter_lazy_labels(cls, object_profile: "ManagedObjectProfile"):
+    def iter_lazy_labels(cls, object_profile: ManagedObjectProfile):
         yield f"noc::managedobjectprofile::{object_profile.name}::="
 
     @classmethod
@@ -1193,7 +1194,7 @@ class ManagedObjectProfile(NOCModel):
         return tuple((x[0], tuple(r[x])) for x in sorted(r, key=lambda i: i[1]))
 
     @classmethod
-    def get_effective_profile(cls, o) -> Optional["str"]:
+    def get_effective_profile(cls, o) -> str | None:
         policy = getattr(o, "get_dynamic_classification_policy", None)
         if policy and policy() == "D":
             # Dynamic classification not enabled

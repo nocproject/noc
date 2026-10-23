@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import cachetools
 from threading import Lock
-from typing import Optional
 from collections.abc import Iterable
 
 # Third-party modules
@@ -235,12 +235,12 @@ class NetworkSegmentProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["NetworkSegmentProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> NetworkSegmentProfile | None:
         return NetworkSegmentProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["NetworkSegmentProfile"]:
+    def get_by_bi_id(cls, bi_id: int) -> NetworkSegmentProfile | None:
         return NetworkSegmentProfile.objects.filter(bi_id=bi_id).first()
 
     def on_save(self):

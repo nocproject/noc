@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock
-from typing import Optional
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -150,12 +150,12 @@ class VRF(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["VRF"]:
+    def get_by_id(cls, oid: int) -> VRF | None:
         return VRF.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_vpn_id_cache"), lock=lambda _: id_lock)
-    def get_by_vpn_id(cls, vpn_id: str) -> Optional["VRF"]:
+    def get_by_vpn_id(cls, vpn_id: str) -> VRF | None:
         return VRF.objects.filter(vpn_id=vpn_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -267,7 +267,7 @@ class VRF(NOCModel):
         return Label.get_effective_setting(label, setting="enable_vrf")
 
     @classmethod
-    def iter_lazy_labels(cls, vrf: "VRF"):
+    def iter_lazy_labels(cls, vrf: VRF):
         yield f"noc::ipvrf::{vrf.name}::="
 
     def get_css_class(self) -> str | None:

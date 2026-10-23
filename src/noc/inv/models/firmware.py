@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
 import uuid
-from typing import Optional
 from pathlib import Path
 
 # Third-party modules
@@ -71,7 +71,7 @@ class Firmware(Document):
     def __str__(self):
         return self.full_name if self.full_name else self.version
 
-    def __eq__(self, other: "Firmware") -> bool:
+    def __eq__(self, other: Firmware) -> bool:
         if not other:
             return False
         if isinstance(other, Firmware):
@@ -84,7 +84,7 @@ class Firmware(Document):
             return False
         return r == 0
 
-    def __lt__(self, other: "Firmware") -> bool:
+    def __lt__(self, other: Firmware) -> bool:
         if not other:
             return False
         if isinstance(other, Firmware):
@@ -98,7 +98,7 @@ class Firmware(Document):
             return False
         return r < 0
 
-    def __le__(self, other: "Firmware") -> bool:
+    def __le__(self, other: Firmware) -> bool:
         if not other:
             return False
         if isinstance(other, Firmware):
@@ -120,12 +120,12 @@ class Firmware(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Firmware"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Firmware | None:
         return Firmware.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Firmware"]:
+    def get_by_bi_id(cls, bi_id: int) -> Firmware | None:
         return Firmware.objects.filter(bi_id=bi_id).first()
 
     def to_json(self) -> str:
@@ -149,7 +149,7 @@ class Firmware(Document):
         key=lambda s, p, v, vv: f"{p.id}-{v.id}-{vv}",
         lock=lambda _: id_lock,
     )
-    def ensure_firmware(cls, profile, vendor, version) -> Optional["Firmware"]:
+    def ensure_firmware(cls, profile, vendor, version) -> Firmware | None:
         """
         Get or create firmware by profile, vendor and version
         :return:

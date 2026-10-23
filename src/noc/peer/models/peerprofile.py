@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock, RLock
 from functools import partial
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import cachetools
@@ -52,7 +53,7 @@ class PeerProfile(NOCModel):
     name = CharField("Name", max_length=32, unique=True)
     description = CharField("Description", max_length=64)
     # Allow Type ?
-    workflow: "Workflow" = DocumentReferenceField(
+    workflow: Workflow = DocumentReferenceField(
         Workflow,
         null=False,
         blank=False,
@@ -104,12 +105,12 @@ class PeerProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["PeerProfile"]:
+    def get_by_id(cls, oid: int) -> PeerProfile | None:
         return PeerProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls) -> "PeerProfile":
+    def get_default_profile(cls) -> PeerProfile:
         pp = PeerProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not pp:
             pp = PeerProfile(name=cls.DEFAULT_PROFILE_NAME)

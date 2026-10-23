@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
-from typing import Optional
 from threading import Lock
 
 # Third-party modules
@@ -150,7 +150,7 @@ class AuthProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["AuthProfile"]:
+    def get_by_id(cls, oid: int) -> AuthProfile | None:
         return AuthProfile.objects.filter(id=oid).first()
 
     def on_save(self):
@@ -170,7 +170,7 @@ class AuthProfile(NOCModel):
         return Label.get_effective_setting(label, setting="enable_authprofile")
 
     @classmethod
-    def get_by_credential(cls, credential) -> Optional["AuthProfile"]:
+    def get_by_credential(cls, credential) -> AuthProfile | None:
         """Find Auth Profile by credential"""
         if credential.snmp_security_level == "Community" and credential.snmp_ro:
             q = Q(

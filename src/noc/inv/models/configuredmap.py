@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules
 import bson
@@ -240,7 +240,7 @@ class ConfiguredMap(Document):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["ConfiguredMap"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> ConfiguredMap | None:
         return ConfiguredMap.objects.filter(id=oid).first()
 
     def get_node_by_id(self, nid) -> NodeItem | None:

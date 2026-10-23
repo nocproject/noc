@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 import logging
 
@@ -85,7 +85,7 @@ class PhoneRange(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["PhoneRange"]:
+    def get_by_id(cls, oid: str | ObjectId) -> PhoneRange | None:
         return PhoneRange.objects.filter(id=oid).first()
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)

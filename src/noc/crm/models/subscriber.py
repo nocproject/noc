@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -70,7 +70,7 @@ class Subscriber(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Subscriber"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Subscriber | None:
         return Subscriber.objects.filter(id=oid).first()
 
     @classmethod

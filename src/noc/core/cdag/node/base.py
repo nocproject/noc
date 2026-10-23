@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, cast
+from __future__ import annotations
+from typing import Any, cast
 from collections.abc import Iterable
 from enum import StrEnum
 import inspect
@@ -44,9 +45,9 @@ class Category(StrEnum):
 @dataclass
 class Subscriber:
     __slots__ = ("input", "next", "node")
-    node: "BaseCDAGNode"
+    node: BaseCDAGNode
     input: str
-    next: Optional["Subscriber"]
+    next: Subscriber | None
 
 
 config_proxy_sentinel = object()
@@ -79,11 +80,11 @@ class ConfigProxy:
 
 class BaseCDAGNodeMetaclass(type):
     def __new__(
-        mcs: "type[BaseCDAGNodeMetaclass]",
+        mcs: type[BaseCDAGNodeMetaclass],
         name: str,
         bases: tuple[type[Any], ...],
         attrs: dict[str, Any],
-    ) -> type["BaseCDAGNode"]:
+    ) -> type[BaseCDAGNode]:
         n = cast(type["BaseCDAGNode"], type.__new__(mcs, name, bases, attrs))
         sig = inspect.signature(n.get_value)
         n.allow_dynamic = "kwargs" in sig.parameters
@@ -197,7 +198,7 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
         state: BaseModel | None = None,
         config: BaseModel | None = None,
         sticky: bool = False,
-    ) -> Optional["BaseCDAGNode"]:
+    ) -> BaseCDAGNode | None:
         """
         Construct node
         :return:
@@ -228,7 +229,7 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
         state: dict[str, Any] | None = None,
         config: dict[str, Any] | None = None,
         static_config: dict[str, Any] | None = None,
-    ) -> Optional["BaseCDAGNode"]:
+    ) -> BaseCDAGNode | None:
         """
         Clone node
         :param node_id: Node Identifier
@@ -408,7 +409,7 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
                 s.node.activate_const(s.input, self._const_value)
 
     def subscribe(
-        self, node: "BaseCDAGNode", name: str, dynamic: bool = False, mark_bound: bool = True
+        self, node: BaseCDAGNode, name: str, dynamic: bool = False, mark_bound: bool = True
     ) -> None:
         """
         Subscribe to node activation
@@ -442,7 +443,7 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
         else:
             self.bound_inputs.add(name)
 
-    def unsubscribe(self, node: "BaseCDAGNode", name: str | None = None) -> None:
+    def unsubscribe(self, node: BaseCDAGNode, name: str | None = None) -> None:
         """
         Unsubscribe node
         :param node: Connected node
@@ -497,7 +498,7 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
             yield s
             s = s.next
 
-    def has_subscriber(self, node: "BaseCDAGNode", input: str) -> bool:
+    def has_subscriber(self, node: BaseCDAGNode, input: str) -> bool:
         return any(True for s in self.iter_subscribers() if s.node == node and s.input == input)
 
     @property

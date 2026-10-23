@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 from threading import Lock, RLock
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Callable
 
 # Third-party modules
@@ -282,22 +283,22 @@ class InterfaceProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["InterfaceProfile"]:
+    def get_by_id(cls, oid: str | ObjectId) -> InterfaceProfile | None:
         return InterfaceProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["InterfaceProfile"]:
+    def get_by_bi_id(cls, bi_id: int) -> InterfaceProfile | None:
         return InterfaceProfile.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["InterfaceProfile"]:
+    def get_by_name(cls, name: str) -> InterfaceProfile | None:
         return InterfaceProfile.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls) -> "InterfaceProfile":
+    def get_default_profile(cls) -> InterfaceProfile:
         return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
 
     @classmethod
@@ -318,8 +319,8 @@ class InterfaceProfile(Document):
 
     @staticmethod
     def config_from_settings(
-        m: "InterfaceProfileMetrics", profile_interval: int | None = None
-    ) -> "MetricConfig":
+        m: InterfaceProfileMetrics, profile_interval: int | None = None
+    ) -> MetricConfig:
         """
         Returns MetricConfig from .metrics field
         :return:
@@ -348,7 +349,7 @@ class InterfaceProfile(Document):
         return Label.get_effective_setting(label, setting="enable_interface")
 
     @classmethod
-    def iter_lazy_labels(cls, interface_profile: "InterfaceProfile"):
+    def iter_lazy_labels(cls, interface_profile: InterfaceProfile):
         yield f"noc::interface_profile::{interface_profile.name}::="
 
     @property

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 from collections.abc import Iterable
 from threading import Lock
 import operator
@@ -60,7 +60,7 @@ class IfDescPatterns(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["IfDescPatterns"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> IfDescPatterns | None:
         return IfDescPatterns.objects.filter(id=oid).first()
 
     def clean(self):

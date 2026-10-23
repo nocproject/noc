@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import threading
 import operator
-from typing import Optional, Any
+from typing import Any
 
 # Third-party modules
 import bson
@@ -141,7 +142,7 @@ class MessageRoute(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["MessageRoute"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> MessageRoute | None:
         return MessageRoute.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

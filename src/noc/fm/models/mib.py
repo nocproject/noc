@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import re
 import threading
-from typing import Optional
 import operator
 
 # Third-party modules
@@ -60,12 +60,12 @@ class MIB(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["MIB"]:
+    def get_by_id(cls, oid: str | ObjectId) -> MIB | None:
         return MIB.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["MIB"]:
+    def get_by_name(cls, name: str) -> MIB | None:
         return MIB.objects.filter(name=name).first()
 
     @classmethod

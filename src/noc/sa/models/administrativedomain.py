@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 from threading import Lock
 import operator
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 # Third-party modules
 from noc.core.translation import ugettext as _
@@ -99,12 +100,12 @@ class AdministrativeDomain(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> Optional["AdministrativeDomain"]:
+    def get_by_id(cls, oid: int) -> AdministrativeDomain | None:
         return AdministrativeDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["AdministrativeDomain"]:
+    def get_by_bi_id(cls, bi_id: int) -> AdministrativeDomain | None:
         return AdministrativeDomain.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -172,7 +173,7 @@ class AdministrativeDomain(NOCModel):
             return self.parent.get_bioseg_floating_name(object)
         return None
 
-    def get_bioseg_floating_parent_segment(self) -> Optional["NetworkSegment"]:
+    def get_bioseg_floating_parent_segment(self) -> NetworkSegment | None:
         if self.bioseg_floating_parent_segment:
             return self.bioseg_floating_parent_segment
         if self.parent:
@@ -194,7 +195,7 @@ class AdministrativeDomain(NOCModel):
         return Label.get_effective_setting(label, setting="enable_administrativedomain")
 
     @classmethod
-    def iter_lazy_labels(cls, adm_domain: "AdministrativeDomain"):
+    def iter_lazy_labels(cls, adm_domain: AdministrativeDomain):
         for ad in AdministrativeDomain.objects.filter(id__in=adm_domain.get_path()):
             if ad == adm_domain:
                 yield f"noc::adm_domain::{ad.name}::="

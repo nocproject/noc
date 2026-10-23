@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import operator
 import threading
 import logging
-from typing import Optional
 
 # Third-party modules
 import bson
@@ -43,7 +43,7 @@ rx_labels_lock = threading.Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
-def check_rg_parent(parent: "ResourceGroup"):
+def check_rg_parent(parent: ResourceGroup):
     if not parent.technology.allow_children:
         raise ValidationError(f"[{parent}] Parent technology is not allowed children")
 
@@ -152,12 +152,12 @@ class ResourceGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["ResourceGroup"]:
+    def get_by_id(cls, oid: str | ObjectId) -> ResourceGroup | None:
         return ResourceGroup.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["ResourceGroup"]:
+    def get_by_bi_id(cls, bi_id: int) -> ResourceGroup | None:
         return ResourceGroup.objects.filter(bi_id=bi_id).first()
 
     @classmethod
@@ -501,7 +501,7 @@ class ResourceGroup(Document):
         return labels
 
     @classmethod
-    def iter_lazy_labels(cls, resource_group: "ResourceGroup"):
+    def iter_lazy_labels(cls, resource_group: ResourceGroup):
         for rg in ResourceGroup.objects.filter(id__in=resource_group.get_path()):
             if rg == resource_group:
                 # Optimize for less MatchLabels count

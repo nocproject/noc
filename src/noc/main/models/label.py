@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import logging
 import operator
 import re
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable, Callable
 from threading import Lock
 from collections import defaultdict
@@ -330,12 +331,12 @@ class Label(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | bson.ObjectId) -> Optional["Label"]:
+    def get_by_id(cls, oid: str | bson.ObjectId) -> Label | None:
         return Label.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name: str) -> Optional["Label"]:
+    def get_by_name(cls, name: str) -> Label | None:
         return Label.objects.filter(name=name).first()
 
     @classmethod
@@ -346,7 +347,7 @@ class Label(Document):
             pass
 
     @classmethod
-    def from_names(self, labels: list[str]) -> list["Label"]:
+    def from_names(self, labels: list[str]) -> list[Label]:
         """
         Conert list names to Labels list
         """
@@ -624,7 +625,7 @@ class Label(Document):
         fg_color2=0x000000,
         expose_metric=False,
         expose_datastream=False,
-    ) -> Optional["Label"]:
+    ) -> Label | None:
         """
         Ensure label is exists, create when necessary
         :return:
@@ -1333,7 +1334,7 @@ class Label(Document):
         key=lambda c, ri: getattr(ri, "regexp", None),
         lock=lambda _: re_lock,
     )
-    def _get_re(cls, rxi: "RegexItem") -> re.Pattern | None:
+    def _get_re(cls, rxi: RegexItem) -> re.Pattern | None:
         flags = 0
         if rxi.flag_multiline:
             flags |= re.MULTILINE

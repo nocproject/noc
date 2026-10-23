@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from __future__ import annotations
 
 # Third-party modules modules
 from noc.core.translation import ugettext as _
@@ -45,7 +45,7 @@ class DNSServer(NOCModel):
         return self.name
 
     @classmethod
-    def get_by_id(cls, oid: int) -> Optional["DNSServer"]:
+    def get_by_id(cls, oid: int) -> DNSServer | None:
         return DNSServer.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):

@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import logging
 import operator
 import re
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -102,7 +103,7 @@ class Interface(Document):
             "effective_labels",
         ],
     }
-    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject)
     name = StringField()  # Normalized via Profile.convert_interface_name
     # Optional default interface name in case the `name` can be reconfigured
     default_name = StringField()
@@ -114,7 +115,7 @@ class Interface(Document):
     enabled_protocols = ListField(
         StringField(choices=[(x, x) for x in INTERFACE_PROTOCOLS]), default=[]
     )
-    profile: "InterfaceProfile" = PlainReferenceField(
+    profile: InterfaceProfile = PlainReferenceField(
         InterfaceProfile, default=InterfaceProfile.get_default_profile
     )
     # profile locked on manual user change
@@ -155,7 +156,7 @@ class Interface(Document):
         return f"{self.managed_object.name}: {self.name}"
 
     @classmethod
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Interface"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Interface | None:
         return Interface.objects.filter(id=oid).first()
 
     @classmethod
@@ -163,7 +164,7 @@ class Interface(Document):
         cls,
         managed_object_id: int,
         ifindex: int,
-    ) -> Optional["Interface"]:
+    ) -> Interface | None:
         return Interface.objects.filter(managed_object=managed_object_id, ifindex=ifindex).first()
 
     def clean(self):
@@ -186,8 +187,8 @@ class Interface(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_component_cache"))
     def get_component(
-        cls, managed_object: "ManagedObject", interface=None, ifindex=None, **kwargs
-    ) -> Optional["Interface"]:
+        cls, managed_object: ManagedObject, interface=None, ifindex=None, **kwargs
+    ) -> Interface | None:
         from noc.inv.models.subinterface import SubInterface
 
         q = {}
@@ -496,7 +497,7 @@ class Interface(Document):
         }
 
     @property
-    def parent(self) -> "Interface":
+    def parent(self) -> Interface:
         """
         Returns aggregated interface for LAG or
         self for non-aggregated interface
@@ -543,7 +544,7 @@ class Interface(Document):
         return Label.get_effective_setting(label, setting="enable_interface")
 
     @classmethod
-    def iter_effective_labels(cls, instance: "Interface") -> Iterable[list[str]]:
+    def iter_effective_labels(cls, instance: Interface) -> Iterable[list[str]]:
         from noc.inv.models.subinterface import SubInterface
 
         yield list(instance.labels or [])
@@ -579,7 +580,7 @@ class Interface(Document):
 
     @classmethod
     def iter_collected_metrics(
-        cls, mo: "ManagedObject", run: int = 0, d_interval: int | None = None
+        cls, mo: ManagedObject, run: int = 0, d_interval: int | None = None
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metric settings

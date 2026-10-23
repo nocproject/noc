@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import datetime
 import operator
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 from collections import defaultdict
 
@@ -78,7 +79,7 @@ class JsonDSAPI:
     Backend for SimpodJson Grafana plugin
     """
 
-    QUERY_CONFIGS: list["QueryConfig"] = None
+    QUERY_CONFIGS: list[QueryConfig] = None
     openapi_tags: list[str] = ["api", "grafanads"]
     api_name: str | None = None
     query_response_model = list[TargetResponseItem]
@@ -158,7 +159,7 @@ class JsonDSAPI:
     @staticmethod
     def iter_alarms_annotations(
         annotation: AnnotationSection, f: datetime.datetime, t: datetime.datetime, user: User = None
-    ) -> Iterable["Annotation"]: ...
+    ) -> Iterable[Annotation]: ...
 
     @classmethod
     def get_metrics(cls) -> list[dict[str, str]]:
@@ -267,7 +268,7 @@ class JsonDSAPI:
         req: QueryRequest,
         table_name: str,
         query_condition: str,
-        query_configs: list["QueryConfig"],
+        query_configs: list[QueryConfig],
     ) -> str:
         """
         Return Query Expression for Clickhouse
@@ -321,7 +322,7 @@ class JsonDSAPI:
         )
 
     @classmethod
-    def format_time_series(cls, results: list[tuple[list["QueryConfig"], dict[str, Any]]]):
+    def format_time_series(cls, results: list[tuple[list[QueryConfig], dict[str, Any]]]):
         result = []
         for query_configs, data in results:
             request_metrics = {qc.alias or qc.metric_type for qc in query_configs}
@@ -342,7 +343,7 @@ class JsonDSAPI:
     @classmethod
     def format_result(
         cls,
-        results: list[tuple[list["QueryConfig"], dict[str, Any]]],
+        results: list[tuple[list[QueryConfig], dict[str, Any]]],
         result_type: str = "time_series",
     ):
         if not hasattr(cls, f"format_{result_type}"):
@@ -448,7 +449,7 @@ class JsonDSAPI:
     def get_query_metric_type_condition(
         self,
         payload: dict[str, str | list[str]],
-        metric_type: Optional["MetricType"] = None,
+        metric_type: MetricType | None = None,
         user: User = None,
     ) -> str:
         """

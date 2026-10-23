@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import annotations
 import re
 from pathlib import Path
 import operator
 from dataclasses import dataclass
 from threading import Lock
-from typing import Optional, Any
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -60,7 +61,7 @@ class ProtocolVariant:
     Add __contains__ for connection check
     """
 
-    protocol: "Protocol"
+    protocol: Protocol
     direction: str = "*"
     discriminator: str | None = None
     data: dict[str, str] | None = None
@@ -69,13 +70,13 @@ class ProtocolVariant:
     def __str__(self) -> str:
         return self.code
 
-    def __eq__(self, other: "ProtocolVariant") -> bool:
+    def __eq__(self, other: ProtocolVariant) -> bool:
         r = self.protocol.id == other.protocol.id and self.direction == other.direction
         if not self.discriminator:
             return r
         return r and self.discriminator == other.discriminator
 
-    def __contains__(self, item: "ProtocolVariant") -> bool:
+    def __contains__(self, item: ProtocolVariant) -> bool:
         if self.protocol.id != item.protocol.id or self.direction != item.direction:
             return False
         if (self.discriminator and not item.discriminator) or (
@@ -96,7 +97,7 @@ class ProtocolVariant:
         return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
 
     @classmethod
-    def get_by_code(cls, code: str) -> "ProtocolVariant":
+    def get_by_code(cls, code: str) -> ProtocolVariant:
         """
         Generate Protocol Variant by code
         LLDP -> LLDP
@@ -197,7 +198,7 @@ class Protocol(Document):
     code = StringField(unique=True)
     description = StringField()
     uuid = UUIDField(binary=True)
-    technology: "Technology" = PlainReferenceField(Technology)
+    technology: Technology = PlainReferenceField(Technology)
     data = EmbeddedDocumentListField(ProtocolAttr)
     connection_schema = StringField(
         choices=[
@@ -231,17 +232,17 @@ class Protocol(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: str | ObjectId) -> Optional["Protocol"]:
+    def get_by_id(cls, oid: str | ObjectId) -> Protocol | None:
         return Protocol.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, bi_id: int) -> Optional["Protocol"]:
+    def get_by_bi_id(cls, bi_id: int) -> Protocol | None:
         return Protocol.objects.filter(bi_id=bi_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
-    def get_by_code(cls, code) -> Optional["Protocol"]:
+    def get_by_code(cls, code) -> Protocol | None:
         return Protocol.objects.filter(code=code).first()
 
     @classmethod
@@ -287,7 +288,7 @@ class Protocol(Document):
         return safe_json_path(self.name)
 
     @classmethod
-    def get_variant_by_code(cls, code: str) -> "ProtocolVariant":
+    def get_variant_by_code(cls, code: str) -> ProtocolVariant:
         """
         Return protocol variant by code
 

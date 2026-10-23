@@ -6,7 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Any
+from __future__ import annotations
+from typing import Any
 from collections.abc import Iterable, Iterator
 from logging import getLogger
 from weakref import ref, ReferenceType
@@ -74,7 +75,7 @@ class Job:
         id: str | None = None,
         action: type[BaseAction] | None = None,
         allow_fail: bool = False,
-        parent: Optional["Job"] = None,
+        parent: Job | None = None,
         environment: dict[str, str] | None = None,
         locks: Iterable[str] | None = None,
         inputs: Iterable[Input] | None = None,
@@ -108,14 +109,14 @@ class Job:
     def has_children(self) -> bool:
         return bool(self.children)
 
-    def iter_parents(self) -> Iterable["Job"]:
+    def iter_parents(self) -> Iterable[Job]:
         """Iterate over parents all way up."""
         p = self.parent
         while p is not None:
             yield p
             p = p.parent
 
-    def iter_children(self) -> Iterable["Job"]:
+    def iter_children(self) -> Iterable[Job]:
         """Iterate over direct children."""
         if self.children:
             for r in self.children:
@@ -123,14 +124,14 @@ class Job:
                 if item:
                     yield item
 
-    def iter_siblings(self) -> Iterable["Job"]:
+    def iter_siblings(self) -> Iterable[Job]:
         """Iterate over siblings."""
         if self.parent:
             for item in self.parent.iter_children():
                 if item != self:
                     yield item
 
-    def iter_depends_on(self) -> Iterable["Job"]:
+    def iter_depends_on(self) -> Iterable[Job]:
         """
         Iterate dependencies.
         """
@@ -140,7 +141,7 @@ class Job:
                 if r:
                     yield r
 
-    def iter_group(self) -> Iterable["Job"]:
+    def iter_group(self) -> Iterable[Job]:
         """
         Iterate job and all direct and indirect children.
         """
@@ -170,7 +171,7 @@ class Job:
         return not self.is_waiting or self.is_blocked_by_parents() or self.is_blocked_by_siblings()
 
     @property
-    def leader(self) -> "Job":
+    def leader(self) -> Job:
         """
         Top-level job.
         """
@@ -374,8 +375,8 @@ class Job:
         cls,
         req: JobRequest,
         *,
-        parent: Optional["Job"] = None,
-    ) -> Iterator["Job"]:
+        parent: Job | None = None,
+    ) -> Iterator[Job]:
         """
         Create jobs from request.
         """
@@ -427,7 +428,7 @@ class Job:
             yield from ch
 
     @classmethod
-    def from_dict(cls, doc: dict[str, Any], jmap: dict[ObjectId, "Job"] | None = None) -> "Job":
+    def from_dict(cls, doc: dict[str, Any], jmap: dict[ObjectId, Job] | None = None) -> Job:
         """
         Create job from database dict.
         """
