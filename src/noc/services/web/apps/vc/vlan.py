@@ -136,7 +136,7 @@ class VLANApplication(ExtDocApplication):
         Returns a dict of {untagged: ..., tagged: ...., l3: ...}
         :return:
         """
-        vlan: "VLAN" = self.get_object_or_404(VLAN, id=vlan_id)
+        vlan = self.get_object_or_404(VLAN, id=vlan_id)
         # Managed objects in L2 Domain
         objects = L2Domain.get_l2_domain_object_ids(vlan.l2_domain.id)
         # Find untagged interfaces

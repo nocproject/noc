@@ -75,7 +75,7 @@ class AssetCheck(DiscoveryCheck):
         )  # Connection rule. type -> [rule1, ruleN]
         self.rule_context = {}
         self.ctx: dict[str, int | str] = {}
-        self.stack_member: dict["Object", str] = {}  # object -> stack member numbers
+        self.stack_member: dict[Object, str] = {}  # object -> stack member numbers
         self.managed: set[str] = set()  # Object ids
         self.unk_model: dict[str, ObjectModel] = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)

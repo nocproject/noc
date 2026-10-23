@@ -170,11 +170,11 @@ class SegmentTopology(TopologyBase):
             Link.objects.filter(linked_segments__in=[s.id for s in self.segment_siblings])
         )
         # All linked interfaces from map
-        all_ifaces: list["ObjectId"] = list(
+        all_ifaces: list[ObjectId] = list(
             itertools.chain.from_iterable(link.interface_ids for link in links)
         )
         # Bulk fetch all interfaces data
-        self._interface_cache: dict["ObjectId", "Interface"] = {
+        self._interface_cache: dict[ObjectId, Interface] = {
             i["_id"]: i
             for i in Interface._get_collection().find(
                 {"_id": {"$in": all_ifaces}},
@@ -194,7 +194,7 @@ class SegmentTopology(TopologyBase):
             {i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i}
             | segment_mos
         )
-        mos: dict[int, "ManagedObject"] = {
+        mos: dict[int, ManagedObject] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
         self.segment_objects: set[int] = {

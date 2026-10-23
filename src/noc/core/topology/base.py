@@ -67,7 +67,7 @@ class TopologyBase(ABC):
         # Caches
         self._rings_cache = {}
         self._isolated_cache = {}
-        self._interface_cache: dict["ObjectId", Any] = {}
+        self._interface_cache: dict[ObjectId, Any] = {}
         # Graph
         self.G = nx.Graph()
         self.caps: set[str] = set()

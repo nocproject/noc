@@ -133,25 +133,25 @@ class User(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: int) -> "User" | None:
+    def get_by_id(cls, oid: int) -> User | None:
         return User.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_id_uncached(cls, oid: int) -> "User" | None:
+    def get_by_id_uncached(cls, oid: int) -> User | None:
         return User.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_username(cls, name: str) -> "User" | None:
+    def get_by_username(cls, name: str) -> User | None:
         return User.objects.filter(username=name).first()
 
     @classmethod
-    def get_by_username_uncached(cls, name: str) -> "User" | None:
+    def get_by_username_uncached(cls, name: str) -> User | None:
         return User.objects.filter(username=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_contact_cache"), lock=lambda _: id_lock)
-    def get_by_contact(cls, contact) -> "User" | None:
+    def get_by_contact(cls, contact) -> User | None:
         from .usercontact import UserContact
 
         uc = UserContact.objects.filter(params=contact).first()
@@ -403,7 +403,7 @@ class User(NOCModel):
         return user.blocked_till
 
     @contextmanager
-    def with_user(self) -> Iterator["User"]:
+    def with_user(self) -> Iterator[User]:
         """
         Set this user as the current execution context user.
 

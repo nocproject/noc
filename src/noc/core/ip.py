@@ -1083,7 +1083,7 @@ class PrefixDB:
             yield root.__class__.from_bits(bits)
 
     @classmethod
-    def from_prefixes(cls, prefixes: list[IPv4], key) -> "PrefixDB":
+    def from_prefixes(cls, prefixes: list[IPv4], key) -> PrefixDB:
         """Create a PrefixDB populated with the same key for all given prefixes.
 
         Args:

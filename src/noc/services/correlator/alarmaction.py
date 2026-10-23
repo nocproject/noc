@@ -53,7 +53,7 @@ class AlarmActionRunner:
         dry_run: bool = False,
     ):
         self.items = items
-        self.alarm: "ActiveAlarm" = items[0].alarm
+        self.alarm: ActiveAlarm = items[0].alarm
         self.services: list[str] = services or []
         self.groups = groups
         self.allowed_actions: list[AllowedAction] = allowed_actions or []

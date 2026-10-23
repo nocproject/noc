@@ -86,7 +86,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
         t: datetime.datetime,
         user: User = None,
     ):
-        mo: "ManagedObject" = ManagedObject.get_by_id(int(annotation.query))
+        mo = ManagedObject.get_by_id(int(annotation.query))
         if not mo:
             raise HTTPException(status_code=404, detail="Managed Object Does Not Exists")
         if not user.is_superuser and mo.administrative_domain.id not in set(

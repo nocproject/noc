@@ -200,11 +200,11 @@ class ReportAlarmDetailApplication(ExtApplication):
                         "Report more than 1 year not allowed. If nedeed - request it from Administrator"
                     )
                 )
-            report: "BaseDataSource" = data_source_loader.get(report_ds)
+            report: BaseDataSource = data_source_loader.get(report_ds)
             out_columns = [ff.name for ff in report.fields]
         else:
             report_ds = "reportdsalarms"
-            report: "BaseDataSource" = data_source_loader.get(report_ds)
+            report: BaseDataSource = data_source_loader.get(report_ds)
         if not report:
             return HttpResponseNotFound(_(f"Report DataSource {report_ds} Not found"))
 

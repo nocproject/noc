@@ -127,7 +127,7 @@ class InvApplication(ExtApplication):
                         {"_id": 1},
                     )
                 ]
-                children: list[tuple[str, "Object"]] = [
+                children: list[tuple[str, Object]] = [
                     (o.name, o)
                     for o in Object.objects.filter(
                         __raw__={"parent": None, "model": {"$in": cmodels}}

@@ -137,7 +137,7 @@ def apply_ch_dictionary(changes: list[dict[str, Any]]) -> None:
             return
         bi_dict_changes[item.model_id].add((o, item.ts))
     for dcls_name in loader:
-        bi_dict_model: "DictionaryModel" | None = loader[dcls_name]
+        bi_dict_model: DictionaryModel | None = loader[dcls_name]
         if not bi_dict_model or bi_dict_model._meta.source_model not in bi_dict_changes:
             continue
         logger.info("[bi_dictionary] [%s] Apply changes", dcls_name)

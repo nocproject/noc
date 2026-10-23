@@ -127,7 +127,7 @@ class CredentialChecker:
             logger or self.base_logger, f"{self.pool or ''}][{self.address or ''}"
         )
         self.calling_service = calling_service
-        self.profile: "Profile" | None = profile
+        self.profile: Profile | None = profile
         if isinstance(self.profile, str):
             self.profile = Profile.get_by_name(profile) if profile else None
         self.credentials: list[CLICredential | SNMPCredential] = credentials or []
@@ -267,7 +267,7 @@ class CredentialChecker:
                     self.logger.info("Unknown check method: %s", suggest.check_method)
                     continue
                 check = getattr(self, f"do_{suggest.check_method}")
-                p_check: "ProtocolResult" = check(protocol, cred)
+                p_check: ProtocolResult = check(protocol, cred)
                 if not p_check.status and self.is_unsupported_error(p_check.error):
                     # Protocol is unsupported, ignored
                     unsupported_proto.add(p_check.protocol)

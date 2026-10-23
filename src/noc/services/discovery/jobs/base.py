@@ -274,7 +274,7 @@ class MODiscoveryJob(PeriodicJob):
         from noc.fm.models.alarmclass import AlarmClass
 
         self.logger.info("Updating alarm statuses")
-        group_cls: "AlarmClass" | None = AlarmClass.get_by_name(group_cls or "Group")
+        group_cls = AlarmClass.get_by_name(group_cls or "Group")
         if not group_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return

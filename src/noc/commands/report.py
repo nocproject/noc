@@ -66,7 +66,7 @@ class Command(BaseCommand):
             pref_lang = user.preferred_language
         else:
             pref_lang = lang
-        report: "Report" = Report.get_by_id(report)
+        report = Report.get_by_id(report)
         report_engine = ReportEngine(
             report_execution_history=False,
             report_print_error=True,

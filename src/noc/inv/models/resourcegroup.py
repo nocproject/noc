@@ -544,7 +544,7 @@ class ResourceGroup(Document):
             # @todo Label expression label1 || label2 && label3 noc- N::pool::MO,
             if so.startswith("@"):
                 # ResourceGroup expression: @<resource group name>
-                o: "ResourceGroup" = ResourceGroup.objects.get(name=so[1:])
+                o: ResourceGroup = ResourceGroup.objects.get(name=so[1:])
                 model = get_model(o.technology.service_model)
                 oo = model.objects.filter(
                     effective_service_groups__overlap=ResourceGroup.get_nested_ids(o)

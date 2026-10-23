@@ -70,11 +70,11 @@ class ObjectLevelNeighborTopology(TopologyBase):
         # Get all links, belonging to segment
         links: list[Link] = list(Link.objects.filter(linked_objects__in=list(object_mos)))
         # All linked interfaces from map
-        all_ifaces: list["ObjectId"] = list(
+        all_ifaces: list[ObjectId] = list(
             itertools.chain.from_iterable(link.interface_ids for link in links)
         )
         # Bulk fetch all interfaces data
-        self._interface_cache: dict["ObjectId", "Interface"] = {
+        self._interface_cache: dict[ObjectId, Interface] = {
             i["_id"]: i
             for i in Interface._get_collection().find(
                 {"_id": {"$in": all_ifaces}},

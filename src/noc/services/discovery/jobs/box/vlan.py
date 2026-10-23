@@ -51,7 +51,7 @@ class VLANCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking VLANs")
-        object_l2domain: "L2Domain" | None = self.object.get_effective_l2_domain()
+        object_l2domain: L2Domain | None = self.object.get_effective_l2_domain()
         if not object_l2domain:
             self.logger.info("L2Domain for object is not set. Skipping")
             return
@@ -137,8 +137,8 @@ class VLANCheck(PolicyDiscoveryCheck):
         2. Getting vlans
         5. Return VLANs
         """
-        result: list["VLAN"] = []
-        l2domains_vlan_map: dict["L2Domain", dict[int, "DiscoveryVLAN"]] = {}
+        result: list[VLAN] = []
+        l2domains_vlan_map: dict[L2Domain, dict[int, DiscoveryVLAN]] = {}
         for v in vlans:
             if v.l2domain not in l2domains_vlan_map:
                 l2domains_vlan_map[v.l2domain] = {}

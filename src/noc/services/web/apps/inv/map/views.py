@@ -233,7 +233,7 @@ class MapApplication(ExtApplication):
         return r
 
     def inspector_cpe(self, request: HttpRequest, id, cpe_id):
-        cpe: "CPE" = self.get_object_or_404(CPE, id=cpe_id)
+        cpe = self.get_object_or_404(CPE, id=cpe_id)
         caps = cpe.get_caps()
         return {
             "id": str(cpe.id),

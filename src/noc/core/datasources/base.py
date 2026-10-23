@@ -400,7 +400,7 @@ class BaseDataSource:
         """Return available snapshots for Datasource"""
         if not cls.clickhouse_mirror():
             return []
-        ch: "ClickhouseClient" = connection()
+        ch: ClickhouseClient = connection()
         result = ch.execute(
             f"SELECT distinct(report_ts, report_ds as name, report_uuid, job_uuid, labels) as ds FROM {cls._get_db_table()} FORMAT JSON",
             return_raw=True,
@@ -439,7 +439,7 @@ class BaseDataSource:
     @classmethod
     def from_clickhouse(cls, report_uuid: uuid.UUID | None = None) -> pl.DataFrame | None:
         """Extract Datasource data from Clickhouse"""
-        ch: "ClickhouseClient" = connection()
+        ch: ClickhouseClient = connection()
         snapshot = cls.get_latest_snapshot()
         r = ch.execute(
             f"SELECT * FROM {cls._get_db_table()} WHERE report_ts = %s FORMAT JSONColumns",
@@ -583,7 +583,7 @@ class BaseDataSource:
     @classmethod
     def ensure_views(cls, connect=None, changed: bool = True) -> bool:
         # Synchronize view
-        ch: "ClickhouseClient" = connect or connection()
+        ch: ClickhouseClient = connect or connection()
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
@@ -664,7 +664,7 @@ class BaseDataSource:
     @classmethod
     def ensure_table(cls, connect=None):
         changed = False
-        ch: "ClickhouseClient" = connect or connection()
+        ch: ClickhouseClient = connect or connection()
         is_cluster = bool(config.clickhouse.cluster)
         table = cls._get_db_table()
         raw_table = cls._get_raw_db_table()

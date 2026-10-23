@@ -1060,7 +1060,7 @@ class Service(Document):
         instance_status = defaultdict(lambda: Status.UP)
         effective_clients = frozenset(str(x) for x in self.effective_client_groups)
         # Matcher ?
-        instances: list["ServiceInstance"] | None = None
+        instances: list[ServiceInstance] | None = None
         max_weight = 0
         # Calculate Alarm status
         for aa in ActiveAlarm.objects.filter(affected_services=self.id):

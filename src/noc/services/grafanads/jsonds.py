@@ -89,7 +89,7 @@ class JsonDSAPI:
         self.service = get_service()
         self.logger = self.service.logger
         self.router = router
-        self.query_config: dict[str, "QueryConfig"] = self.load_query_config()
+        self.query_config: dict[str, QueryConfig] = self.load_query_config()
         self.type_adapter = TypeAdapter(self.variable_payload)
         self.setup_routes()
 
@@ -221,7 +221,7 @@ class JsonDSAPI:
         self.logger.info("Query Request: %s", req)
         connect = connection()
         r = []
-        targets: dict[tuple[str, str], list["QueryConfig"]] = defaultdict(list)
+        targets: dict[tuple[str, str], list[QueryConfig]] = defaultdict(list)
         # Merge targets to Metric Scope and Filter
         for target in req.targets:
             if target.target in self.query_config:

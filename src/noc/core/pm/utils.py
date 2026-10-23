@@ -195,7 +195,7 @@ class QuerySet:
             proxy: Metric Scope Proxy
             group_by: Group by fields list ?function
         """
-        self.metric_proxy: "MetricScopeProxy" = proxy
+        self.metric_proxy: MetricScopeProxy = proxy
         self.fields: dict[str, QueryField] = {}
         self.group_by = group_by or []
         # self.query_cache: Dict[str, List["MetricValue"]] = defaultdict(list)
@@ -528,7 +528,7 @@ class MetricProxy:
     """
 
     def __init__(self, query_ts: datetime.datetime | None = None, **kwargs) -> None:
-        self._scopes: dict[str, "MetricScopeProxy"] = {}  # Scope Storage
+        self._scopes: dict[str, MetricScopeProxy] = {}  # Scope Storage
         self._conditions = kwargs
 
     def __getattr__(self, item) -> "MetricScopeProxy":
@@ -638,7 +638,7 @@ def get_objects_metrics(
     ch = ch_connection()
     mtable = []  # mo_id, mac, iface, ts
     metric_map = {}
-    last_ts: dict["ManagedObject", datetime.datetime] = {}  # mo -> ts
+    last_ts: dict[ManagedObject, datetime.datetime] = {}  # mo -> ts
 
     for table, fields in itertools.groupby(sorted(mmm, key=lambda x: x[0]), key=lambda x: x[0]):
         fields = list(fields)
@@ -753,8 +753,8 @@ def get_interface_metrics(
         ", ".join(bi_map),
     )
     ch = ch_connection()
-    metric_map: defaultdict["ManagedObject", dict[str, dict[str, int | float]]] = defaultdict(dict)
-    last_ts: dict["ManagedObject", datetime.datetime] = {}  # mo -> ts
+    metric_map: defaultdict[ManagedObject, dict[str, dict[str, int | float]]] = defaultdict(dict)
+    last_ts: dict[ManagedObject, datetime.datetime] = {}  # mo -> ts
     try:
         results = ch.execute(post=SQL, return_raw=True)
         results = orjson.loads(results)

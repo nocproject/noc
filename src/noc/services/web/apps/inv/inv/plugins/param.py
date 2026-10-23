@@ -81,7 +81,7 @@ class ParamPlugin(InvPlugin):
         return {"id": str(o.id), "name": o.name, "model": o.model.name, "data": data}
 
     def api_save_data(self, request: HttpRequest, id, **kwargs):
-        o: "Object" = self.app.get_object_or_404(Object, id=id)
+        o = self.app.get_object_or_404(Object, id=id)
         data: list[dict[str, Any]] = self.app.deserialize(request.body)
         for d in data:
             p = self.app.get_object_or_404(ConfigurationParam, id=d["param"])

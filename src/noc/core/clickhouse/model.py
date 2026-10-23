@@ -318,7 +318,7 @@ class Model(metaclass=ModelBase):
         if not cls._meta.run_migrate:
             return False
         changed = False
-        ch: "ClickhouseClient" = connect or connection()
+        ch: ClickhouseClient = connect or connection()
         is_cluster = bool(config.clickhouse.cluster)
         table = cls._get_db_table()
         raw_table = cls._get_raw_db_table()
@@ -366,7 +366,7 @@ class Model(metaclass=ModelBase):
     @classmethod
     def ensure_views(cls, connect=None, changed: bool = True) -> bool:
         # Synchronize view
-        ch: "ClickhouseClient" = connect or connection()
+        ch: ClickhouseClient = connect or connection()
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
@@ -901,7 +901,7 @@ class ViewModel(Model, metaclass=ModelBase):
     @classmethod
     def ensure_views(cls, connect=None, changed: bool = True) -> bool:
         # Synchronize view
-        ch: "ClickhouseClient" = connect or connection()
+        ch: ClickhouseClient = connect or connection()
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")

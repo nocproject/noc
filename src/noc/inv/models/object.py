@@ -635,7 +635,7 @@ class Object(Document):
         param_data: dict[tuple[str, str], Any] = {}
         for d in self.cfg_data:
             param_data[(d.param.code, d.scope)] = d.value
-        r: list["ParamData"] = []
+        r: list[ParamData] = []
         seen: set[tuple[str, str]] = set()
         if not self.model.configuration_rule:
             return r

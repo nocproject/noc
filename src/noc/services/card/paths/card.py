@@ -40,7 +40,7 @@ def get_card_class(name: str) -> type[BaseCard] | None:
 
 class HandlerStub:
     def __init__(self, user, arguments) -> None:
-        self.user: "User" = user
+        self.user: User = user
         self.arguments = {}
         for key in arguments:
             if arguments[key]:
