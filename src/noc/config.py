@@ -1335,7 +1335,7 @@ class Config(BaseConfig):
         """
         UTC offset for configured timezone.
         """
-        dt = datetime.datetime.now(datetime.timezone.utc)
+        dt = datetime.datetime.now(datetime.UTC)
         offset = dt.astimezone(self.timezone).utcoffset()
         return int(offset.total_seconds())
 

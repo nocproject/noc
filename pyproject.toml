@@ -180,7 +180,6 @@ ignore = [
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF100", # Unused blanket `noqa` directive
   "UP014", # Convert `PathInfo` from `NamedTuple` functional to class syntax
-  "UP017", # Use `datetime.UTC` alias
   "UP030", # Use implicit references for positional format fields
   "UP046", # Generic class `BaseResourceAPI` uses `Generic` subclass instead of type parameters
   "UP037", # Remove quotes from type annotation
