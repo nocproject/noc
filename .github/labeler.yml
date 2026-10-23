@@ -4,7 +4,7 @@ max-files-changed: 100
 adapter:
   - changed-files:
       - any-glob-to-any-file:
-          - "sa/profiles/**"
+          - "src/noc/sa/profiles/**"
 collections:
   - changed-files:
       - any-glob-to-any-file:
@@ -50,7 +50,7 @@ c-other:
 core:
   - changed-files:
       - any-glob-to-any-file:
-          - "core/**"
+          - "src/noc/core/**"
 deploy:
   - changed-files:
       - any-glob-to-any-file:
@@ -67,7 +67,7 @@ github:
 migrations:
   - changed-files:
       - any-glob-to-any-file:
-          - "*/migrations/*.py"
+          - "src/noc/*/migrations/*.py"
 setup:
   - changed-files:
       - any-glob-to-any-file:
@@ -75,56 +75,56 @@ setup:
 s-discovery:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/bh/**"
-          - "services/discovery/**"
+          - "src/noc/services/bh/**"
+          - "src/noc/services/discovery/**"
 s-fm:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/classifier/**"
-          - "services/correlator/**"
-          - "services/syslogcollector/**"
-          - "services/trapcollector/**"
-          - "services/ping/**"
-          - "services/escalator/**"
-          - "services/mib/**"
+          - "src/noc/services/classifier/**"
+          - "src/noc/services/correlator/**"
+          - "src/noc/services/syslogcollector/**"
+          - "src/noc/services/trapcollector/**"
+          - "src/noc/services/ping/**"
+          - "src/noc/services/escalator/**"
+          - "src/noc/services/mib/**"
 s-integration:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/datastream/**"
-          - "services/nbi/**"
-          - "services/kafkasender/**"
-          - "services/mailsender/**"
-          - "services/mx/**"
-          - "services/tgsender/**"
+          - "src/noc/services/datastream/**"
+          - "src/noc/services/nbi/**"
+          - "src/noc/services/kafkasender/**"
+          - "src/noc/services/mailsender/**"
+          - "src/noc/services/mx/**"
+          - "src/noc/services/tgsender/**"
 s-pm:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/metrics/**"
-          - "services/metricscollector/**"
+          - "src/noc/services/metrics/**"
+          - "src/noc/services/metricscollector/**"
 s-sa:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/activator/**"
-          - "services/runner/**"
-          - "services/mrt/**"
-          - "services/sae/**"
+          - "src/noc/services/activator/**"
+          - "src/noc/services/runner/**"
+          - "src/noc/services/mrt/**"
+          - "src/noc/services/sae/**"
 s-web:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/web/**"
-          - "services/ui/**"
-          - "services/card/**"
+          - "src/noc/services/web/**"
+          - "src/noc/services/ui/**"
+          - "src/noc/services/card/**"
+          - "src/noc/services/login/**"
 s-other:
   - changed-files:
       - any-glob-to-any-file:
-          - "services/bi/**"
-          - "services/chwriter/**"
-          - "services/grafanads/**"
-          - "services/login/**"
-          - "services/scheduler/**"
-          - "services/selfmon/**"
-          - "services/topo/**"
-          - "services/worker/**"
+          - "src/noc/services/bi/**"
+          - "src/noc/services/chwriter/**"
+          - "src/noc/services/grafanads/**"
+          - "src/noc/services/scheduler/**"
+          - "src/noc/services/selfmon/**"
+          - "src/noc/services/topo/**"
+          - "src/noc/services/worker/**"
 tests:
   - changed-files:
       - any-glob-to-any-file:

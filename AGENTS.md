@@ -6,8 +6,6 @@ NOC is a telecom-grade Operation Support System (OSS) for service providers and 
 
 The codebase follows a modular architecture similar to Django apps — each "application" is its own directory with models, migrations, and domain-specific logic. `core/` contains framework services (I/O loops, protocols, data sources, middleware). `services/` provides microservices implementation.
 
-**Current state: migrating to `src/noc/`.** Root directories still contain code during transition. Treat the root as a source of truth for navigation but always read/write files through `src/noc/` — that is the canonical destination after migration completes. Do not process the same file from both locations. If a conflict exists, prefer `src/noc/`.
-
 ## Code Conventions
 
 - **Formatter:** `ruff format`. Run on all Python files: `ruff format .`.
