@@ -77,7 +77,7 @@ v1=7
         (PYTHON3_TPL, {"v": 2}, PYTHON3_OUT),
     ],
 )
-def test_templatetags(template, context, expected):
+def test_templatetags(template, context, expected) -> None:
     ctx = django.template.Context(context)
     result = django.template.Template(template).render(ctx)
     assert result == expected

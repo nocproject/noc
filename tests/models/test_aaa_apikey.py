@@ -12,7 +12,7 @@ import datetime
 from noc.aaa.models.apikey import APIKey, APIAccess
 
 
-def test_apikey_access_active():
+def test_apikey_access_active() -> None:
     secret = "test_apikey_access_active"
     # Prepare key
     key = APIKey(
@@ -34,7 +34,7 @@ def test_apikey_access_active():
     key.delete()
 
 
-def test_apikey_access_inactive():
+def test_apikey_access_inactive() -> None:
     secret = "test_apikey_access_inactive"
     # Prepare key
     key = APIKey(
@@ -56,7 +56,7 @@ def test_apikey_access_inactive():
     key.delete()
 
 
-def test_apikey_access_non_expired():
+def test_apikey_access_non_expired() -> None:
     secret = "test_apikey_access_non_expired"
     # Prepare key
     key = APIKey(
@@ -79,7 +79,7 @@ def test_apikey_access_non_expired():
     key.delete()
 
 
-def test_apikey_access_expired():
+def test_apikey_access_expired() -> None:
     secret = "test_apikey_access_non_expired"
     # Prepare key
     key = APIKey(
@@ -102,7 +102,7 @@ def test_apikey_access_expired():
     key.delete()
 
 
-def test_apikey_invalid():
+def test_apikey_invalid() -> None:
     secret = "no such key"
     assert APIKey.get_access(secret) == []
     assert APIKey.get_access_str(secret) == ""

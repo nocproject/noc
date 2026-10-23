@@ -24,7 +24,7 @@ from noc.dns.models.dnsserver import DNSServer
         ("p3", "ns2.example.com", False),
     ],
 )
-def test_autoritative_servers(zoneprofile, dns_server, is_authoritative):
+def test_autoritative_servers(zoneprofile: str, dns_server: str, is_authoritative: bool) -> None:
     zp = DNSZoneProfile.objects.get(name=zoneprofile)
     assert zp
     ns = DNSServer.objects.get(name=dns_server)

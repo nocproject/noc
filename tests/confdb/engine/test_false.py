@@ -32,6 +32,6 @@ from noc.core.confdb.engine.base import Engine
         ({}, "Set(x=[1, 2]) and False()", []),
     ],
 )
-def test_false(input, query, output):
+def test_false(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

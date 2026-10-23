@@ -101,7 +101,7 @@ SEQ_NORMAL_0_1 = [
         ),
     ],
 )
-def test_statistic_node(op, config, measures, expected):
+def test_statistic_node(op, config, measures, expected) -> None:
     state = {}
     cdag = NodeCDAG(op, config=config, state=state)
     for ms, exp in zip(measures, expected):

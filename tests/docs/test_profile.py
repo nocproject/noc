@@ -48,7 +48,7 @@ def all_profiles() -> list[str]:
 
 
 @pytest.mark.parametrize("vendor", all_vendors())
-def test_vendor_doc_exists(vendor):
+def test_vendor_doc_exists(vendor) -> None:
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
     path = PROFILE_DOCS_BASE / vendor / "index.md"
@@ -56,7 +56,7 @@ def test_vendor_doc_exists(vendor):
 
 
 @pytest.mark.parametrize("vendor", all_vendors())
-def test_vendor_doc_toc(toc, vendor):
+def test_vendor_doc_toc(toc, vendor) -> None:
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
     path = ("References", "Profiles", vendor)
@@ -66,7 +66,7 @@ def test_vendor_doc_toc(toc, vendor):
 
 
 @pytest.mark.parametrize("profile", all_profiles())
-def test_profile_doc_exists(profile):
+def test_profile_doc_exists(profile) -> None:
     vendor, name = profile.split(".")
     path = PROFILE_DOCS_BASE / vendor / f"{name}.md"
     assert path.exists(), f"Profile '{profile}' must be documented in {path}"

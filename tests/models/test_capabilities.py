@@ -61,14 +61,14 @@ def object_caps():
         ),
     ],
 )
-def test_update_caps(caps, update_caps, expected, object_caps):
+def test_update_caps(caps, update_caps: dict[str, int], expected, object_caps) -> None:
     for c in caps:
         object_caps.set_caps(**c)
     object_caps.update_caps(update_caps, source="manual")
     assert object_caps.get_caps() == expected
 
 
-def test_update_caps_scopes(object_caps):
+def test_update_caps_scopes(object_caps) -> None:
     object_caps.update_caps({"Cisco | IP | SLA | Probes": 1}, source="manual", scope="scope1")
     object_caps.update_caps({"Cisco | IP | SLA | Probes": 22}, source="manual", scope="scope2")
     assert len(list(object_caps.iter_caps())) == 2
@@ -101,14 +101,14 @@ def test_update_caps_scopes(object_caps):
         ),
     ],
 )
-def test_delete_caps(caps, update_caps, expected, object_caps):
+def test_delete_caps(caps, update_caps, expected, object_caps) -> None:
     for c in caps:
         object_caps.set_caps(**c)
     object_caps.update_caps(update_caps, source="database")
     assert object_caps.get_caps() == expected
 
 
-def test_set_caps(object_caps):
+def test_set_caps(object_caps) -> None:
     for _ in range(1, 4):
         object_caps.set_caps("DB | Interfaces", 1)
     assert len(object_caps.caps) == 1
@@ -148,7 +148,9 @@ def test_set_caps(object_caps):
         ),
     ],
 )
-def test_get_scope_caps(caps, update_caps, scope, expected_scope, expected, object_caps):
+def test_get_scope_caps(
+    caps, update_caps: dict[str, int], scope, expected_scope, expected, object_caps
+) -> None:
     for c in caps:
         object_caps.set_caps(**c)
     object_caps.update_caps(update_caps, source="manual", scope=scope)

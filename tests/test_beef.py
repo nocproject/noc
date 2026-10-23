@@ -45,7 +45,7 @@ def get_beef_tests() -> list[tuple[str, str]]:
 
 
 @pytest.mark.parametrize(("url", "path"), get_beef_tests())
-def test_beef(url: str, path: str):
+def test_beef(url: str, path: str) -> None:
     with open_blob(url) as blob:
         test = orjson.loads(bz2.decompress(blob[path]))
     service = ServiceStub(pool="default")

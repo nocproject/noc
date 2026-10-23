@@ -24,6 +24,6 @@ from noc.core.confdb.engine.base import Engine
         ({}, "(True() and True() and True()) or True()", [{}]),
     ],
 )
-def test_org(input, query, output):
+def test_org(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

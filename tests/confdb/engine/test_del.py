@@ -28,6 +28,6 @@ from noc.core.confdb.engine.base import Engine
         ({"x": [1, 2], "y": [3, 4]}, "Del(x)", [{"y": 3}, {"y": 4}]),
     ],
 )
-def test_true(input, query, output):
+def test_true(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

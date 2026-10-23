@@ -137,6 +137,6 @@ TOKENS2 = [
         ),
     ],
 )
-def test_tokenizer(input, config, expected):
+def test_tokenizer(input, config, expected) -> None:
     tokenizer = ContextTokenizer(input, **config)
     assert list(tokenizer) == expected

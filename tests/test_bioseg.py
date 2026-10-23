@@ -59,13 +59,13 @@ class MockBioSegPolicy(BaseBioSegPolicy):
 
 
 @pytest.mark.parametrize("name", ["keep", "eat", "feed", "merge", "calcify"])
-def test_loader(name):
+def test_loader(name: str) -> None:
     policy_cls = bioseg_policy_loader.get(name)
     assert policy_cls
     assert policy_cls.name == name
 
 
-def test_set_power():
+def test_set_power() -> None:
     attacker = NetworkSegment(id=ns_id1, name="attacker")
     target = NetworkSegment(id=ns_id2, name="target")
     policy = BaseBioSegPolicy(attacker, target)
@@ -78,7 +78,7 @@ def test_set_power():
     assert policy.get_power(attacker) == 30
 
 
-def test_consume_objects():
+def test_consume_objects() -> None:
     profile = NetworkSegmentProfile(name="mock", is_persistent=False)
     attacker = NetworkSegment(id=ns_id1, name="attacker", profile=profile)
     target = NetworkSegment(id=ns_id2, name="target", profile=profile)
@@ -92,7 +92,7 @@ def test_consume_objects():
     assert policy.get_power(target) == 0
 
 
-def test_base_trial():
+def test_base_trial() -> None:
     attacker = NetworkSegment(name="attacker")
     target = NetworkSegment(name="target")
     policy = BaseBioSegPolicy(attacker, target)
@@ -100,7 +100,7 @@ def test_base_trial():
         policy.trial()
 
 
-def test_keep_trial():
+def test_keep_trial() -> None:
     attacker = NetworkSegment(name="attacker")
     target = NetworkSegment(name="target")
     policy = KeepBioSegPolicy(attacker, target)
@@ -116,7 +116,7 @@ def test_keep_trial():
         (30, ns_id2, 30, ns_id1, "feed"),
     ],
 )
-def test_merge_policy(a_power, a_id, t_power, t_id, expected):
+def test_merge_policy(a_power, a_id, t_power, t_id, expected) -> None:
     """
     Test MERGE rule
     :return:
@@ -144,7 +144,7 @@ def test_merge_policy(a_power, a_id, t_power, t_id, expected):
         ("f", True, False),
     ],
 )
-def test_collision_policy_type(match_type, is_persistent, outcome):
+def test_collision_policy_type(match_type: str, is_persistent: bool, outcome: bool) -> None:
     cp = BioCollisionPolicy(match_type=match_type)
     assert cp.check_type(is_persistent) is outcome
 
@@ -184,7 +184,9 @@ def test_collision_policy_type(match_type, is_persistent, outcome):
         (">", 10, 20, False),
     ],
 )
-def test_collision_policy_level(match_level, attacker_level, target_level, outcome):
+def test_collision_policy_level(
+    match_level: str, attacker_level, target_level, outcome: bool
+) -> None:
     cp = BioCollisionPolicy(match_type="*", match_level=match_level)
     assert cp.check_level(attacker_level, target_level) is outcome
 
@@ -224,7 +226,7 @@ def test_collision_policy_level(match_level, attacker_level, target_level, outco
         ("calcify", "calcify", "calcify"),
     ],
 )
-def test_collision_persist(attacker_policy, target_policy, expected):
+def test_collision_persist(attacker_policy: str, target_policy: str, expected: str) -> None:
     policy = bioseg_policy_loader.get(target_policy)
     profile = NetworkSegmentProfile(name="stub", is_persistent=True)
     target = NetworkSegment(name="target", profile=profile)
@@ -268,7 +270,7 @@ def test_collision_persist(attacker_policy, target_policy, expected):
         ("calcify", "calcify", "calcify"),
     ],
 )
-def test_collision_floating(attacker_policy, target_policy, expected):
+def test_collision_floating(attacker_policy: str, target_policy: str, expected: str) -> None:
     policy = bioseg_policy_loader.get(target_policy)
     profile = NetworkSegmentProfile(name="stub", is_persistent=False)
     target = NetworkSegment(name="target", profile=profile)

@@ -286,12 +286,12 @@ gi1/0/1   00:11:22:33:44:55 gigaethernet1 Internacional'nyy     B, r      100
         ),
     ],
 )
-def test_parse_table(value, kwargs, expected):
+def test_parse_table(value, kwargs, expected) -> None:
     assert parse_table(value, **kwargs) == expected
 
 
 @pytest.mark.parametrize("expected", ["Title            Body    Text"])
-def test_strip_html_tags(expected):
+def test_strip_html_tags(expected: str) -> None:
     html = """
     <html>
     <head>
@@ -320,7 +320,7 @@ def test_strip_html_tags(expected):
         )
     ],
 )
-def test_xml_to_table(config, expected):
+def test_xml_to_table(config: list[str], expected: list[dict[str, str]]) -> None:
     assert xml_to_table(str(config), "action", "row") == expected
 
 
@@ -336,7 +336,7 @@ def test_xml_to_table(config, expected):
         (range(1, 4001), "1-4000"),
     ],
 )
-def test_list_to_ranges(config, expected):
+def test_list_to_ranges(config, expected) -> None:
     assert list_to_ranges(config) == expected
 
 
@@ -349,7 +349,7 @@ def test_list_to_ranges(config, expected):
         ("1, 10-12, 15, 17-19", [1, 10, 11, 12, 15, 17, 18, 19]),
     ],
 )
-def test_ranges_to_list(config, expected):
+def test_ranges_to_list(config: str, expected: list[int]) -> None:
     assert ranges_to_list(config) == expected
 
 
@@ -361,7 +361,7 @@ def test_ranges_to_list(config, expected):
         ("the (?P<groupname> nested (test)>)", "the groupvalue"),
     ],
 )
-def test_replace_re_group_text(config, expected):
+def test_replace_re_group_text(config: str, expected: str) -> None:
     assert replace_re_group(config, "(?P<groupname>", "groupvalue") == expected
 
 
@@ -373,7 +373,7 @@ def test_replace_re_group_text(config, expected):
         (b"the (?P<groupname> nested (test)>)", b"the groupvalue"),
     ],
 )
-def test_replace_re_group_bytes(config, expected):
+def test_replace_re_group_bytes(config: bytes, expected: bytes) -> None:
     assert replace_re_group(config, b"(?P<groupname>", b"groupvalue") == expected
 
 
@@ -387,7 +387,7 @@ def test_replace_re_group_bytes(config, expected):
         ),
     ],
 )
-def test_indent(config, expected):
+def test_indent(config: str, expected: str) -> None:
     assert indent(config, n=1) == expected
 
 
@@ -400,7 +400,7 @@ def test_indent(config, expected):
         ("ge-1/0/1.15", ["ge-", 1, "/", 0, "/", 1, ".", 15]),
     ],
 )
-def test_split_alnum(config, expected):
+def test_split_alnum(config: str, expected) -> None:
     assert split_alnum(config) == expected
 
 
@@ -414,7 +414,7 @@ def test_split_alnum(config, expected):
         ("ge-1/0/1.15", "ge-000000000001/000000000000/000000000001.000000000015"),
     ],
 )
-def test_alnum_key(input, expected):
+def test_alnum_key(input: str, expected: str) -> None:
     assert alnum_key(input) == expected
 
 
@@ -427,7 +427,7 @@ def test_alnum_key(input, expected):
         )
     ],
 )
-def test_find_indented(config, expected):
+def test_find_indented(config: str, expected: list[str]) -> None:
     assert find_indented(config) == expected
 
 
@@ -435,7 +435,7 @@ def test_find_indented(config, expected):
     ("config", "expected"),
     [("1h", 3600), ("1d", 86400), ("1w", 604800), ("1m", 2592000), ("1y", 31536000)],
 )
-def test_to_seconds(config, expected):
+def test_to_seconds(config: str, expected: int) -> None:
     assert to_seconds(config) == expected
 
 
@@ -448,7 +448,7 @@ def test_to_seconds(config, expected):
         )
     ],
 )
-def test_format_table(config, expected):
+def test_format_table(config: list[list[str]], expected: str) -> None:
     assert format_table([0, 0, 0, 0, 0], config) == expected
 
 
@@ -456,7 +456,7 @@ def test_format_table(config, expected):
     ("config", "expected"),
     [("12w34r5t6y7", "1234567"), ("   223ssSSSf*3", "2233"), ("(032HDWeg sda^@3f ", "0323")],
 )
-def test_clean_number(config, expected):
+def test_clean_number(config: str, expected: str) -> None:
     assert clean_number(config) == expected
 
 
@@ -464,7 +464,7 @@ def test_clean_number(config, expected):
     ("config", "expected"),
     [(None, "None"), ("s", "******"), ("sssssss", "s******s"), ("1", "******"), ([1, 2], "******")],
 )
-def test_safe_shadow(config, expected):
+def test_safe_shadow(config, expected: str) -> None:
     assert safe_shadow(config) == expected
 
 
@@ -475,7 +475,7 @@ def test_safe_shadow(config, expected):
         ("aaaa\nbbbb\nsss sss\n", "aaaa\\\\nbbbb\\\\nsss sss\\\\n"),
     ],
 )
-def test_ch_escape(config, expected):
+def test_ch_escape(config: str, expected: str) -> None:
     assert ch_escape(config) == expected
 
 
@@ -494,7 +494,7 @@ def test_ch_escape(config, expected):
         ),
     ],
 )
-def test_split_text(config, max_chunk, expected):
+def test_split_text(config: str, max_chunk: int, expected: list[str]) -> None:
     assert list(split_text(config, max_chunk=max_chunk)) == expected
 
 

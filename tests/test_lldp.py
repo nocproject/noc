@@ -48,7 +48,7 @@ from noc.core.lldp import (
         (["OtHeR", "repeAter"], 3),
     ],
 )
-def test_lldp_caps_to_bits(value, expected):
+def test_lldp_caps_to_bits(value, expected: int) -> None:
     cmap = {
         "other": LLDP_CAP_OTHER,
         "repeater": LLDP_CAP_REPEATER,
@@ -93,5 +93,5 @@ def test_lldp_caps_to_bits(value, expected):
         ),
     ],
 )
-def test_lldp_bits_to_caps(value, expected):
+def test_lldp_bits_to_caps(value: int, expected) -> None:
     assert lldp_bits_to_caps(value) == expected

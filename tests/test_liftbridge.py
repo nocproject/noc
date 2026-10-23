@@ -20,6 +20,6 @@ from noc.core.msgstream.queuebuffer import QBuffer
         ([b"abc", b"def", b"ghi", b"klm"], [b"abc\ndef\nghi", b"klm"], 11),
     ],
 )
-def test_qbuffer(input, output, size):
+def test_qbuffer(input: list[bytes], output: list[bytes], size: int) -> None:
     q = QBuffer(max_size=size)
     assert list(q._iter_chunks(input, size)) == output

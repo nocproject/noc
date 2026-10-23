@@ -15,7 +15,7 @@ import pytest
 from noc.core.models.escalationpolicy import EscalationPolicy
 
 
-def test_default():
+def test_default() -> None:
     assert EscalationPolicy.get_default() == EscalationPolicy.ROOT
 
 
@@ -30,7 +30,7 @@ def test_default():
         ("noc::escalation::always", EscalationPolicy.ALWAYS),
     ],
 )
-def test_try_from_label(label: str, expected: EscalationPolicy | None):
+def test_try_from_label(label: str, expected: EscalationPolicy | None) -> None:
     assert EscalationPolicy.try_from_label(label) is expected
 
 
@@ -71,5 +71,5 @@ def test_try_from_label(label: str, expected: EscalationPolicy | None):
         ),
     ],
 )
-def test_get_effective_policy(labels: Iterable[list[str]], expected: EscalationPolicy):
+def test_get_effective_policy(labels: Iterable[list[str]], expected: EscalationPolicy) -> None:
     assert EscalationPolicy.get_effective_policy(labels) is expected

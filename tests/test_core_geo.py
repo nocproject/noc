@@ -21,7 +21,7 @@ from noc.core.geo import _get_point, distance, bearing, bearing_sym
         ([160.024824, 55.735127], (55.735127, 160.024824, 0.0)),
     ],
 )
-def test_geo_point(config, expected):
+def test_geo_point(config: list[float], expected: tuple[float, ...]) -> None:
     assert _get_point(config) == Point(*expected)
 
 
@@ -33,7 +33,7 @@ def test_geo_point(config, expected):
         ([160.024824, 55.735127], [161.156416, 55.455182], 77849),
     ],
 )
-def test_geo_distance(config, config1, expected):
+def test_geo_distance(config: list[float], config1: list[float], expected: int) -> None:
     assert int(distance(config, config1)) == expected
 
 
@@ -45,7 +45,7 @@ def test_geo_distance(config, config1, expected):
         ([160.024824, 55.735127], [161.156416, 55.455182], 113),
     ],
 )
-def test_geo_bearing(config, config1, expected):
+def test_geo_bearing(config: list[float], config1: list[float], expected: int) -> None:
     assert int(bearing(config, config1)) == expected
 
 
@@ -57,5 +57,5 @@ def test_geo_bearing(config, config1, expected):
         ([160.024824, 55.735127], [161.156416, 55.455182], "SE"),
     ],
 )
-def test_geo_bearing_sym(config, config1, expected):
+def test_geo_bearing_sym(config: list[float], config1: list[float], expected: str) -> None:
     assert bearing_sym(config, config1) == expected

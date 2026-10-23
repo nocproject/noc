@@ -14,7 +14,7 @@ from .util import get_models, get_documents
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_db_table(model, database):
+def test_db_table(model, database) -> None:
     if not hasattr(model, "_meta"):
         pytest.skip("No _meta")
     if not hasattr(model._meta, "db_table"):
@@ -26,7 +26,7 @@ def test_db_table(model, database):
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_count(model, database):
+def test_model_count(model, database) -> None:
     if not hasattr(model, "_meta"):
         pytest.skip("No _meta")
     if not hasattr(model._meta, "db_table"):
@@ -37,7 +37,7 @@ def test_model_count(model, database):
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_count(model, database):
+def test_document_count(model, database) -> None:
     if not hasattr(model, "_meta"):
         pytest.skip("No _meta")
     model._get_collection().count_documents({})

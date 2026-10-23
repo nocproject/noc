@@ -61,7 +61,7 @@ yaml.add_constructor("!IP", create_ip, Loader)
 
 
 @pytest.mark.parametrize("path", list(iter_test_paths()))
-def test_profile(path):
+def test_profile(path) -> None:
     # Open YAML
     full_path = (*PREFIX, path)
     with open(os.path.join(*full_path)) as f:

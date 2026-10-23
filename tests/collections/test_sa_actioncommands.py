@@ -29,7 +29,7 @@ def action_commands(database, request):
     yield helper.get_object(request.param)
 
 
-def test_action_commands_collection_cases(database, action_commands):
+def test_action_commands_collection_cases(database, action_commands) -> None:
     for expected, ctx in action_commands.iter_cases():
         commands = action_commands.action.render_action_commands(
             action_commands.profile,

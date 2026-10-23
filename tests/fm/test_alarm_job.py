@@ -37,7 +37,7 @@ def notification_group():
     return get_notification_group_mock()
 
 
-def test_run_request(alarm, user, tt_system):
+def test_run_request(alarm, user, tt_system) -> None:
     """Test run request, test condition"""
     req = AlarmActionRequest(
         ctx=0,
@@ -80,7 +80,7 @@ def test_run_request(alarm, user, tt_system):
     # test on update alarm_watch
 
 
-def test_state(alarm, user, tt_system):
+def test_state(alarm, user, tt_system) -> None:
     """test save state validation and save"""
     # Test State
     req = AlarmActionRequest(
@@ -125,7 +125,7 @@ def test_state(alarm, user, tt_system):
     )
 
 
-def test_repeat(alarm, notification_group):
+def test_repeat(alarm, notification_group) -> None:
     """test repeat, test repeat on error step"""
     req = AlarmActionRequest(
         ctx=0,
@@ -167,7 +167,7 @@ def test_repeat(alarm, notification_group):
     # test repeat on error step
 
 
-def test_run_once(alarm, user, tt_system):
+def test_run_once(alarm, user, tt_system) -> None:
     """"""
     # not run_once if failed
 

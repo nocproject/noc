@@ -16,7 +16,7 @@ import pytest
 from noc.core.debug import ErrorReport
 
 
-def test_error_report():
+def test_error_report() -> None:
     stream = StringIO()
     logger = logging.Logger(__name__ + "::test_error_report")
     logger.setLevel(logging.DEBUG)

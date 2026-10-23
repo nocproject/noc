@@ -155,6 +155,6 @@ TOKENS4 = [
         (CFG4, {"line_comment": "!", "end_of_context": "#"}, TOKENS4),
     ],
 )
-def test_tokenizer(input, config, expected):
+def test_tokenizer(input, config, expected) -> None:
     tokenizer = IndentTokenizer(input, **config)
     assert list(tokenizer) == expected

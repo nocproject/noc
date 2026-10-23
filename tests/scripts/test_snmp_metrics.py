@@ -35,7 +35,7 @@ def get_json_paths():
 
 
 @pytest.mark.parametrize("path", get_json_paths())
-def test_snmp_metrics_json(path):
+def test_snmp_metrics_json(path) -> None:
     # Test loading
     try:
         with open(path) as f:

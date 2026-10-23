@@ -51,18 +51,18 @@ def model(request):
 
 
 @pytest.mark.xfail
-def test_uuid_unique(model):
+def test_uuid_unique(model) -> None:
     assert helper.get_uuid_count(model.uuid) == 1, "UUID %s is not unique" % model.uuid
 
 
-def test_name_unique(model):
+def test_name_unique(model) -> None:
     assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
 
 
 rx_mib = re.compile(r"^[0-9a-z][0-9a-z\-_]::[0-9a-z][0-9a-z\-_]*(\.\d+)*$", re.IGNORECASE)
 
 
-def test_oid(model):
+def test_oid(model) -> None:
     def check_oid(oid):
         if oid == "0.0":
             # For ISKRATEL VDSL-2 sysObjectID ProfileCheckRule
@@ -81,7 +81,7 @@ def test_oid(model):
     assert check_oid(model.value)
 
 
-def test_oid_unique(model):
+def test_oid_unique(model) -> None:
     if model.method != "snmp_v2c_get" or model.match_method != "eq":
         pytest.skip("Not relevant")
     assert (

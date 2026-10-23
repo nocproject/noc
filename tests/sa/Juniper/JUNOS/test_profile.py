@@ -110,7 +110,7 @@ show chassis environment | display json
         ),
     ],
 )
-def test_clear_json(x: str, expected: str):
+def test_clear_json(x: str, expected: str) -> None:
     profile = loader.get_profile("Juniper.JUNOS")
 
     r = profile.clear_json(profile, x)

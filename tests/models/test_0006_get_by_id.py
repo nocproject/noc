@@ -14,7 +14,7 @@ from .util import get_models, get_documents
 
 
 @pytest.mark.parametrize("model", [x for x in get_models() if hasattr(x, "get_by_id")])
-def test_model_get_by_id(model, database):
+def test_model_get_by_id(model, database) -> None:
     assert callable(model.get_by_id)
     r = model.objects.all()[:1]
     if r:
@@ -28,7 +28,7 @@ def test_model_get_by_id(model, database):
 
 
 @pytest.mark.parametrize("model", [x for x in get_documents() if hasattr(x, "get_by_id")])
-def test_document_get_by_id(model, database):
+def test_document_get_by_id(model, database) -> None:
     assert callable(model.get_by_id)
     r = model.objects.first()
     if r:

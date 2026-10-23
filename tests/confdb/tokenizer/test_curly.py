@@ -131,6 +131,6 @@ TOKENS3 = [
         ),
     ],
 )
-def test_tokenizer(input, config, expected):
+def test_tokenizer(input, config, expected) -> None:
     tokenizer = CurlyTokenizer(input, **config)
     assert list(tokenizer) == expected

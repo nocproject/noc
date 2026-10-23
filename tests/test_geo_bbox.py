@@ -25,7 +25,7 @@ from noc.core.geo import get_bbox
         ([0, 10, 0, -100], [[[0, -90], [10, -90], [10, 0], [0, 00], [0, -90]]]),
     ],
 )
-def test_get_bbox(input, expected):
+def test_get_bbox(input, expected) -> None:
     bbox = get_bbox(*input)
     assert isinstance(bbox, Polygon)
     assert bbox.type == "Polygon"

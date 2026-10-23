@@ -177,7 +177,7 @@ class GetDiagScript(BaseScript):
         ),
     ],
 )
-def test_cli(proto, host, port, user, password, args, xcls):
+def test_cli(proto, host, port, user, password, args, xcls) -> None:
     try:
         address = socket.gethostbyname(host)
     except socket.gaierror:

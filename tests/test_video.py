@@ -30,7 +30,7 @@ from noc.core.video.codecs import H264Profile, get_h264_profile_by_id, get_h264_
         ("8K", 7680, 4320, False),
     ],
 )
-def test_video_resolution(name, width, height, interlace):
+def test_video_resolution(name: str, width: int, height: int, interlace: bool) -> None:
     res = get_resolution(name)
     assert res
     assert isinstance(res, VideoResolution)
@@ -39,7 +39,7 @@ def test_video_resolution(name, width, height, interlace):
     assert res.interlace is interlace, "Interlace mismatch"
 
 
-def test_unknown_resolution():
+def test_unknown_resolution() -> None:
     assert get_resolution("unknown") is None
 
 
@@ -57,7 +57,7 @@ def test_unknown_resolution():
         (122, None, "Hi422P"),
     ],
 )
-def test_get_h264_profile_by_name(id, constraint, name):
+def test_get_h264_profile_by_name(id: int, constraint, name: str) -> None:
     profile = get_h264_profile_by_name(name)
     assert profile
     assert isinstance(profile, H264Profile)
@@ -80,7 +80,7 @@ def test_get_h264_profile_by_name(id, constraint, name):
         (122, None, "Hi422P"),
     ],
 )
-def test_get_h264_profile_by_id(id, constraint, name):
+def test_get_h264_profile_by_id(id: int, constraint, name: str) -> None:
     profile = get_h264_profile_by_id(id, constraint)
     assert profile
     assert isinstance(profile, H264Profile)

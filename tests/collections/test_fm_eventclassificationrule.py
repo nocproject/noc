@@ -102,7 +102,7 @@ def event(database, request):
     return event, ec, cfg.get("vars", {})
 
 
-def test_event(database, ruleset, event):
+def test_event(database, ruleset, event) -> None:
     e, expected_class, expected_vars = event
     e_vars = e.raw_vars.copy()
     if e.source == "SNMP Trap":
@@ -126,7 +126,7 @@ def test_event(database, ruleset, event):
 #     return request.param
 
 
-def test_rules_collection_cases(database, ruleset, event_class_rule):
+def test_rules_collection_cases(database, ruleset, event_class_rule) -> None:
     for e, v in event_class_rule.iter_cases():
         rule, e_vars = ruleset.find_rule(e, v)
         assert rule is not None, "Cannot find matching rule"

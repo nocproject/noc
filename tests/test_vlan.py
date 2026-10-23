@@ -66,7 +66,7 @@ from noc.core.vlan import has_vlan, optimize_filter
         ("10,20-30,40,50-60", 61, False),
     ],
 )
-def test_has_vlan(vlan_filter, vlan, result):
+def test_has_vlan(vlan_filter: str, vlan, result: bool) -> None:
     assert has_vlan(vlan_filter, vlan) is result
 
 
@@ -99,5 +99,5 @@ def test_has_vlan(vlan_filter, vlan, result):
         ("1,5-10,4,3-20,40", "1,3-20,40"),
     ],
 )
-def test_optimize_filter(vlan_filter, result):
+def test_optimize_filter(vlan_filter: str, result: str) -> None:
     assert optimize_filter(vlan_filter) == result

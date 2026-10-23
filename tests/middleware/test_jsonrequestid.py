@@ -22,7 +22,7 @@ from noc.core.script.http.middleware.base import middleware_loader
         ({"a": "b"}, {"request_id_param": "rid"}, 456, {"rid": 456, "a": "b"}),
     ],
 )
-def test_jsonsession(body, config, request_id, expected):
+def test_jsonsession(body, config, request_id: int, expected) -> None:
     http = HTTP(None)
     http.request_id = request_id
     mw_cls = middleware_loader.get("jsonrequestid")

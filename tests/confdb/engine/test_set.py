@@ -101,5 +101,5 @@ from .utils import check_query
         ),
     ],
 )
-def test_set(input, query, output):
+def test_set(input, query: str, output) -> None:
     assert check_query(query, input, output)

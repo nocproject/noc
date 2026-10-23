@@ -23,7 +23,7 @@ class RequestStub:
 
 
 @pytest.mark.parametrize("report", ["report_objectsummary", "report_source_classificationrule"])
-def test_report_config(report):
+def test_report_config(report: str) -> None:
     path = os.path.realpath(os.path.dirname(__file__))
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
         cfg = yaml.safe_load(f)

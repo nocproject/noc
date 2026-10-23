@@ -34,7 +34,7 @@ from noc.core.etl.models.typing import Reference
         ),
     ],
 )
-def test_from_iter(input, expected):
+def test_from_iter(input, expected) -> None:
     if expected is ValueError:
         with pytest.raises(ValueError):
             AdministrativeDomain.from_iter(input)

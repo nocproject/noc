@@ -86,7 +86,7 @@ async def client_routine(server: UDPServerStub, datagrams_quantity: int) -> None
 
 
 # Testing UDP-server by sending a lot of datagrams from multiple clients
-def test_server_operation():
+def test_server_operation() -> None:
     async def inner():
         udpserver = UDPServerStub()
         tasks = [server_routine(udpserver)] + [

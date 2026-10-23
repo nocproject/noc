@@ -43,7 +43,7 @@ def test_get_json_path(model) -> None:
 
 
 @pytest.mark.parametrize("model", SELECTED_MODELS)
-def test_to_json(model):
+def test_to_json(model) -> None:
     for o in model.objects.all():
         j = o.to_json()
         assert j

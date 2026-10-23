@@ -25,7 +25,7 @@ from noc.dns.models.dnszone import DNSZone
         ("1.9.b.d.0.1.0.0.2.ip6.int", "6"),
     ],
 )
-def test_zone_type(zone, ztype):
+def test_zone_type(zone: str, ztype: str) -> None:
     z = DNSZone.objects.get(name=zone)
     assert z
     assert z.type == ztype
@@ -40,7 +40,7 @@ def test_zone_type(zone, ztype):
         ("1.9.b.d.0.1.0.0.2.ip6.int", "2001:db9:1000::/36"),
     ],
 )
-def test_reverse_prefix(zone, prefix):
+def test_reverse_prefix(zone: str, prefix: str) -> None:
     z = DNSZone.objects.get(name=zone)
     assert z
     assert z.reverse_prefix == prefix

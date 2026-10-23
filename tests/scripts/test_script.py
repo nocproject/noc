@@ -34,21 +34,21 @@ def sa_script(request):
     return request.param
 
 
-def test_iter_scripts():
+def test_iter_scripts() -> None:
     assert len(list(loader.iter_scripts())) > 0
 
 
-def test_script_loading(sa_script):
+def test_script_loading(sa_script) -> None:
     script = loader.get_script(sa_script)
     assert script is not None
 
 
-def test_script_type(sa_script):
+def test_script_type(sa_script) -> None:
     script = loader.get_script(sa_script)
     assert issubclass(script, BaseScript)
 
 
-def test_script_name(sa_script):
+def test_script_name(sa_script) -> None:
     script = loader.get_script(sa_script)
     assert getattr(script, "name"), "Script should has name"
     req_name = script.__module__
@@ -57,7 +57,7 @@ def test_script_name(sa_script):
     assert script.name == req_name
 
 
-def test_script_interface(sa_script):
+def test_script_interface(sa_script) -> None:
     script = loader.get_script(sa_script)
     assert getattr(script, "interface", None) is not None, "Script should has 'interface' attribute"
     assert issubclass(script.interface, BaseInterface)

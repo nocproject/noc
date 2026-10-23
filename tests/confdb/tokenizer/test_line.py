@@ -142,6 +142,6 @@ TOKENS7 = [
         ),
     ],
 )
-def test_tokenizer(input, config, expected):
+def test_tokenizer(input, config, expected) -> None:
     tokenizer = LineTokenizer(input, **config)
     assert list(tokenizer) == expected

@@ -39,6 +39,6 @@ from noc.core.confdb.engine.base import Engine
         ),
     ],
 )
-def test_re(input, query, output):
+def test_re(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

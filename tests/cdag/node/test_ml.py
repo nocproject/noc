@@ -36,7 +36,7 @@ from .util import NodeCDAG
         ),
     ],
 )
-def test_ml_node(op, config, measures, expected):
+def test_ml_node(op: str, config, measures: list[float], expected: list[float]) -> None:
     state = {}
     cdag = NodeCDAG(op, config=config, state=state)
     for ms, exp in zip(measures, expected):

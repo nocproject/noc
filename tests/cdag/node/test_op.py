@@ -38,7 +38,7 @@ from .util import NodeCDAG
         ("div", 1.0, 2, 0.5),
     ],
 )
-def test_op_node(op, x, y, expected):
+def test_op_node(op: str, x, y, expected) -> None:
     cdag = NodeCDAG(op)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

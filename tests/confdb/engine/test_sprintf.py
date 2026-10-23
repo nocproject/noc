@@ -57,5 +57,5 @@ from .utils import check_query
         ({"x": 1}, "Sprintf(y, 'y = %s', x + 1)", [{"x": 1, "y": "y = 2"}]),
     ],
 )
-def test_sprintf(input, query, output):
+def test_sprintf(input, query: str, output) -> None:
     assert check_query(query, input, output)

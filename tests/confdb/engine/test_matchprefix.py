@@ -37,6 +37,6 @@ from noc.core.confdb.engine.base import Engine
         ),
     ],
 )
-def test_match_prefix(input, query, output):
+def test_match_prefix(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

@@ -22,12 +22,12 @@ def test_mac_mac() -> None:
     ("raw", "expected"),
     [("12:34:56:78:9a:bc", "12:34:56:78:9A:BC"), ("12:34:56:78:9A:BC", "12:34:56:78:9A:BC")],
 )
-def test_mac_colon(raw, expected):
+def test_mac_colon(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("0:13:46:50:87:5", "00:13:46:50:87:05")])
-def test_mac_colon_short(raw, expected):
+def test_mac_colon_short(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
@@ -35,22 +35,22 @@ def test_mac_colon_short(raw, expected):
     ("raw", "expected"),
     [("aabbccddeeff", "AA:BB:CC:DD:EE:FF"), ("AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF")],
 )
-def test_mac_nosep(raw, expected):
+def test_mac_nosep(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [(0xAABBCCDDEEFF, "AA:BB:CC:DD:EE:FF")])
-def test_mac_int(raw, expected):
+def test_mac_int(raw: int, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("\xaa\xbb\xcc\xdd\xee\xff", "AA:BB:CC:DD:EE:FF")])
-def test_mac_bin(raw, expected):
+def test_mac_bin(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [(b"\xe0\xd9\xe3:\x07\xc0", "E0:D9:E3:3A:07:C0")])
-def test_mac_str_bin(raw, expected):
+def test_mac_str_bin(raw: bytes, expected: str) -> None:
     assert MAC(raw) == expected
 
 
@@ -62,33 +62,33 @@ def test_mac_str_bin(raw, expected):
         ("0112.3456.789a.bc", "12:34:56:78:9A:BC"),
     ],
 )
-def test_mac_cisco(raw, expected):
+def test_mac_cisco(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize("raw", ["1234.5678.9abc.def0"])
-def test_mac_cisco_error(raw):
+def test_mac_cisco_error(raw: str) -> None:
     with pytest.raises(ValueError):
         MAC(raw)
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("123456-789abc", "12:34:56:78:9A:BC")])
-def test_mac_dash1(raw, expected):
+def test_mac_dash1(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("aabb-ccdd-eeff", "AA:BB:CC:DD:EE:FF")])
-def test_mac_dash3(raw, expected):
+def test_mac_dash3(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("12-34-56-78-9A-BC", "12:34:56:78:9A:BC")])
-def test_mac_dash5(raw, expected):
+def test_mac_dash5(raw: str, expected: str) -> None:
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize("raw", ["12-34-56-78-9A-BC-DE", "AB-CD-EF-GH-HJ-KL"])
-def test_mac_dash5_error(raw):
+def test_mac_dash5_error(raw: str) -> None:
     with pytest.raises(ValueError):
         MAC(raw)
 
@@ -102,12 +102,12 @@ def test_mac_dash5_error(raw):
         )
     ],
 )
-def test_mac_str_op(raw, expected):
+def test_mac_str_op(raw, expected) -> None:
     assert raw == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", "aabb.ccdd.eeff")])
-def test_mac_to_cisco(raw, expected):
+def test_mac_to_cisco(raw: str, expected: str) -> None:
     assert MAC(raw).to_cisco() == expected
 
 
@@ -121,17 +121,17 @@ def test_mac_to_cisco(raw, expected):
         ("AA:BB:CC:DD:EE:FF", 4096, "AA:BB:CC:DD:FE:FF"),
     ],
 )
-def test_mac_shift(raw, config, expected):
+def test_mac_shift(raw: str, config: int, expected: str) -> None:
     assert MAC(raw).shift(config) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", 17)])
-def test_len(raw, expected):
+def test_len(raw: str, expected: int) -> None:
     assert len(MAC(raw)) == expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", 0xAABBCCDDEEFF)])
-def test_int(raw, expected):
+def test_int(raw: str, expected: int) -> None:
     assert int(MAC(raw)) == expected
 
 
@@ -146,7 +146,7 @@ def test_int(raw, expected):
         "78:4F:43:01:02:53",
     ],
 )
-def test_unicast(value):
+def test_unicast(value: str) -> None:
     assert MAC(value).is_multicast is False
 
 
@@ -161,7 +161,7 @@ def test_unicast(value):
         "01:80:C2:00:00:0E",
     ],
 )
-def test_multicast(value):
+def test_multicast(value: str) -> None:
     assert MAC(value).is_multicast is True
 
 

@@ -98,23 +98,23 @@ ack_ts DateTime
 
 
 @pytest.mark.parametrize(("name", "db_type"), FIELDS)
-def test_field_db_type(name, db_type):
+def test_field_db_type(name, db_type) -> None:
     field_name, nested_name = BaseField.nested_path(name)
     assert MODEL._meta.fields[field_name].get_db_type(nested_name) == db_type
 
 
-def test_iter_create_sql():
+def test_iter_create_sql() -> None:
     assert list(MODEL.iter_create_sql()) == FIELDS
 
 
-def test_get_create_fields_sql():
+def test_get_create_fields_sql() -> None:
     expected = "\n".join(SQL.splitlines()[1:-1])
     assert MODEL.get_create_fields_sql() == expected
 
 
-def test_get_create_sql():
+def test_get_create_sql() -> None:
     assert MODEL.get_create_sql() == SQL
 
 
-def test_create_distributed_sql():
+def test_create_distributed_sql() -> None:
     assert MODEL.cget_create_distributed_sql()

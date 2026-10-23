@@ -28,14 +28,14 @@ def model(request):
     yield helper.get_object(request.param)
 
 
-def test_uuid_unique(model):
+def test_uuid_unique(model) -> None:
     assert helper.get_uuid_count(model.uuid) == 1, "UUID %s is not unique" % model.uuid
 
 
-def test_name_unique(model):
+def test_name_unique(model) -> None:
     assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
 
 
-def test_data_format(model):
+def test_data_format(model) -> None:
     if model.data is not None:
         assert isinstance(model.data, list), 'Connection type field "data" must have type "list"'

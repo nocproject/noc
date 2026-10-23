@@ -79,7 +79,7 @@ CONF1 = [
         ),
     ],
 )
-def test_match(conf, query, output):
+def test_match(conf, query, output) -> None:
     e = Engine()
     e.insert_bulk(conf)
     assert list(e.query(query)) == output

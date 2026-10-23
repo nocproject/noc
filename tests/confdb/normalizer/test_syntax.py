@@ -24,7 +24,7 @@ from noc.core.confdb.normalizer.base import BaseNormalizer
         ("make_prompt", {"prompt": "SW1>"}, ["system", "prompt", "SW1>", {"replace": True}]),
     ],
 )
-def test_syntax_gen(name, args, paths):
+def test_syntax_gen(name: str, args: dict[str, str], paths) -> None:
     normalizer = BaseNormalizer(None, None)
     gen = getattr(normalizer, name, None)
     assert gen, f"Generator '{gen}' is not defined"

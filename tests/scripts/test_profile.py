@@ -28,21 +28,21 @@ def sa_profile(request):
     return request.param
 
 
-def test_iter_profiles():
+def test_iter_profiles() -> None:
     assert len(list(loader.iter_profiles())) > 0
 
 
-def test_profile_loading(sa_profile):
+def test_profile_loading(sa_profile) -> None:
     profile = loader.get_profile(sa_profile)
     assert profile is not None
 
 
-def test_profile_type(sa_profile):
+def test_profile_type(sa_profile) -> None:
     profile = loader.get_profile(sa_profile)
     assert issubclass(profile, BaseProfile)
 
 
-def test_profile_name(sa_profile):
+def test_profile_name(sa_profile) -> None:
     profile = loader.get_profile(sa_profile)
     assert getattr(profile, "name"), "Profile should has name"
     parts = profile.__module__.split(".")

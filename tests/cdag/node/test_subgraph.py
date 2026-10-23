@@ -53,13 +53,13 @@ CONFIG = {
 }
 
 
-def test_inputs():
+def test_inputs() -> None:
     node = NodeCDAG("subgraph", config=CONFIG).get_node()
     inputs = set(node.iter_inputs())
     assert inputs == {"x", "y"}
 
 
-def test_config():
+def test_config() -> None:
     node = NodeCDAG("subgraph", config=CONFIG).get_node()
     vnode = node.cdag.get_node("n")
     assert vnode.config.value == 2
@@ -69,7 +69,7 @@ def test_config():
     ("x", "y", "expected"),
     [(0, 0, 0), (1, 0, 2), (0, 1, 1), (2, 1, 5)],
 )
-def test_subgraph_node(x, y, expected):
+def test_subgraph_node(x: int, y: int, expected: int) -> None:
     cdag = NodeCDAG("subgraph", config=CONFIG)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

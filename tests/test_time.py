@@ -10,7 +10,7 @@ import time
 from time import perf_counter
 
 
-def test_perf_counter():
+def test_perf_counter() -> None:
     DELTA = 1.0
     t0 = perf_counter()
     time.sleep(DELTA)
@@ -18,5 +18,5 @@ def test_perf_counter():
     assert t1 - t0 >= DELTA
 
 
-def test_perf_counter_implementation():
+def test_perf_counter_implementation() -> None:
     assert perf_counter != time.time

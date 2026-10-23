@@ -9,7 +9,7 @@
 from noc.core.change.policy import change_tracker, SimpleChangeTrackerPolicy
 
 
-def test_change_tracker_stack():
+def test_change_tracker_stack() -> None:
     p1 = SimpleChangeTrackerPolicy()
     assert change_tracker.get_policy() is not p1
     change_tracker.push_policy(p1)

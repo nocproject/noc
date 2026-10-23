@@ -368,7 +368,7 @@ class MockInterface:
         (INTERFACES5, PATHS5),
     ],
 )
-def test_profile(interfaces, paths):
+def test_profile(interfaces, paths) -> None:
     ifaces = {}
     for iface_name, iface_type in interfaces:
         ifaces[iface_name] = MockInterface(iface_name, "", iface_type)

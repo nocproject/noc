@@ -79,7 +79,7 @@ class Object:
         )
 
 
-def test_set_state():
+def test_set_state() -> None:
     o = Object()
     o.diagnostics = {
         "D2": {"diagnostic": "D2", "state": "failed", "reason": "1"},
@@ -99,7 +99,7 @@ def test_set_state():
     assert o.diagnostics["Access"]["state"] == "enabled"
 
 
-def test_change_object_config_state():
+def test_change_object_config_state() -> None:
     o = Object()
     o.diagnostics = {
         "D2": {"diagnostic": "D2", "state": "failed", "reason": "1"},
@@ -120,7 +120,7 @@ def test_change_object_config_state():
     assert o.diagnostic.SNMP.state == DiagnosticState.blocked
 
 
-def test_bulk_set_state():
+def test_bulk_set_state() -> None:
     o = Object()
     o.diagnostics = {
         "D2": {"diagnostic": "D2", "state": "failed", "reason": "1"},
@@ -142,7 +142,7 @@ def test_bulk_set_state():
     assert o.diagnostics["Access"]["state"] == "enabled"
 
 
-def test_expired_checks():
+def test_expired_checks() -> None:
     o = Object()
     expired = datetime.datetime.now() - datetime.timedelta(hours=1)
     o.diagnostics = {

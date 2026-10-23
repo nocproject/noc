@@ -18,25 +18,25 @@ SAMPLE = ["Lorem ", "ipsum\n", "dolor ", "sit ", "amet"]
 RESULT = "Lorem ipsum\ndolor sit amet"
 
 
-def test_base_open():
+def test_base_open() -> None:
     with temporary_file() as path, pytest.raises(NotImplementedError):
         BaseCompressor(path).open()
 
 
-def test_base_close():
+def test_base_close() -> None:
     with temporary_file() as path, pytest.raises(NotImplementedError):
         BaseCompressor(path).close()
 
 
 @pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
-def test_file_instance(fmt):
+def test_file_instance(fmt) -> None:
     comp_cls = compressor_loader.get(fmt)
     with temporary_file() as path, comp_cls(path, mode="w") as f:
         assert isinstance(f, io.TextIOWrapper)
 
 
 @pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
-def test_ext(fmt):
+def test_ext(fmt) -> None:
     comp_cls = compressor_loader.get(fmt)
     assert comp_cls.ext is not None
     if comp_cls.ext:
@@ -44,7 +44,7 @@ def test_ext(fmt):
 
 
 @pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
-def test_compressor(fmt):
+def test_compressor(fmt) -> None:
     comp_cls = compressor_loader.get(fmt)
     with temporary_file() as path:
         # Write samples

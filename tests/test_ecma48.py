@@ -18,12 +18,12 @@ def char_range(start, stop, prefix=b""):
 
 
 @pytest.mark.parametrize(("config", "expected"), [([0, 0], 0), ([1, 11], 27), ([15, 15], 255)])
-def test_c(config, expected):
+def test_c(config: list[int], expected: int) -> None:
     assert c(*config) == expected
 
 
 @pytest.mark.parametrize(("config", "expected"), [(b"Lorem Ipsum", b"Lorem Ipsum")])
-def test_strip_normal(config, expected):
+def test_strip_normal(config: bytes, expected: bytes) -> None:
     """
     Normal text leaved untouched
     :return:
@@ -32,7 +32,7 @@ def test_strip_normal(config, expected):
 
 
 @pytest.mark.parametrize(("config", "expected"), [(char_range(0, 31), b"\t\n\r")])
-def test_control_survive(config, expected):
+def test_control_survive(config, expected) -> None:
     """
     CR,LF and ESC survive from C0 set
     :return:
@@ -41,7 +41,7 @@ def test_control_survive(config, expected):
 
 
 @pytest.mark.parametrize(("config", "expected"), [(char_range(64, 95, b"\x1b"), b"\x1b[")])
-def test_C1_stripped(config, expected):
+def test_C1_stripped(config, expected) -> None:
     """
     C1 set stripped (ESC+[ survive)
     :return:
@@ -50,7 +50,7 @@ def test_C1_stripped(config, expected):
 
 
 @pytest.mark.parametrize(("config", "expected"), [(b"\x1b", b"\x1b")])
-def test_incomplete_C1(config, expected):
+def test_incomplete_C1(config: bytes, expected: bytes) -> None:
     """
     Incomplete C1 passed
     :return:
@@ -67,7 +67,7 @@ def test_incomplete_C1(config, expected):
         (b"L\x1b[@or\x1b[/~em\x1b[0 @ Ips\x1b[0;7/~um\x07", b"Lorem Ipsum"),
     ],
 )
-def test_CSI(config, expected):
+def test_CSI(config: bytes, expected: bytes) -> None:
     """
     CSI without P and I stripped
     CSI with I stripped
@@ -79,7 +79,7 @@ def test_CSI(config, expected):
 
 
 @pytest.mark.parametrize(("config", "expected"), [(b"\x1b[", b"\x1b[")])
-def test_incomplete_CSI(config, expected):
+def test_incomplete_CSI(config: bytes, expected: bytes) -> None:
     """
     Incomplete CSI passed
     :return:
@@ -95,7 +95,7 @@ def test_incomplete_CSI(config, expected):
         (b"\x08 \x08\x08 \x08\x08 \x08\x08 test", b" test"),
     ],
 )
-def test_backspace(config, expected):
+def test_backspace(config: bytes, expected: bytes) -> None:
     """
     Single backspace
     Triple backspace
@@ -118,7 +118,7 @@ def test_backspace(config, expected):
         )
     ],
 )
-def test_ascii_mess(config, expected):
+def test_ascii_mess(config: bytes, expected: bytes) -> None:
     """
     ASCII mess
     :return:

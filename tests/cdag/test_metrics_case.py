@@ -190,7 +190,7 @@ SCENARIO = [
 ]
 
 
-def test_case():
+def test_case() -> None:
     state = {}
     cdag = CDAG("test", state=state)
     factory = YAMLCDAGFactory(cdag, CONFIG)

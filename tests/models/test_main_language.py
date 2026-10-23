@@ -16,7 +16,7 @@ from noc.main.models.language import Language
     ("name", "rec_name", "native_name"),
     [("English", "English", "English"), ("Russian", "Russian", "Русский")],
 )
-def test_default_language(name, rec_name, native_name):
+def test_default_language(name: str, rec_name: str, native_name: str) -> None:
     lang = Language.objects.get(name=name)
     assert lang.name == rec_name
     assert lang.native_name == native_name
@@ -29,7 +29,7 @@ def test_default_language(name, rec_name, native_name):
         {"name": "Klingon", "native_name": "Klingon", "is_active": True},
     ],
 )
-def test_insert(data):
+def test_insert(data) -> None:
     lang = Language(**data)
     lang.save()
     for k in data:

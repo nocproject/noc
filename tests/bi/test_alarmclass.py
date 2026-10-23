@@ -54,10 +54,10 @@ CONFIG = """<dictionaries>
 
 
 @pytest.mark.parametrize(("name", "db_type"), FIELDS)
-def test_field_db_type(name, db_type):
+def test_field_db_type(name, db_type) -> None:
     field_name, nested_name = BaseField.nested_path(name)
     assert MODEL._meta.fields[field_name].get_db_type(nested_name) == db_type
 
 
-def test_get_config():
+def test_get_config() -> None:
     assert MODEL.get_config() == CONFIG

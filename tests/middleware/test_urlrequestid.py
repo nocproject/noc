@@ -26,7 +26,7 @@ from noc.core.script.http.middleware.base import middleware_loader
         ("http://127.0.0.1?x=y", {"request_id_param": "_dc"}, "http://127.0.0.1?x=y&_dc={0}"),
     ],
 )
-def test_(url, config, expected):
+def test_(url: str, config, expected: str) -> None:
     http = HTTP(None)
     mw_cls = middleware_loader.get("urlrequestid")
     middleware = mw_cls(http, **config)

@@ -32,7 +32,7 @@ from noc.main.models.label import Label
         ((["x", "scope1::scope2::x", "scope1::scope2::x"],), ["x", "scope1::scope2::x"]),
     ],
 )
-def test_merge_labels(iter_labels: tuple[list[str]], expected: list[str]):
+def test_merge_labels(iter_labels: tuple[list[str]], expected: list[str]) -> None:
     assert Label.merge_labels(iter_labels) == expected
 
 
@@ -47,7 +47,7 @@ def test_merge_labels(iter_labels: tuple[list[str]], expected: list[str]):
         ("myscope::mysubscope::*", True),
     ],
 )
-def test_is_wildcard(label: str, expected: bool):
+def test_is_wildcard(label: str, expected: bool) -> None:
     instance = Label(name=label)
     assert instance.is_wildcard is expected
 
@@ -60,7 +60,7 @@ def test_is_wildcard(label: str, expected: bool):
         ("myscope::mysubscope::mylabel", ["myscope", "myscope::mysubscope"]),
     ],
 )
-def test_iter_scopes(label: str, expected: list[str]):
+def test_iter_scopes(label: str, expected: list[str]) -> None:
     instance = Label(name=label)
     scopes = list(instance.iter_scopes())
     assert scopes == expected

@@ -13,7 +13,7 @@ from .util import get_models, get_documents
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_str(model, database):
+def test_model_str(model, database) -> None:
     for o in model.objects.all():
         s = str(o)
         assert s
@@ -21,7 +21,7 @@ def test_model_str(model, database):
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_str(model, database):
+def test_document_str(model, database) -> None:
     for o in model.objects.all():
         s = str(o)
         assert isinstance(s, str)

@@ -38,7 +38,7 @@ def dataframe_from(query):
         ([query1, query_empty], dataframe_from(query1)),
     ],
 )
-def test_get_rows(queries, expected):
+def test_get_rows(queries, expected) -> None:
     report_engine = ReportEngine()
     res = report_engine.get_datasets(queries, {}, []) or None
     if res is None:

@@ -28,7 +28,7 @@ def bin(s):
         (None, "None"),
     ],
 )
-def test_smart_text(input, expected):
+def test_smart_text(input, expected) -> None:
     v = smart_text(input)
     assert isinstance(v, str)
     assert v == expected
@@ -46,7 +46,7 @@ def test_smart_text(input, expected):
         (None, bin("None")),
     ],
 )
-def test_smart_bytes(input, expected):
+def test_smart_bytes(input, expected) -> None:
     v = smart_bytes(input)
     assert isinstance(v, bytes)
     assert v == expected

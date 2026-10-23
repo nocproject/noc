@@ -52,7 +52,7 @@ DOT = r"""digraph {
 }"""
 
 
-def test_to_dot():
+def test_to_dot() -> None:
     cdag = CDAG("test", {})
     # Apply config
     factory = YAMLCDAGFactory(cdag, CONFIG)
@@ -60,14 +60,14 @@ def test_to_dot():
     assert cdag.get_dot() == DOT
 
 
-def test_duplicated_node():
+def test_duplicated_node() -> None:
     cdag = CDAG("test", {})
     cdag.add_node("n01", "none")
     with pytest.raises(ValueError):
         cdag.add_node("n01", "none")
 
 
-def test_invalid_node_class():
+def test_invalid_node_class() -> None:
     cdag = CDAG("test", {})
     with pytest.raises(ValueError):
         cdag.add_node("n01", "none!!!")
@@ -115,7 +115,7 @@ nodes:
 """
 
 
-def test_const():
+def test_const() -> None:
     cdag = CDAG("test", {})
     # Apply config
     factory = YAMLCDAGFactory(cdag, CONST_CONFIG)

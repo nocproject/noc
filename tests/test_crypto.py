@@ -13,7 +13,7 @@ from noc.core.crypto import gen_salt, md5crypt
 
 
 @pytest.mark.parametrize(("raw", "value"), [(4, 4), (10, 10)])
-def test_salt_length(raw, value):
+def test_salt_length(raw: int, value: int) -> None:
     salt = gen_salt(raw)
     assert isinstance(salt, bytes)
     assert len(salt) == value
@@ -29,5 +29,5 @@ def test_salt_length(raw, value):
         ),
     ],
 )
-def test_md5_crypt(raw, value):
+def test_md5_crypt(raw: dict[str, bytes], value: bytes) -> None:
     assert md5crypt(**raw) == value

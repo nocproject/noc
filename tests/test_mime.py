@@ -16,10 +16,10 @@ IMAGE_TYPES = {ContentType.JPEG.value, ContentType.GIF.value, ContentType.PNG.va
 
 
 @pytest.mark.parametrize("ct", list(ContentType))
-def test_content_type(ct: ContentType):
+def test_content_type(ct: ContentType) -> None:
     assert ct.content_type is not None
 
 
 @pytest.mark.parametrize("ct", list(ContentType))
-def test_is_image(ct: ContentType):
+def test_is_image(ct: ContentType) -> None:
     assert ct.is_image is (ct.value in IMAGE_TYPES)

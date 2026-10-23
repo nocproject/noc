@@ -10,5 +10,5 @@ import pytest
 
 
 @pytest.mark.run_on_setup
-def test_init_db(database):
+def test_init_db(database) -> None:
     """Trigger database initialization."""

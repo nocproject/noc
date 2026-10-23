@@ -16,7 +16,7 @@ TRIES = 2 * RATE
 NS = 1_000_000_000
 
 
-def test_sync_rate_limit():
+def test_sync_rate_limit() -> None:
     limit = SyncRateLimit(float(RATE))
     t0 = perf_counter_ns()
     for i in range(TRIES):

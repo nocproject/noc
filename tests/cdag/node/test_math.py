@@ -73,7 +73,7 @@ from .util import NodeCDAG
         ("atan", 1.633123935319537e16, pi / 2),
     ],
 )
-def test_math_node(fn, x, expected):
+def test_math_node(fn, x, expected) -> None:
     cdag = NodeCDAG(fn)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

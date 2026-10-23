@@ -55,6 +55,6 @@ class Normalizer1(BaseNormalizer):
 
 
 @pytest.mark.parametrize(("tokens", "ncls", "result"), [(CONF1, Normalizer1, RESULT1)])
-def test_normalizer(tokens, ncls, result):
+def test_normalizer(tokens, ncls, result) -> None:
     normalizer = ncls(None, tokens)
     assert list(normalizer) == result

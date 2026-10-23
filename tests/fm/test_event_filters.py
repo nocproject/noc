@@ -83,7 +83,7 @@ event_config = EventConfig(
         )
     ],
 )
-def test_dedup(events, expected):
+def test_dedup(events, expected: int) -> None:
     dedup_filter: DedupFilter = DedupFilter()
     r = 0
     path = os.path.realpath(os.path.dirname(__file__))
@@ -144,7 +144,7 @@ def test_dedup(events, expected):
         )
     ],
 )
-def test_suppress(events, expected):
+def test_suppress(events, expected: int) -> None:
     suppress_filter: SuppressFilter = SuppressFilter()
     r = 0
     path = os.path.realpath(os.path.dirname(__file__))

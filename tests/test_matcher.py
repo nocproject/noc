@@ -13,12 +13,12 @@ from noc.core.matcher import match
 
 
 @pytest.mark.parametrize(("raw", "config", "expected"), [({}, {}, True), ({"k", "v"}, {}, True)])
-def test_zero(raw, config, expected):
+def test_zero(raw, config, expected: bool) -> None:
     assert match(raw, config) is expected
 
 
 @pytest.mark.parametrize(("raw", "config", "expected"), [({"x": "y"}, {"x": "y"}, True)])
-def test_eq(raw, config, expected):
+def test_eq(raw: dict[str, str], config: dict[str, str], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -26,7 +26,7 @@ def test_eq(raw, config, expected):
     ("raw", "config", "expected"),
     [({"x": "y"}, {"x": {"$ne": "y"}}, False), ({"x": "x"}, {"x": {"$ne": "y"}}, True)],
 )
-def test_ne(raw, config, expected):
+def test_ne(raw: dict[str, str], config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -37,7 +37,7 @@ def test_ne(raw, config, expected):
         ({"x": "y", "m": "n"}, {"x": "y", "m": "n"}, True),
     ],
 )
-def test_eq_and(raw, config, expected):
+def test_eq_and(raw: dict[str, str], config: dict[str, str], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -64,7 +64,7 @@ def test_eq_and(raw, config, expected):
         ({"vendor": "Eltex"}, {"image": {"$regex": r"^\S+"}, "vendor": "Eltex"}, False),
     ],
 )
-def test_regex(raw, config, expected):
+def test_regex(raw: dict[str, str], config, expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -99,7 +99,7 @@ def test_regex(raw, config, expected):
         ),
     ],
 )
-def test_in(raw, config, expected):
+def test_in(raw, config: dict[str, dict[str, list[str]]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -114,7 +114,7 @@ def test_in(raw, config, expected):
         ({"x": 5}, {"x": {"$gt": "10"}}, False),
     ],
 )
-def test_gt(raw, config, expected):
+def test_gt(raw, config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -129,7 +129,7 @@ def test_gt(raw, config, expected):
         ({"x": 5}, {"x": {"$gte": "10"}}, False),
     ],
 )
-def test_gte(raw, config, expected):
+def test_gte(raw, config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -144,7 +144,7 @@ def test_gte(raw, config, expected):
         ({"x": 5}, {"x": {"$lt": "10"}}, True),
     ],
 )
-def test_lt(raw, config, expected):
+def test_lt(raw, config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -159,7 +159,7 @@ def test_lt(raw, config, expected):
         ({"x": 5}, {"x": {"$lte": "10"}}, True),
     ],
 )
-def test_lte(raw, config, expected):
+def test_lte(raw, config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -170,7 +170,9 @@ def test_lte(raw, config, expected):
         ({"labels": ["tag2", "tag4"]}, {"labels": {"$all": ["tag4", "tag2"]}}, True),
     ],
 )
-def test_all(raw, config, expected):
+def test_all(
+    raw: dict[str, list[str]], config: dict[str, dict[str, list[str]]], expected: bool
+) -> None:
     assert match(raw, config) is expected
 
 
@@ -204,7 +206,7 @@ def test_all(raw, config, expected):
         ),
     ],
 )
-def test_between(raw, config, expected):
+def test_between(raw: dict[str, str], config: dict[str, dict[str, str]], expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -233,7 +235,9 @@ def test_between(raw, config, expected):
         ),
     ],
 )
-def test_or(raw, config, expected):
+def test_or(
+    raw: dict[str, str], config: dict[str, list[dict[str, dict[str, str]]]], expected: bool
+) -> None:
     assert match(raw, config) is expected
 
 
@@ -245,7 +249,7 @@ def test_or(raw, config, expected):
         ({"x": "20", "y": "30"}, {"x": {"$gte": "==y"}}, False),
     ],
 )
-def test_field_eq(raw, config, expected):
+def test_field_eq(raw: dict[str, str], config, expected: bool) -> None:
     assert match(raw, config) is expected
 
 
@@ -256,5 +260,7 @@ def test_field_eq(raw, config, expected):
         ({"labels": ["tag2", "tag4"]}, {"labels": {"$all_ne": ["tag4", "tag2"]}}, False),
     ],
 )
-def test_negative(raw, config, expected):
+def test_negative(
+    raw: dict[str, list[str]], config: dict[str, dict[str, list[str]]], expected: bool
+) -> None:
     assert match(raw, config) is expected

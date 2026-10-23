@@ -71,7 +71,7 @@ CONF2 = [
         ),
     ],
 )
-def test_group(conf, query, output):
+def test_group(conf, query, output) -> None:
     e = Engine()
     e.insert_bulk(conf)
     assert list(e.query(query)) == output

@@ -48,7 +48,7 @@ from .util import NodeCDAG
         ("softplus", {"k": 0}, -1.0, None),
     ],
 )
-def test_activation_node(fn, config, x, expected):
+def test_activation_node(fn: str, config, x, expected) -> None:
     cdag = NodeCDAG(fn, config=config)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

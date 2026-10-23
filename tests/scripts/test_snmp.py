@@ -57,7 +57,7 @@ class GetDiagScript(BaseScript):
         (SNMP_HOST, SNMP_v2c, SNMP_COMMUNITY + "X", SNMP.TimeOutError),
     ],
 )
-def test_snmp(host, version, community, xcls):
+def test_snmp(host, version, community, xcls) -> None:
     try:
         address = socket.gethostbyname(host)
     except socket.gaierror:

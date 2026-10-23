@@ -50,7 +50,7 @@ nodes:
 @pytest.mark.parametrize(
     ("configs", "out_state"), [([CONFIG1, CONFIG2, CONFIG3], {"n04": {"value": 3.0}})]
 )
-def test_factory_chain(configs, out_state):
+def test_factory_chain(configs, out_state) -> None:
     # Empty graph with no state
     cdag = CDAG("test", {})
     # Apply config
@@ -105,7 +105,7 @@ nodes:
         )
     ],
 )
-def test_factory_ns_chain(ctx, configs, out_state):
+def test_factory_ns_chain(ctx, configs, out_state) -> None:
     # Empty graph with no state
     cdag = CDAG("test", {})
     # Apply config

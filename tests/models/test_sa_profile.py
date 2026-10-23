@@ -12,7 +12,7 @@ import bson
 from noc.sa.models.profile import Profile
 
 
-def test_generic_profile_id():
+def test_generic_profile_id() -> None:
     p = Profile.get_generic_profile_id()
     assert p
     assert isinstance(p, bson.ObjectId)

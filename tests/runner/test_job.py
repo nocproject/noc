@@ -148,7 +148,7 @@ def test_unique_names(jobs: list[JobRequest], expected: bool) -> None:
         ),
     ],
 )
-def test_from_req_errors(req: JobRequest):
+def test_from_req_errors(req: JobRequest) -> None:
     async def inner():
         runner = Runner()
         with pytest.raises(ValueError):
@@ -471,7 +471,7 @@ def get_scenario_id(x) -> str:
     ],
     ids=get_scenario_id,
 )
-def test_scenario(req: JobRequest, expected: dict[str, JobStatus]):
+def test_scenario(req: JobRequest, expected: dict[str, JobStatus]) -> None:
     async def inner() -> None:
         runner = RunnerWrapper()
         runner.submit(req)

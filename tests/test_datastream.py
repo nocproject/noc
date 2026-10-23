@@ -45,16 +45,16 @@ class NoEvenDatastream(DataStream):
         return {"n": data["id"] / 2}
 
 
-def test_datastream_base():
+def test_datastream_base() -> None:
     with pytest.raises(NotImplementedError):
         DataStream.get_object(1)
 
 
-def test_datastream_collection_name():
+def test_datastream_collection_name() -> None:
     assert ExampleDataStream.get_collection_name() == "ds_example"
 
 
-def test_datastream_collection():
+def test_datastream_collection() -> None:
     ExampleDataStream.ensure_collection()
     # Test collection exists
     coll = ExampleDataStream.get_collection()
@@ -65,7 +65,7 @@ def test_datastream_collection():
     assert ii["change_id_1"].get("unique")
 
 
-def test_datastream_hash():
+def test_datastream_hash() -> None:
     data = {"id": 1, "name": "test"}
     assert ExampleDataStream.get_hash(data) == "5757d197ae2f024e"
 
@@ -75,7 +75,7 @@ def ds_index(request):
     return request.param
 
 
-def test_datastream_update(ds_index):
+def test_datastream_update(ds_index) -> None:
     coll = ExampleDataStream.get_collection()
     # Generate update
     m_u = metrics["ds_example_updated"].value
@@ -109,11 +109,11 @@ def test_datastream_update(ds_index):
     assert doc["change_id"] == change_id
 
 
-def test_datastream_total():
+def test_datastream_total() -> None:
     assert ExampleDataStream.get_total() == 10
 
 
-def test_datastream_iter_data_limit():
+def test_datastream_iter_data_limit() -> None:
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(limit=3):
         assert id not in seen
@@ -121,7 +121,7 @@ def test_datastream_iter_data_limit():
     assert seen == {1, 2, 3}
 
 
-def test_datastream_iter_data():
+def test_datastream_iter_data() -> None:
     seen = set()
     last_change = None
     for id, change_id, data in ExampleDataStream.iter_data():
@@ -133,7 +133,7 @@ def test_datastream_iter_data():
     assert seen == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
 
-def test_datastream_iter_data_id1():
+def test_datastream_iter_data_id1() -> None:
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3)"]):
         assert id not in seen
@@ -141,7 +141,7 @@ def test_datastream_iter_data_id1():
     assert seen == {3}
 
 
-def test_datastream_iter_data_id2():
+def test_datastream_iter_data_id2() -> None:
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3,7)"]):
         assert id not in seen
@@ -149,7 +149,7 @@ def test_datastream_iter_data_id2():
     assert seen == {3, 7}
 
 
-def test_datastream_iter_data_id_type_check():
+def test_datastream_iter_data_id_type_check() -> None:
     with pytest.raises(ValueError):
         next(ExampleDataStream.iter_data(filters=3))
     with pytest.raises(ValueError):
@@ -158,7 +158,7 @@ def test_datastream_iter_data_id_type_check():
         next(ExampleDataStream.iter_data(change_id="3"))
 
 
-def test_datastream_iter_data_chunked():
+def test_datastream_iter_data_chunked() -> None:
     seen = set()
     last_change = None
     # First 3
@@ -189,7 +189,7 @@ def test_datastream_iter_data_chunked():
     assert list(ExampleDataStream.iter_data(change_id=last_change, limit=3)) == []
 
 
-def test_datastream_key_error(ds_index):
+def test_datastream_key_error(ds_index) -> None:
     coll = NoEvenDatastream.get_collection()
     NoEvenDatastream.update_object(ds_index)
     doc = coll.find_one({"_id": ds_index})
@@ -203,7 +203,7 @@ def test_datastream_key_error(ds_index):
         assert doc["meta"]["n"][0] == ds_index / 2
 
 
-def test_datastream_delete_object():
+def test_datastream_delete_object() -> None:
     class DeleteDataStream(ExampleDataStream):
         name = "delete"
 
@@ -222,12 +222,12 @@ def test_datastream_delete_object():
     assert "$deleted" in doc["data"]
 
 
-def test_datastream_clean_id():
+def test_datastream_clean_id() -> None:
     assert ExampleDataStream.clean_id(1) == 1
     assert ExampleDataStream.clean_id("1") == 1
 
 
-def test_datastream_clean_id_int():
+def test_datastream_clean_id_int() -> None:
     class DS(DataStream):
         clean_id = DataStream.clean_id_int
 
@@ -242,29 +242,29 @@ def datastream_name(request):
     return request.param
 
 
-def test_loader(datastream_name):
+def test_loader(datastream_name) -> None:
     ds = data_stream_loader.get(datastream_name)
     assert ds is not None
     assert issubclass(ds, DataStream)
     assert ds.name == datastream_name
 
 
-def test_loader_invalid_name():
+def test_loader_invalid_name() -> None:
     ds = data_stream_loader.get("aaa..bbbb")
     assert ds is None
 
 
-def test_loader_error():
+def test_loader_error() -> None:
     ds = data_stream_loader.get("invalid")
     assert ds is None
 
 
-def test_loader_contains(datastream_name):
+def test_loader_contains(datastream_name) -> None:
     assert datastream_name in data_stream_loader
 
 
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Replica set is disabled")
-def test_wait():
+def test_wait() -> None:
     class WaitDS(DataStream):
         name = "wait"
 
@@ -304,7 +304,7 @@ def test_wait():
     assert WaitDS.get_total() == 2
 
 
-def test_clean_changeid():
+def test_clean_changeid() -> None:
     oid = bson.ObjectId()
     # ObjectId left unchanged
     assert DataStream.clean_change_id(oid) == oid
@@ -320,7 +320,7 @@ def test_clean_changeid():
         DataStream.clean_change_id("9999-99-99")
 
 
-def test_parse_filter():
+def test_parse_filter() -> None:
     assert DataStream._parse_filter("id(1)") == ["id", "1"]
     assert DataStream._parse_filter("id(1,2)") == ["id", "1", "2"]
     assert DataStream._parse_filter("id(1,2,  3   )") == ["id", "1", "2", "3"]
@@ -332,17 +332,17 @@ def test_parse_filter():
         DataStream._parse_filter("id(")
 
 
-def test_filter_id():
+def test_filter_id() -> None:
     assert DataStream.filter_id(10) == {"_id": 10}
     assert DataStream.filter_id(10, 11) == {"_id": {"$in": [10, 11]}}
 
 
-def test_filter_shard():
+def test_filter_shard() -> None:
     assert DataStream.filter_shard(1, 3) == {"_id": {"$mod": [3, 1]}}
     assert DataStream.filter_shard("1", "3") == {"_id": {"$mod": [3, 1]}}
 
 
-def test_compile_filters():
+def test_compile_filters() -> None:
     assert DataStream.compile_filters(["id(1)"]) == {"_id": "1"}
     assert DataStream.compile_filters(["id(1,2)"]) == {"_id": {"$in": ["1", "2"]}}
     with pytest.raises(ValueError):

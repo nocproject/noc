@@ -82,7 +82,7 @@ from noc.inv.models.discoveryid import DiscoveryID, MACRange
         )
     ],
 )
-def test_macs_as_ints(ranges, additional, result):
+def test_macs_as_ints(ranges, additional, result) -> None:
     r = [str(MAC(x)) for x in DiscoveryID._macs_as_ints(ranges, additional)]
     assert r == result
 
@@ -130,7 +130,7 @@ def test_macs_as_ints(ranges, additional, result):
         )
     ],
 )
-def test_macs_to_ranges(macs, result):
+def test_macs_to_ranges(macs: list[str], result: list[tuple[str, ...]]) -> None:
     imacs = [int(MAC(m)) for m in macs]
     r = [(mr.first_mac, mr.last_mac) for mr in DiscoveryID._macs_to_ranges(imacs)]
     assert r == result

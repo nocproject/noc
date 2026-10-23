@@ -43,7 +43,7 @@ from noc.core.vlanmap import process_vlan_map, process_chain
         ([20, 10], [30], [{"op": "pop"}, {"op": "swap", "vlan": 30}]),
     ],
 )
-def test_vlan_map(input, expected, rules):
+def test_vlan_map(input, expected, rules) -> None:
     output = process_vlan_map(input, rules)
     assert output == expected
 
@@ -100,6 +100,6 @@ def test_vlan_map(input, expected, rules):
         ),
     ],
 )
-def test_process_chain(input, expected, chain):
+def test_process_chain(input, expected, chain) -> None:
     output = process_chain(input, chain)
     assert output == expected

@@ -20,7 +20,7 @@ from .util import NodeCDAG, publish_service, MetricTarget
         ("key", {}, 2.0, 1.0, 2.0),
     ],
 )
-def test_key_node(op, config, x, key, expected):
+def test_key_node(op: str, config, x: float, key: float, expected) -> None:
     cdag = NodeCDAG(op, config=config)
     cdag.activate("key", key)
     cdag.activate("x", x)
@@ -32,7 +32,7 @@ def test_key_node(op, config, x, key, expected):
 
 
 @pytest.mark.parametrize(("config", "expected"), [({"value": 1}, 1), ({"value": 1.0}, 1.0)])
-def test_value_node(config, expected):
+def test_value_node(config, expected) -> None:
     cdag = NodeCDAG("value", config=config)
     assert cdag.get_node().config.value == config["value"]
     assert cdag.get_node().is_const is True
@@ -50,7 +50,7 @@ def test_value_node(config, expected):
         ("none", 1.0, None),
     ],
 )
-def test_util_node(op, x, expected):
+def test_util_node(op: str, x, expected) -> None:
     cdag = NodeCDAG(op)
     cdag.activate("x", x)
     assert cdag.get_value() == expected
@@ -70,7 +70,7 @@ LABELS = ["test"]
         ({"m1": 1, "m2": None}, {"date": TS_DATE, "ts": TS_STR, "labels": LABELS, "m1": 1}),
     ],
 )
-def test_metrics(values, expected):
+def test_metrics(values, expected) -> None:
     cdag = NodeCDAG("metrics", {"scope": "test", "spool": False})
     # Check default inputs
     node = cdag.get_node()
@@ -116,7 +116,7 @@ def test_metrics(values, expected):
         ),
     ],
 )
-def test_alarm(config, values, expected, state):
+def test_alarm(config, values: list[float], expected, state: list[bool]) -> None:
     assert len(values) == len(expected), "Broken test"
     assert len(values) == len(state), "Broken test"
     default_cfg = {
@@ -206,7 +206,7 @@ def test_alarm(config, values, expected, state):
         ),
     ],
 )
-def test_alarm_vars(config, expected):
+def test_alarm_vars(config, expected) -> None:
     default_cfg = {
         "reference": "test:1",
         "pool": "TEST",
@@ -390,7 +390,7 @@ def test_alarm_vars(config, expected):
         # ),
     ],
 )
-def test_threshold(config, values, expected, state):
+def test_threshold(config, values, expected, state: list[bool]) -> None:
     assert len(values) == len(expected), "Broken test"
     assert len(values) == len(state), "Broken test"
     default_cfg = {

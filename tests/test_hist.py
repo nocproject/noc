@@ -37,7 +37,7 @@ from noc.core.hist.base import Histogram
         ([0.001, 0.01], [0, 999, 1000, 1001, 5000, 9999, 10000, 100000], [3, 7, 8]),
     ],
 )
-def test_hist_register(config, sample, expected):
+def test_hist_register(config, sample, expected: list[int]) -> None:
     # Create histogram
     hist = Histogram(config)
     # Fill with samples
@@ -106,7 +106,7 @@ def test_hist_register(config, sample, expected):
         ),
     ],
 )
-def test_prom_metrics(config, sample, labels, expected):
+def test_prom_metrics(config, sample, labels, expected: str) -> None:
     # Create histogram
     hist = Histogram(config)
     # Fill with samples

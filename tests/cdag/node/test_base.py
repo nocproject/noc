@@ -12,7 +12,7 @@ import pytest
 from noc.core.cdag.graph import CDAG
 
 
-def test_missed_activate():
+def test_missed_activate() -> None:
     cdag = CDAG("test", {})
     node = cdag.add_node("n01", "none")
     tx = cdag.begin()
@@ -20,7 +20,7 @@ def test_missed_activate():
         tx.activate(node.name, "xxx", 1)
 
 
-def test_add_input_fail():
+def test_add_input_fail() -> None:
     cdag = CDAG("test", {})
     node = cdag.add_node("n01", "none")
     # None node has "x" input by default

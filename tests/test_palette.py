@@ -46,11 +46,11 @@ def test_tone_palette_size(colors: list[str]) -> None:
     assert len(colors) == 10
 
 
-def test_bw_palette_size():
+def test_bw_palette_size() -> None:
     assert len(BW) == 2
 
 
-def test_get_avatar_bg_color():
+def test_get_avatar_bg_color() -> None:
     n = len(AVATAR_COLORS)
     # First round
     round1 = [get_avatar_bg_color(i) for i in range(1, n + 1)]
@@ -67,7 +67,7 @@ def test_get_avatar_bg_color():
 
 
 @pytest.mark.parametrize("color", ALL_COLORS)
-def test_split_rgb(color: str):
+def test_split_rgb(color: str) -> None:
     r, g, b = split_rgb(color)
     assert color[0] == "#"
     assert color[1:3] == f"{r:02X}"
@@ -76,7 +76,7 @@ def test_split_rgb(color: str):
 
 
 @pytest.mark.parametrize("color", [c for c in ALL_COLORS if c not in FG])
-def test_get_fg_color(color: str):
+def test_get_fg_color(color: str) -> None:
     def distance(c1: tuple[int, int, int], c2: tuple[int, int, int]):
         return abs(c1[0] - c2[0]) + abs(c1[1] - c2[1]) + abs(c1[2] - c2[2])
 

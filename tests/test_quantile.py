@@ -43,20 +43,20 @@ def seq_linear(first, last, n):
         x += delta
 
 
-def test_stream_f():
+def test_stream_f() -> None:
     stream = Stream(100)
     with pytest.raises(NotImplementedError):
         stream.f(0, 100)
 
 
 @pytest.mark.parametrize(("r", "n", "expected"), [(0, 100, 0.0), (50, 100, 5.0), (100, 100, 10.0)])
-def test_low_biased_f(r, n, expected):
+def test_low_biased_f(r: int, n: int, expected: float) -> None:
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     assert stream.f(r, n) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(("r", "n", "expected"), [(0, 100, 10.0), (50, 100, 5.0), (100, 100, 0.0)])
-def test_high_biased_f(r, n, expected):
+def test_high_biased_f(r: int, n: int, expected: float) -> None:
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
     assert stream.f(r, n) == pytest.approx(expected)
 
@@ -77,12 +77,12 @@ def test_high_biased_f(r, n, expected):
         (100, 100, 2.105263),
     ],
 )
-def test_targeted_f(r, n, expected):
+def test_targeted_f(r: int, n: int, expected: float) -> None:
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     assert stream.f(r, n) == pytest.approx(expected)
 
 
-def test_targeted_f_extremums():
+def test_targeted_f_extremums() -> None:
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     n = 100
     extremums = set()
@@ -120,7 +120,7 @@ def test_targeted_f_extremums():
         (seq_linear(1.0, 0.0, 501), [0.5, 0.9, 0.95]),
     ],
 )
-def test_targeted_quantile(seq, expected):
+def test_targeted_quantile(seq, expected) -> None:
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     for sample in seq:
         stream.insert(sample)
@@ -144,7 +144,7 @@ def test_targeted_quantile(seq, expected):
         seq_linear(1.0, 0.0, 1000),
     ],
 )
-def test_low_biased_merged_width(seq):
+def test_low_biased_merged_width(seq) -> None:
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     n = 0
     for sample in seq:
@@ -168,7 +168,7 @@ def test_low_biased_merged_width(seq):
         seq_linear(1.0, 0.0, 1000),
     ],
 )
-def test_high_biased_merged_width(seq):
+def test_high_biased_merged_width(seq) -> None:
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
     n = 0
     for sample in seq:
@@ -192,7 +192,7 @@ def test_high_biased_merged_width(seq):
         seq_linear(1.0, 0.0, 1000),
     ],
 )
-def test_targeted_merged_width(seq):
+def test_targeted_merged_width(seq) -> None:
     stream = TargetedStream(100, Q_DEFAULT_TARGET)
     n = 0
     for sample in seq:
@@ -202,7 +202,7 @@ def test_targeted_merged_width(seq):
     assert stream.merged_width == n
 
 
-def test_reset():
+def test_reset() -> None:
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     # Initial
     assert not stream.samples
@@ -238,7 +238,7 @@ def test_reset():
     assert not stream.sorted
 
 
-def test_summary():
+def test_summary() -> None:
     summary = Summary(1, 3, HighBiasedStream, 100, Q_DEFAULT_EPS)
     # Check slots amount (N+1)
     assert len(summary.slots) == 4

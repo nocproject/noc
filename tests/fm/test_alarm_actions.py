@@ -46,7 +46,7 @@ def action_config(request):
     return request.param
 
 
-def test_alarm_action(alarm, action_config: ActionConfig, user):
+def test_alarm_action(alarm, action_config: ActionConfig, user) -> None:
     runner = AlarmActionRunner([Item.from_alarm(alarm=alarm)], dry_run=True)
     alarm_ctx = alarm.get_message_ctx()
     aa = ActionLog.from_request(action_config, started_at=alarm.timestamp)
@@ -112,7 +112,7 @@ def tt_action_config(request):
     return request.param
 
 
-def test_escalation_action(alarm, tt_action_config: ActionConfig, tt_system):
+def test_escalation_action(alarm, tt_action_config: ActionConfig, tt_system) -> None:
     """"""
     # Scenario 1 - escalation with no error
     # Scenario 2 - escalation with error with retry

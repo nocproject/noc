@@ -12,7 +12,7 @@ import pytest
 from noc.services.web.base.site import site
 
 
-def test_autodiscover():
+def test_autodiscover() -> None:
     site.autodiscover()
     assert site.apps
 

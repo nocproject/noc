@@ -24,7 +24,7 @@ from noc.core.fileutils import safe_rewrite, write_tempfile, temporary_file
         ("Буря мглою ", "небо кроет", "Буря мглою небо кроет"),
     ],
 )
-def test_read_write(start, tail, expected):
+def test_read_write(start: str, tail: str, expected: str) -> None:
     fn = os.path.join("/tmp", f"noc-test-fu-{int(time.time())}")
     safe_rewrite(fn, start)
     with open(fn, "a") as f:
@@ -35,7 +35,7 @@ def test_read_write(start, tail, expected):
 
 
 @pytest.mark.parametrize("text", ["Lorem ipsum dorem sit amet", "Буря мглою небо кроет"])
-def test_write_tempfile(text):
+def test_write_tempfile(text: str) -> None:
     fn = write_tempfile(text)
     assert os.path.exists(fn)
     data = Path(fn).read_text()
@@ -44,7 +44,7 @@ def test_write_tempfile(text):
 
 
 @pytest.mark.parametrize("text", ["Lorem ipsum dorem sit amet", "Буря мглою небо кроет"])
-def test_temporary_file(text):
+def test_temporary_file(text: str) -> None:
     with temporary_file(text) as fn:
         assert os.path.exists(fn)
         data = Path(fn).read_text()

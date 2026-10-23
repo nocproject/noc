@@ -42,7 +42,7 @@ from .util import NodeCDAG
         ("expdecay", {"k": 1.0}, [10], [10]),
     ],
 )
-def test_window_node(op, config, measures, expected):
+def test_window_node(op: str, config, measures, expected) -> None:
     state = {}
     cdag = NodeCDAG(op, config=config, state=state)
     for ms, exp in zip(measures, expected):
@@ -78,7 +78,7 @@ W_SEQ = [(T0 + i * 10 * NS, i) for i in range(5)]
         (3, W_SEQ, True),
     ],
 )
-def test_window_filled_ticks(min_window, data, expected):
+def test_window_filled_ticks(min_window, data, expected) -> None:
     def get_node():
         return WindowNode("n01", state=state, config={"type": "t", "min_window": min_window})
 
@@ -99,7 +99,7 @@ def test_window_filled_ticks(min_window, data, expected):
         (10, T0 + 11 * NS, W_SEQ[:1], True),
     ],
 )
-def test_window_filled_seconds(min_window, ts, data, expected):
+def test_window_filled_seconds(min_window, ts, data, expected) -> None:
     def get_node():
         return WindowNode("n01", state=state, config={"type": "s", "min_window": min_window})
 
@@ -124,7 +124,7 @@ def test_window_filled_seconds(min_window, ts, data, expected):
         (10, W_SEQ, W_SEQ),
     ],
 )
-def test_window_trim_ticks(max_window, data, expected):
+def test_window_trim_ticks(max_window, data, expected) -> None:
     def get_node():
         return WindowNode("n01", state=state, config={"type": "t", "max_window": max_window})
 
@@ -153,7 +153,7 @@ def test_window_trim_ticks(max_window, data, expected):
         (10, W_SEQ[:2], W_SEQ[:2]),
     ],
 )
-def test_window_trim_seconds(max_window, data, expected):
+def test_window_trim_seconds(max_window, data, expected) -> None:
     def get_node():
         return WindowNode("n01", state=state, config={"type": "s", "max_window": max_window})
 

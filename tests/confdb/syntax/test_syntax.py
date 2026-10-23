@@ -40,7 +40,7 @@ def get_path(path):
 
 
 @pytest.mark.parametrize("nodes", get_nodes(), ids=get_path)
-def test_wildcard_names(nodes):
+def test_wildcard_names(nodes) -> None:
     n = nodes[-1]
     if not n.token:
         assert n.name, "Wildcard without name"

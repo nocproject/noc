@@ -31,6 +31,6 @@ class Form(NOCForm):
         (None, 18, False),
     ],
 )
-def test_f(charf, intf, expected):
+def test_f(charf, intf, expected: bool) -> None:
     f = Form(data={"charf": charf, "intf": intf})
     assert f.is_valid() is expected

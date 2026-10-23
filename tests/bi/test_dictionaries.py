@@ -17,18 +17,18 @@ def dictionary(request):
     return loader[request.param]
 
 
-def test_dictionary_meta(dictionary):
+def test_dictionary_meta(dictionary) -> None:
     assert hasattr(dictionary, "_meta")
 
 
-def test_dictionary_name(dictionary):
+def test_dictionary_name(dictionary) -> None:
     assert dictionary._meta.name
 
 
-def test_dictionary_layout(dictionary):
+def test_dictionary_layout(dictionary) -> None:
     assert dictionary._meta.layout
 
 
-def test_config(dictionary):
+def test_config(dictionary) -> None:
     # @todo: Check result
     assert dictionary.get_config()

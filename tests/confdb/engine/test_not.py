@@ -21,6 +21,6 @@ from noc.core.confdb.engine.base import Engine
         ({}, "not (True() and False())", [{}]),
     ],
 )
-def test_not(input, query, output):
+def test_not(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

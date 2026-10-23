@@ -246,11 +246,11 @@ def run_job(jcls, mo, checks):
     assert not job.problems
 
 
-def test_box_basic(discovery_object):
+def test_box_basic(discovery_object) -> None:
     run_job(BoxDiscoveryJob, discovery_object, ["version", "caps", "id", "interface"])
 
 
-def test_version_vendor(discovery_object):
+def test_version_vendor(discovery_object) -> None:
     expected = get_by_path(discovery_object, "checks.version.vendor")
     if not expected:
         pytest.skip("vendor is not expected")
@@ -258,7 +258,7 @@ def test_version_vendor(discovery_object):
     assert discovery_object.vendor.code == expected
 
 
-def test_version_platform(discovery_object):
+def test_version_platform(discovery_object) -> None:
     expected = get_by_path(discovery_object, "checks.version.platform")
     if not expected:
         pytest.skip("platform is not expected")
@@ -266,7 +266,7 @@ def test_version_platform(discovery_object):
     assert discovery_object.platform.name == expected
 
 
-def test_version_version(discovery_object):
+def test_version_version(discovery_object) -> None:
     expected = get_by_path(discovery_object, "checks.version.version")
     if not expected:
         pytest.skip("version is not expected")
@@ -274,7 +274,7 @@ def test_version_version(discovery_object):
     assert discovery_object.version.version == expected
 
 
-def test_capabilities(discovery_object):
+def test_capabilities(discovery_object) -> None:
     xcaps = get_by_path(discovery_object, "checks.caps")
     if not xcaps:
         pytest.skip("caps are not expected")
@@ -284,7 +284,7 @@ def test_capabilities(discovery_object):
         assert caps[expected["name"]] == expected["value"]
 
 
-def test_id_hostname(discovery_object):
+def test_id_hostname(discovery_object) -> None:
     expected = get_by_path(discovery_object, "checks.id.hostname")
     if not expected:
         pytest.skip("hostname is not expected")
@@ -293,7 +293,7 @@ def test_id_hostname(discovery_object):
     assert d.hostname == expected
 
 
-def test_id_macs(discovery_object):
+def test_id_macs(discovery_object) -> None:
     xmacs = get_by_path(discovery_object, "checks.id.macs")
     if not xmacs:
         pytest.skip("macs are not expected")

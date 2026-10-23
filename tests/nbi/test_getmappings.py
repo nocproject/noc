@@ -128,7 +128,7 @@ from noc.services.nbi.paths.getmappings import GetMappingsAPI
         ),
     ],
 )
-def test_request(input, expected):
+def test_request(input, expected) -> None:
     if inspect.isclass(expected) and issubclass(expected, Exception):
         with pytest.raises(expected):
             GetMappingsAPI.cleaned_request(**input)

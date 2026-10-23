@@ -32,6 +32,6 @@ from noc.core.confdb.engine.base import Engine
         ({}, "Set(x=[1, 2]) and True()", [{"x": 1}, {"x": 2}]),
     ],
 )
-def test_true(input, query, output):
+def test_true(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

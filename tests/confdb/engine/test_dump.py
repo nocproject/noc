@@ -30,6 +30,6 @@ from noc.core.confdb.engine.base import Engine
         ({"x": [1, 2]}, "Dump('M3')", [{"x": 1}, {"x": 2}]),
     ],
 )
-def test_dump(input, query, output):
+def test_dump(input, query: str, output) -> None:
     e = Engine()
     assert list(e.query(query, **input)) == output

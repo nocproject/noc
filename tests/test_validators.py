@@ -38,19 +38,19 @@ from noc.core.validators import (
 @pytest.mark.parametrize(
     ("raw", "expected"), [(10, True), ("10", True), ("Ten", False), (None, False)]
 )
-def test_is_int(raw, expected):
+def test_is_int(raw, expected: bool) -> None:
     assert is_int(raw) is expected
 
 
 @pytest.mark.parametrize(
     ("raw", "expected"), [(10, True), (10.2, True), ("10.2", True), ("Ten", False), (None, False)]
 )
-def test_is_float(raw, expected):
+def test_is_float(raw, expected: bool) -> None:
     assert is_float(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [(100, True), (100000, True), (-1, False)])
-def test_is_asn(raw, expected):
+def test_is_asn(raw, expected: bool) -> None:
     assert is_asn(raw) is expected
 
 
@@ -64,7 +64,7 @@ def test_is_asn(raw, expected):
         ("192.168.a.250", False),
     ],
 )
-def test_is_ipv4(raw, expected):
+def test_is_ipv4(raw: str, expected: bool) -> None:
     assert is_ipv4(raw) is expected
 
 
@@ -86,7 +86,7 @@ def test_is_ipv4(raw, expected):
         ("1::2:3:4:5:6:7:8:9", False),
     ],
 )
-def test_is_ipv6(raw, expected):
+def test_is_ipv6(raw: str, expected: bool) -> None:
     assert is_ipv6(raw) is expected
 
 
@@ -101,7 +101,7 @@ def test_is_ipv6(raw, expected):
         ("192.168.0.0/33", False),
     ],
 )
-def test_is_ipv4_prefix(raw, expected):
+def test_is_ipv4_prefix(raw: str, expected: bool) -> None:
     assert is_ipv4_prefix(raw) is expected
 
 
@@ -116,12 +116,12 @@ def test_is_ipv4_prefix(raw, expected):
         ("192.168.0.0/32", False),
     ],
 )
-def test_is_ipv6_prefix(raw, expected):
+def test_is_ipv6_prefix(raw: str, expected: bool) -> None:
     assert is_ipv6_prefix(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("192.168.0.0/16", True), ("1::/32", True)])
-def test_is_prefix(raw, expected):
+def test_is_prefix(raw: str, expected: bool) -> None:
     assert is_prefix(raw) is expected
 
 
@@ -151,29 +151,29 @@ def test_is_prefix(raw, expected):
         ("100:b", False),
     ],
 )
-def test_is_rd(raw, expected):
+def test_is_rd(raw: str, expected: bool) -> None:
     assert is_rd(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("AS-TEST", True), ("AS100", False)])
-def test_is_as_set(raw, expected):
+def test_is_as_set(raw: str, expected: bool) -> None:
     assert is_as_set(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("test.example.com", True), ("test", False)])
-def test_is_fqdn(raw, expected):
+def test_is_fqdn(raw: str, expected: bool) -> None:
     assert is_fqdn(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("1{1,2}", True), ("1[", False)])
-def test_is_re(raw, expected):
+def test_is_re(raw: str, expected: bool) -> None:
     assert is_re(raw) is expected
 
 
 @pytest.mark.parametrize(
     ("raw", "expected"), [(1, True), (-1, False), (4095, True), (4096, False), ("g", False)]
 )
-def test_is_vlan(raw, expected):
+def test_is_vlan(raw, expected: bool) -> None:
     assert is_vlan(raw) is expected
 
 
@@ -198,31 +198,31 @@ def test_is_vlan(raw, expected):
         ("123", False),
     ],
 )
-def test_is_mac(raw, expected):
+def test_is_mac(raw, expected: bool) -> None:
     assert is_mac(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("test@example.com", True), ("test", False)])
-def test_is_email(raw, expected):
+def test_is_email(raw: str, expected: bool) -> None:
     assert is_email(raw) is expected
 
 
 @pytest.mark.parametrize(
     ("raw", "expected"), [("1.3.6.1.6.3.1.1.4.1.0", True), ("1.3.6.1.6.3.1.1.4.a.1.0", False)]
 )
-def test_is_oid(raw, expected):
+def test_is_oid(raw: str, expected: bool) -> None:
     assert is_oid(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [(".txt", True), ("txt", False)])
-def test_is_extension(raw, expected):
+def test_is_extension(raw: str, expected: bool) -> None:
     assert is_extension(raw) is expected
 
 
 @pytest.mark.parametrize(
     ("raw", "expected"), [("application/octet-stream", True), ("application", False)]
 )
-def test_is_mimetype(raw, expected):
+def test_is_mimetype(raw: str, expected: bool) -> None:
     assert is_mimetype(raw) is expected
 
 
@@ -233,16 +233,16 @@ def test_is_mimetype(raw, expected):
         ("689d99b5-419a-4411-a904-70366c8e5584x", False),
     ],
 )
-def test_is_uuid(raw, expected):
+def test_is_uuid(raw: str, expected: bool) -> None:
     assert is_uuid(raw) is expected
 
 
 @pytest.mark.parametrize(("raw", "expected"), [("5b2d0cba4575cf01ead6aa89", True)])
-def test_is_objectid(raw, expected):
+def test_is_objectid(raw: str, expected: bool) -> None:
     assert is_objectid(raw) is expected
 
 
-def test_generic_validator():
+def test_generic_validator() -> None:
     v = generic_validator(is_int, "invalid int")
     assert v(6) == 6
     with pytest.raises(ValidationError):

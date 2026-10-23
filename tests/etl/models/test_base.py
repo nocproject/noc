@@ -31,5 +31,5 @@ class Pile(BaseModel):
     ("model", "expected"),
     [(Color, {}), (Pile, {"parent": "pile", "color": "color", "color2": "color"})],
 )
-def test_mapped_fields(model: BaseModel, expected: dict[str, str]):
+def test_mapped_fields(model: BaseModel, expected: dict[str, str]) -> None:
     assert model.get_mapped_fields() == expected

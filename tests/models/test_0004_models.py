@@ -28,11 +28,11 @@ def get_fields():
 @pytest.mark.parametrize(
     ("model_id", "field_name", "field"), [x for x in get_fields() if isinstance(x[2], BooleanField)]
 )
-def test_boolean_defaults(model_id, field_name, field):
+def test_boolean_defaults(model_id, field_name, field) -> None:
     assert field.default is not None
     assert field.default != NOT_PROVIDED, "BooleanField default must be set to either True or False"
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_tucked_pants(model):
+def test_tucked_pants(model) -> None:
     assert hasattr(model, "_tucked_pants"), "Model must be subclass of NOCModel"

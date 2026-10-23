@@ -76,7 +76,7 @@ def test_string_parameter_none() -> None:
     assert config.string is None
 
 
-def test_secret_parameter():
+def test_secret_parameter() -> None:
     class Config(BaseConfig):
         secret = SecretParameter()
 
@@ -85,7 +85,7 @@ def test_secret_parameter():
     assert config.secret == "password"
 
 
-def test_secret_parameter_none():
+def test_secret_parameter_none() -> None:
     class Config(BaseConfig):
         secret = SecretParameter()
 
@@ -93,7 +93,7 @@ def test_secret_parameter_none():
     assert config.secret is None
 
 
-def test_secret_parameter_defaults():
+def test_secret_parameter_defaults() -> None:
     class Config(BaseConfig):
         secret = SecretParameter(default="password")
 
@@ -101,7 +101,7 @@ def test_secret_parameter_defaults():
     assert config.secret == "password"
 
 
-def test_uuid_parameter():
+def test_uuid_parameter() -> None:
     class Config(BaseConfig):
         installation_id = UUIDParameter()
 
@@ -112,7 +112,7 @@ def test_uuid_parameter():
         config.installation_id = "xxxxxx"
 
 
-def test_uuid_parameter_none():
+def test_uuid_parameter_none() -> None:
     class Config(BaseConfig):
         installation_id = UUIDParameter()
 
@@ -120,7 +120,7 @@ def test_uuid_parameter_none():
     assert config.installation_id is None
 
 
-def test_uuid_parameter_defaults():
+def test_uuid_parameter_defaults() -> None:
     class Config(BaseConfig):
         installation_id = UUIDParameter(default="287fb1c7-dff8-495d-9c97-462a0456c817")
 
@@ -128,7 +128,7 @@ def test_uuid_parameter_defaults():
     assert config.installation_id == "287fb1c7-dff8-495d-9c97-462a0456c817"
 
 
-def test_uuid_parameter_error():
+def test_uuid_parameter_error() -> None:
     class Config(BaseConfig):
         installation_id = UUIDParameter()
 
@@ -294,7 +294,7 @@ def test_list_parameter_default() -> None:
     assert config.items == ["1", "2"]
 
 
-def test_float_parameter():
+def test_float_parameter() -> None:
     class Config(BaseConfig):
         f = FloatParameter()
         default_f = FloatParameter(default=1.0)
@@ -322,7 +322,7 @@ def test_map_parameter(value: str, expected: int) -> None:
     assert config.m == expected
 
 
-def test_map_parameter_none():
+def test_map_parameter_none() -> None:
     class Config(BaseConfig):
         m = MapParameter[int](mappings={"one": 1, "two": 2})
 
@@ -330,7 +330,7 @@ def test_map_parameter_none():
     assert config.m is None
 
 
-def test_map_parameter_default():
+def test_map_parameter_default() -> None:
     class Config(BaseConfig):
         m = MapParameter[int](mappings={"one": 1, "two": 2}, default="one")
 
@@ -394,7 +394,7 @@ def test_seconds_parameter_default(cfg: dict[str, object], expected: int) -> Non
     assert config.s == expected
 
 
-def test_bytes_parameter():
+def test_bytes_parameter() -> None:
     class Config(BaseConfig):
         s = BytesSizeParameter()
         default_s = BytesSizeParameter(default="1M")
@@ -433,7 +433,7 @@ def my_handler():
 HANDLER_PATH = f"{__name__}.my_handler"
 
 
-def test_handler():
+def test_handler() -> None:
     class Config:
         handler = HandlerParameter()
 
@@ -442,7 +442,7 @@ def test_handler():
     assert config.handler == HANDLER_PATH
 
 
-def test_handler_none():
+def test_handler_none() -> None:
     class Config:
         handler = HandlerParameter()
 
@@ -450,7 +450,7 @@ def test_handler_none():
     assert config.handler is None
 
 
-def test_handler_default():
+def test_handler_default() -> None:
     class Config:
         handler = HandlerParameter(default=HANDLER_PATH)
 

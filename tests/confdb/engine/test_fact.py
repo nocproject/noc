@@ -86,7 +86,7 @@ OUT3 = """interfaces
         ),
     ],
 )
-def test_fact(conf, input, query, out_conf, output):
+def test_fact(conf, input, query, out_conf, output) -> None:
     db = ConfDB()
     db.insert_bulk(CONF1)
     e = Engine().with_db(db)

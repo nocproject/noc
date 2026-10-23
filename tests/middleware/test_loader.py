@@ -16,7 +16,7 @@ from noc.core.script.http.middleware.base import BaseMiddleware
 @pytest.mark.parametrize(
     "name", ["urlsession", "urlrequestid", "jsonsession", "jsonrequestid", "basicauth"]
 )
-def test_loader(name):
+def test_loader(name: str) -> None:
     t = middleware_loader.get(name)
     assert t is not None
     assert t.name == name

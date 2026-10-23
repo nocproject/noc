@@ -21,7 +21,7 @@ from noc.core.hash import hash_str, hash_int, dict_hash_int, dict_hash_int_args
         ("None", b"\x1a3\x12\x943.\xcdm"),
     ],
 )
-def test_hash_str(value, expected):
+def test_hash_str(value, expected: bytes) -> None:
     assert hash_str(value) == expected
 
 
@@ -34,7 +34,7 @@ def test_hash_str(value, expected):
         ("None", 1887873096521534829),
     ],
 )
-def test_hash_int(value, expected):
+def test_hash_int(value, expected: int) -> None:
     assert hash_int(value) == expected
 
 
@@ -49,7 +49,7 @@ def test_hash_int(value, expected):
         ({"k": 1, "v": "None"}, 1975760527053142894),
     ],
 )
-def test_dict_hash_int(value, expected):
+def test_dict_hash_int(value, expected) -> None:
     assert dict_hash_int(value) == expected
 
 
@@ -64,5 +64,5 @@ def test_dict_hash_int(value, expected):
         ({"k": 1, "v": "None"}, 1975760527053142894),
     ],
 )
-def test_dict_hash_int_args(value, expected):
+def test_dict_hash_int_args(value, expected) -> None:
     assert dict_hash_int_args(**value) == expected

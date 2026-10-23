@@ -62,7 +62,7 @@ CONFIG = """{
 
 
 @pytest.mark.parametrize(("config", "out_state"), [(CONFIG, {"n04": {"value": 3.0}})])
-def test_json_factory(config, out_state):
+def test_json_factory(config, out_state) -> None:
     # Empty graph with no state
     cdag = CDAG("test", {})
     # Construct

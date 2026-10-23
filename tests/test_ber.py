@@ -13,7 +13,7 @@ from noc.core.snmp.ber import BEREncoder, BERDecoder
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"\x00", False), (b"\x01", True), (b"", False)])
-def test_decode_bool(raw, value):
+def test_decode_bool(raw: bytes, value: bool) -> None:
     decoder = BERDecoder()
     assert decoder.parse_boolean(raw) is value
 
@@ -34,7 +34,7 @@ def test_decode_bool(raw, value):
         (b"\x20\x85\x11", 0x208511),
     ],
 )
-def test_decode_int(raw, value):
+def test_decode_int(raw: bytes, value) -> None:
     decoder = BERDecoder()
     assert decoder.parse_int(raw) == value
 
@@ -49,53 +49,53 @@ def test_decode_int(raw, value):
         (b"", 0.0),
     ],
 )
-def test_decode_real(raw, value):
+def test_decode_real(raw, value) -> None:
     decoder = BERDecoder()
     assert decoder.parse_real(raw) == value
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"B", float("nan")), (b"C", float("-0"))])
-def test_decode_real_error(raw, value):
+def test_decode_real_error(raw, value) -> None:
     decoder = BERDecoder()
     with pytest.raises(Exception):
         assert decoder.parse_real(raw) == value
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"\x00\xff\x84", b"000000001111111110000100")])
-def test_decode_p_bitstring(raw, value):
+def test_decode_p_bitstring(raw: bytes, value: bytes) -> None:
     decoder = BERDecoder()
     assert decoder.parse_p_bitstring(raw) == value
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"test", b"test"), (b"public", b"public"), (b"", b"")])
-def test_decode_p_octetstring(raw, value):
+def test_decode_p_octetstring(raw: bytes, value: bytes) -> None:
     decoder = BERDecoder()
     assert decoder.parse_p_octetstring(raw) == value
 
 
 @pytest.mark.xfail
-def test_decode_p_t61_string():
+def test_decode_p_t61_string() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_c_octetstring():
+def test_decode_c_octetstring() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_c_t61_string():
+def test_decode_c_t61_string() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.parametrize("raw", [b"\x00"])
-def test_decode_null(raw):
+def test_decode_null(raw: bytes) -> None:
     decoder = BERDecoder()
     assert decoder.parse_null(raw) is None
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"\xc0\xa8\x00\x01", "192.168.0.1")])
-def test_decode_a_ipaddress(raw, value):
+def test_decode_a_ipaddress(raw: bytes, value: str) -> None:
     decoder = BERDecoder()
     assert decoder.parse_a_ipaddress(raw) == value
 
@@ -103,33 +103,33 @@ def test_decode_a_ipaddress(raw, value):
 @pytest.mark.parametrize(
     ("raw", "value"), [(b"+\x06\x01\x02\x01\x01\x05\x00", "1.3.6.1.2.1.1.5.0")]
 )
-def test_decode_p_oid(raw, value):
+def test_decode_p_oid(raw: bytes, value: str) -> None:
     decoder = BERDecoder()
     assert decoder.parse_p_oid(raw) == value
 
 
 @pytest.mark.xfail
-def test_decode_compressed_oid():
+def test_decode_compressed_oid() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_sequence():
+def test_decode_sequence() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_implicit():
+def test_decode_implicit() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_set():
+def test_decode_set() -> None:
     raise NotImplementedError()
 
 
 @pytest.mark.xfail
-def test_decode_utctime():
+def test_decode_utctime() -> None:
     raise NotImplementedError()
 
 
@@ -141,7 +141,7 @@ def test_decode_utctime():
         (b"\x44\x07\x9f\x78\x04\x42\xf6\x00\x00", 123.0),
     ],
 )
-def test_decode_float(raw, value):
+def test_decode_float(raw: bytes, value: float) -> None:
     decoder = BERDecoder()
     assert decoder.parse_tlv(raw)[0] == value
 
@@ -154,13 +154,13 @@ def test_decode_float(raw, value):
         (b"\x44\x0b\x9f\x79\x08\x40\x5e\xc0\x00\x00\x00\x00\x00", 123.0),
     ],
 )
-def test_decode_double(raw, value):
+def test_decode_double(raw: bytes, value: float) -> None:
     decoder = BERDecoder()
     assert decoder.parse_tlv(raw)[0] == value
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"\x44\x81\x06\x04\x04test", b"test")])
-def test_decode_opaque(raw, value):
+def test_decode_opaque(raw: bytes, value: bytes) -> None:
     decoder = BERDecoder()
     assert decoder.parse_tlv(raw)[0] == value
 
@@ -168,7 +168,7 @@ def test_decode_opaque(raw, value):
 @pytest.mark.parametrize(
     ("tag", "primitive", "data", "value"), [(0x4, True, b"test", b"\x04\x04test")]
 )
-def test_encode_tlv(tag, primitive, data, value):
+def test_encode_tlv(tag: int, primitive: bool, data: bytes, value: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_tlv(tag, primitive, data) == value
 
@@ -177,7 +177,7 @@ def test_encode_tlv(tag, primitive, data, value):
     ("raw", "value"),
     [(b"test", b"\x04\x04test"), (b"public", b"\x04\x06public"), (b"", b"\x04\x00")],
 )
-def test_encode_octet_string(raw, value):
+def test_encode_octet_string(raw: bytes, value: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_octet_string(raw) == value
 
@@ -196,7 +196,7 @@ def test_encode_octet_string(raw, value):
         (-129, b"\x02\x02\xff\x7f"),
     ],
 )
-def test_encode_int(value, raw):
+def test_encode_int(value, raw: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_int(value) == raw
 
@@ -212,13 +212,13 @@ def test_encode_int(value, raw):
         (float("1.5"), b"\t\t0x0315E-1"),
     ],
 )
-def test_encode_real(raw, value):
+def test_encode_real(raw, value) -> None:
     encoder = BEREncoder()
     assert encoder.encode_real(raw) == value
 
 
 @pytest.mark.parametrize("value", [b"\x05\x00"])
-def test_encode_null(value):
+def test_encode_null(value: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_null() == value
 
@@ -244,7 +244,7 @@ def test_encode_null(value):
         ("1.3.6.4160759936", b"\x06\x07+\x06\x8f\xc0\x80\xd1\x00"),
     ],
 )
-def test_encode_oid(oid, raw):
+def test_encode_oid(oid: str, raw: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_oid(oid) == raw
 
@@ -265,7 +265,7 @@ def test_encode_oid(oid, raw):
         ),
     ],
 )
-def test_encode_sequence(data, result):
+def test_encode_sequence(data, result: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_sequence(data) == result
 
@@ -289,6 +289,6 @@ def test_encode_sequence(data, result):
         ),
     ],
 )
-def test_encode_choice(tag, data, result):
+def test_encode_choice(tag: int, data, result: bytes) -> None:
     encoder = BEREncoder()
     assert encoder.encode_choice(tag, data) == result

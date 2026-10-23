@@ -42,7 +42,7 @@ nodes:
 
 
 @pytest.mark.parametrize(("config", "out_state"), [(CONFIG, {"n04": {"value": 3.0}})])
-def test_yaml_factory(config, out_state):
+def test_yaml_factory(config, out_state) -> None:
     # Empty graph with no state
     cdag = CDAG("test", {})
     # Apply config

@@ -55,5 +55,5 @@ DEFAULT_OID = "1.3.6"
         (get_string_renderer("text"), None, b"123", "text"),
     ],
 )
-def test_renderer(renderer, oid, value, expected):
+def test_renderer(renderer, oid, value, expected) -> None:
     assert renderer(oid or DEFAULT_OID, value) == expected

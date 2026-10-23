@@ -49,12 +49,12 @@ class MyModel(Model):
         )
     ],
 )
-def test_to_json(data, expected):
+def test_to_json(data, expected) -> None:
     assert MyModel.to_json(**data) == expected
 
 
 @pytest.mark.xfail
-def test_mymodel_to_python():
+def test_mymodel_to_python() -> None:
     # Check TSV conversion
     today = datetime.date.today()
     ch_data = MyModel.to_python([today.isoformat(), "Test", "1:'First',2:'Second'"])

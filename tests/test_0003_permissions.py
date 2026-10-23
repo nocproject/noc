@@ -15,7 +15,7 @@ from noc.services.web.base.site import site
 
 
 @pytest.mark.fatal
-def test_permissions(database):
+def test_permissions(database) -> None:
     site.service = get_service()
     Permission.sync()
     assert Permission.objects.count() > 0

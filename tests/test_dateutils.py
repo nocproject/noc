@@ -15,7 +15,7 @@ import pytest
 from noc.core.dateutils import hits_in_range
 
 
-def test_hits_in_range():
+def test_hits_in_range() -> None:
     start = datetime.datetime(2017, 9, 1)
     stop = datetime.datetime(2017, 9, 2)
     t0 = start - datetime.timedelta(hours=2)
@@ -64,6 +64,6 @@ def total_seconds_data(request):
     return request.param
 
 
-def test_total_seconds(total_seconds_data):
+def test_total_seconds(total_seconds_data) -> None:
     d, s = total_seconds_data
     assert d.total_seconds() == s

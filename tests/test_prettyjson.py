@@ -19,13 +19,13 @@ from noc.core.prettyjson import to_json
         (["key1value1key2value2key3value3"], False),
     ],
 )
-def test_prettyjson(config, expected):
+def test_prettyjson(config, expected: bool) -> None:
     assert to_json(config).startswith("{\n") == expected
 
 
 @pytest.mark.parametrize(
     ("config", "expected"), [(("key1", "value1", "key2", "value2", "key3", "value3"), True)]
 )
-def test_prettyjson_error(config, expected):
+def test_prettyjson_error(config: tuple[str, ...], expected: bool) -> None:
     with pytest.raises(TypeError):
         assert to_json(config).startswith("{\n") == expected

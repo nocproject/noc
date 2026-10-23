@@ -12,7 +12,7 @@ import polars as pl
 from noc.core.reporter.band import Band, ROOT_BAND, DataSet
 
 
-def test_get_children():
+def test_get_children() -> None:
     root = create_band_data()
 
     band1 = root.get_child_by_name("Band1")
@@ -25,7 +25,7 @@ def test_get_children():
     assert band1.get_child_by_name("Band14") is not None
 
 
-def test_find_band_recursively():
+def test_find_band_recursively() -> None:
     root = create_band_data()
 
     f_root = root.find_band_recursively(ROOT_BAND)
@@ -39,7 +39,7 @@ def test_find_band_recursively():
     assert band11.full_name == "Band1.Band11"
 
 
-def test_get_band_data():
+def test_get_band_data() -> None:
     root = create_band_data()
 
     band11 = root.find_band_recursively("Band11")

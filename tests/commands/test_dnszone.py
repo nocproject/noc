@@ -34,5 +34,5 @@ from noc.commands.dnszone import Command
         ("5D2h1", 439201),
     ],
 )
-def test_ttl(value, expected):
+def test_ttl(value: str, expected: int) -> None:
     assert Command.parse_ttl(value) == expected

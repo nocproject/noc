@@ -30,21 +30,21 @@ def model(request):
     yield helper.get_object(request.param)
 
 
-def test_uuid_unique(model):
+def test_uuid_unique(model) -> None:
     assert helper.get_uuid_count(model.uuid) == 1, "UUID %s is not unique" % model.uuid
 
 
-def test_name_unique(model):
+def test_name_unique(model) -> None:
     assert helper.get_name_count(model.name) == 1, "Name '%s' is not unique" % model.name
 
 
-def test_cr_context(model):
+def test_cr_context(model) -> None:
     if model.connection_rule is None:
         pytest.skip("No connection rule")
     assert model.cr_context is not None, "'cr_context' must be filled"
 
 
-def test_connection_gender(model):
+def test_connection_gender(model) -> None:
     fail = []
     for c in model.connections:
         if c.gender not in c.type.genders:
@@ -54,7 +54,7 @@ def test_connection_gender(model):
         pytest.fail("\n".join(fail))
 
 
-def test_data_format(model):
+def test_data_format(model) -> None:
     if model.data is not None:
         assert isinstance(model.data, list), 'Object model field "data" must have type "list"'
 

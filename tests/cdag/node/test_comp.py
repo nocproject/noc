@@ -32,7 +32,7 @@ from .util import NodeCDAG
         ("ne", {"epsilon": 0.01}, 1.0, 1.1, 1),
     ],
 )
-def test_comp_node(op, conf, x, y, expected):
+def test_comp_node(op: str, conf, x, y, expected) -> None:
     cdag = NodeCDAG(op, config=conf)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

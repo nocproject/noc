@@ -128,7 +128,7 @@ class MyTelnetStream(TelnetStream):
         ],
     ],
 )
-def test_telnet_scenario(scenario):
+def test_telnet_scenario(scenario: list[tuple[bytes, ...]]) -> None:
     stream = MyTelnetStream()
     for feed, expected, sent_expected in scenario:
         with IOLoopContext() as loop:
@@ -148,10 +148,10 @@ def test_telnet_scenario(scenario):
         (b"12345\xff", b"12345\xff\xff"),
     ],
 )
-def test_telnet_escape(data, expected):
+def test_telnet_escape(data: bytes, expected: bytes) -> None:
     assert MyTelnetStream().escape(data) == expected
 
 
 @pytest.mark.parametrize(("cmd", "opt", "expected"), [])
-def test_telnet_iac_repr(cmd, opt, expected):
+def test_telnet_iac_repr(cmd, opt, expected) -> None:
     assert MyTelnetStream().iac_repr(cmd, opt) == expected

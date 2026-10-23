@@ -58,5 +58,5 @@ from noc.core.snmp.util import render_tc
         ),
     ],
 )
-def test_render_tc(value, base_type, format, expected):
+def test_render_tc(value, base_type: str, format, expected: str) -> None:
     assert render_tc(value, base_type, format) == expected

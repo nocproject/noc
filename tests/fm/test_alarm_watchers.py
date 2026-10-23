@@ -37,7 +37,7 @@ def alarm_class():
     return get_alarm_class_mock(name="System | Reboot")
 
 
-def test_watchers_options(alarm):
+def test_watchers_options(alarm) -> None:
     """
     Test watch API:
     * Add Watch
@@ -61,7 +61,7 @@ def test_watchers_options(alarm):
         alarm.add_watch(Effect.CLEAR_ALARM, key="", clear_only=True)
 
 
-def test_watchers_stop_clear(alarm):
+def test_watchers_stop_clear(alarm) -> None:
     """Clear Alarm watchers"""
     assert alarm.allow_clear is True
     alarm.add_watch(Effect.STOP_CLEAR, key="")
@@ -73,7 +73,7 @@ def test_watchers_stop_clear(alarm):
     assert r.status == "C"
 
 
-def test_subscribe(alarm, user):
+def test_subscribe(alarm, user) -> None:
     """Subscribe method"""
     alarm.subscribe(user)
     w = alarm.watchers[0]
@@ -83,7 +83,7 @@ def test_subscribe(alarm, user):
     assert len(alarm.watchers) == 0
 
 
-def test_escalation(alarm):
+def test_escalation(alarm) -> None:
     """Escalate method"""
     tt_id_1 = "Stub:1"
     alarm.escalate(tt_id_1)
@@ -104,7 +104,7 @@ def test_escalation(alarm):
     assert not w.immediate
 
 
-def test_wait_tt(alarm):
+def test_wait_tt(alarm) -> None:
     """
     Wait TT Scenario:
     * escalate with wait_tt param, set Disable Clear Alarm
@@ -118,14 +118,14 @@ def test_wait_tt(alarm):
     assert r.status == "C"
 
 
-def test_alarm_clear_recursion(alarm):
+def test_alarm_clear_recursion(alarm) -> None:
     """Test run CLEAR_ALARM watch on clear_alarm method"""
     alarm.add_watch(Effect.CLEAR_ALARM, key="")
     r = alarm.clear_alarm("Test Clear", dry_run=True)
     assert r.status == "C"
 
 
-def test_alarm_after(alarm):
+def test_alarm_after(alarm) -> None:
     """
     After watchers. Execute watcher after deadline
     """
@@ -148,7 +148,7 @@ def test_alarm_after(alarm):
     assert alarm.wait_ts is None
 
 
-def test_rewrite_alarm_class(alarm, alarm_class):
+def test_rewrite_alarm_class(alarm, alarm_class) -> None:
     """
     Test rewrite AlarmClass
     """

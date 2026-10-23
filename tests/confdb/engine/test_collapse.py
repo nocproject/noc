@@ -57,7 +57,7 @@ RESULT_JOINRANGE = """interfaces
         (CONF1, "Collapse('interfaces', X, 'tagged-vlans', joinrange=',')", RESULT_JOINRANGE),
     ],
 )
-def test_collapse_join(conf, query, result):
+def test_collapse_join(conf, query, result) -> None:
     e = Engine()
     e.insert_bulk(CONF1)
     list(e.query(query))

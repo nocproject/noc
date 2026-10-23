@@ -52,7 +52,7 @@ EMPTY_CONF = []
         ),
     ],
 )
-def test_match(conf, query, output):
+def test_match(conf, query, output) -> None:
     db = ConfDB()
     db.insert_bulk(conf)
     e = Engine().with_db(db)

@@ -28,7 +28,7 @@ CONFIG = GraphConfig(
 
 
 @pytest.mark.parametrize(("config", "out_state"), [(CONFIG, {"n04": {"value": 3.0}})])
-def test_config_factory(config, out_state):
+def test_config_factory(config, out_state) -> None:
     # Empty graph with no state
     cdag = CDAG("test", {})
     # Apply config
@@ -65,7 +65,7 @@ MISSED_CONFIG = GraphConfig(
 )
 
 
-def test_config_missed_node():
+def test_config_missed_node() -> None:
     cdag = CDAG("test", {})
     # Apply config
     factory = ConfigCDAGFactory(cdag, MISSED_CONFIG)
@@ -105,7 +105,7 @@ MATCHERS_CONFIG = GraphConfig(
         ({"allow_sum": True, "allow_state": True}, {"n01", "n02", "n03", "n04"}),
     ],
 )
-def test_config_matchers(ctx, expected_nodes):
+def test_config_matchers(ctx, expected_nodes: set[str]) -> None:
     cdag = CDAG("test", {})
     # Apply config
     factory = ConfigCDAGFactory(cdag, MATCHERS_CONFIG, ctx=ctx)

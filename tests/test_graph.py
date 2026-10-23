@@ -39,7 +39,7 @@ from noc.core.graph.nexthop import iter_next_hops
         ([(1, 2), (3, 4)], 1, 4, []),
     ],
 )
-def test_next_hop(edges, source, target, expected):
+def test_next_hop(edges: list[tuple[int, ...]], source: int, target: int, expected) -> None:
     # Build graph
     G = nx.Graph()
     for u, v in edges:

@@ -29,7 +29,7 @@ CMIBS = config.noc_base / "cmibs"
         ("CISCO-VLAN-MEMBERSHIP-MIB", "cisco-vlan-membership-mib"),
     ],
 )
-def test_mib_to_modname(input, expected):
+def test_mib_to_modname(input: str, expected: str) -> None:
     assert mib.mib_to_modname(expected)
 
 
@@ -41,7 +41,7 @@ def test_mib_to_modname(input, expected):
         (("SNMPv2-MIB::sysDescr", 0), "1.3.6.1.2.1.1.1.0"),
     ],
 )
-def test_mib_lookup(input, expected):
+def test_mib_lookup(input, expected: str) -> None:
     assert mib[input] == expected
 
 
@@ -64,7 +64,7 @@ def clean_mib():
 
 
 @pytest.mark.parametrize("name", ["IF-MIB::ifDescr", "SNMPv2-MIB::sysObjectID"])
-def test_mib_loading(clean_mib, name):
+def test_mib_loading(clean_mib, name: str) -> None:
     mib = clean_mib
     mib_name = name.split("::", 1)[0]
     # Check MIB is missed
@@ -84,7 +84,7 @@ def test_mib_loading(clean_mib, name):
         (("SNMPv2-MIB::sysDescr", 0), "1.3.6.1.2.1.1.1.0"),
     ],
 )
-def test_implicit_mib_loading(clean_mib, name, oid):
+def test_implicit_mib_loading(clean_mib, name, oid: str) -> None:
     # Check cache is clean
     if isinstance(name, tuple):
         mib_name = name[0].split("::", 1)[0]
@@ -101,7 +101,7 @@ def test_implicit_mib_loading(clean_mib, name, oid):
 @pytest.mark.parametrize(
     "name", ["IF-MIBX::WUT", ("IF-MIBX::WUT", 10), "IF-MIB::WUT", ("IF-MIB::WUT", 10)]
 )
-def test_invalid_name(clean_mib, name):
+def test_invalid_name(clean_mib, name) -> None:
     mib = clean_mib
     with pytest.raises(KeyError):
         assert mib[name]
@@ -162,7 +162,7 @@ def test_invalid_name(clean_mib, name):
         ),
     ],
 )
-def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
+def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected) -> None:
     mib = clean_mib
     mib.load_mib(mib_name)
     assert mib.render(oid, value, display_hints) == expected
@@ -185,5 +185,5 @@ def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
         )
     ],
 )
-def test_fm_mib(oids, expected):
+def test_fm_mib(oids: dict[str, str], expected: dict[str, str]) -> None:
     assert MIB.resolve_vars(oids) == expected

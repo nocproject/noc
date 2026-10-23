@@ -24,7 +24,7 @@ from noc.core.expr import get_vars, get_fn
         ("(delta * 8) / time_delta", ["delta", "time_delta"]),
     ],
 )
-def test_get_vars(expr, expected):
+def test_get_vars(expr: str, expected) -> None:
     vars = get_vars(expr)
     assert vars == expected
 
@@ -39,7 +39,7 @@ def test_get_vars(expr, expected):
         ("(delta * 8) / time_delta", {"delta": 100, "time_delta": 10}, 80),
     ],
 )
-def test_get_fn(expr, args, expected):
+def test_get_fn(expr: str, args, expected: int) -> None:
     fn = get_fn(expr)
     value = fn(**args)
     assert value == expected

@@ -10,7 +10,7 @@ from noc.core.script.http.base import HTTP
 from noc.core.script.http.middleware.base import middleware_loader
 
 
-def test_basicauth():
+def test_basicauth() -> None:
     http = HTTP(None)
     mw_cls = middleware_loader.get("basicauth")
     middleware = mw_cls(http, user="user", password="password")

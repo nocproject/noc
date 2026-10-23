@@ -470,7 +470,7 @@ from .util import NodeCDAG
         ),
     ],
 )
-def test_probe(unit, data):
+def test_probe(unit: str, data) -> None:
     state = {}
     is_delta = False
     if "," in unit:

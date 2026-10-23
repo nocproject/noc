@@ -23,7 +23,7 @@ from noc.core.script.http.middleware.base import middleware_loader
         ({}, {"session_param": "sid"}, "12345", {"sid": "12345"}),
     ],
 )
-def test_jsonsession(body, config, session_id, expected):
+def test_jsonsession(body, config, session_id, expected) -> None:
     http = HTTP(None)
     http.set_session_id(session_id)
     mw_cls = middleware_loader.get("jsonsession")

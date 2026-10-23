@@ -76,7 +76,7 @@ interface Gi0/2
         ("B", SRC_B2, DELTA_B2, RESULT_B2),
     ],
 )
-def test_apply_delta(dtype, src, delta, result):
+def test_apply_delta(dtype, src, delta, result) -> None:
     assert GridVCS.apply_delta(dtype, src, delta) == result
 
 
@@ -94,10 +94,10 @@ RESULT_z0 = (
 
 
 @pytest.mark.parametrize(("ctype", "src", "result"), [("z", SRC_z0, RESULT_z0)])
-def test_compress(ctype, src, result):
+def test_compress(ctype, src, result) -> None:
     assert GridVCS.compress(src, method=ctype) == result
 
 
 @pytest.mark.parametrize(("ctype", "src", "result"), [("z", SRC_z0, RESULT_z0)])
-def test_decompress(ctype, src, result):
+def test_decompress(ctype, src, result) -> None:
     assert GridVCS.decompress(result, method=ctype) == src

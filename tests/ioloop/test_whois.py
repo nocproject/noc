@@ -13,7 +13,7 @@ from noc.core.ioloop.whois import whois
 
 
 @pytest.mark.parametrize("domain", ["getnoc.com", "nocproject.org"])
-def test_whois_domain(domain):
+def test_whois_domain(domain: str) -> None:
     data = dict(whois(domain))
     assert "domain" in data
     assert data["domain"].lower() == domain.lower()

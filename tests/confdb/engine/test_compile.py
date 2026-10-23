@@ -22,20 +22,20 @@ from noc.core.confdb.engine.base import Engine
         "Set(x=1, y=2) and True()",
     ],
 )
-def test_valid(query):
+def test_valid(query: str) -> None:
     e = Engine()
     e.compile(query)
 
 
 @pytest.mark.parametrize("query", ["True("])
-def test_invalid(query):
+def test_invalid(query: str) -> None:
     e = Engine()
     with pytest.raises(SyntaxError):
         e.compile(query)
 
 
 @pytest.mark.parametrize("query", ["True()", "True() and True()"])
-def test_prepared_query(query):
+def test_prepared_query(query: str) -> None:
     e = Engine()
     q = e.compile(query)
     e.query(q)

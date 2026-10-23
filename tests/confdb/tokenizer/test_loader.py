@@ -14,7 +14,7 @@ from noc.core.confdb.tokenizer.base import BaseTokenizer
 
 
 @pytest.mark.parametrize("name", ["ini", "line", "context", "indent", "curly", "routeros"])
-def test_loader(name):
+def test_loader(name: str) -> None:
     t = tokenizer_loader.get(name)
     assert t is not None
     assert t.name == name

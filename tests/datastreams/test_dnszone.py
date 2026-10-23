@@ -80,7 +80,7 @@ def find_record(records, name, type, content):
         ),
     ],
 )
-def test_data(zone_id, masters, slaves, records):
+def test_data(zone_id: int, masters: list[str], slaves, records: list[tuple[str, ...]]) -> None:
     data = DNSZoneDataStream().get_object(zone_id)
     assert data
     assert data.get("name")
@@ -107,7 +107,7 @@ def test_data(zone_id, masters, slaves, records):
     assert meta["servers"] == masters + slaves
 
 
-def test_filter_server():
+def test_filter_server() -> None:
     q = DNSZoneDataStream.filter_server("ns1.example.com")
     assert q
     assert "meta.servers" in q

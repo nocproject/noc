@@ -21,7 +21,7 @@ from noc.core.colors import get_colors
         (4, ["#ff0000", "#00ffff", "#7fff00", "#7f00ff"]),
     ],
 )
-def test_color(config, expected):
+def test_color(config: int, expected: list[str]) -> None:
     """
     :return:
     """

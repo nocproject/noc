@@ -13,7 +13,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize("value", [1, 1.0, 5])
-def test_state_node(value):
+def test_state_node(value) -> None:
     state = {}
     cdag = NodeCDAG("state", state=state)
     cdag.activate("x", value)

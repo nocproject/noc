@@ -24,7 +24,7 @@ def user():
     return User(username="test User", first_name="Test")
 
 
-def test_base_severity(alarm):
+def test_base_severity(alarm) -> None:
     """
     Change based severity
     """
@@ -34,7 +34,7 @@ def test_base_severity(alarm):
     assert severity == 2000
 
 
-def test_limit_severity_severity(alarm):
+def test_limit_severity_severity(alarm) -> None:
     """
     Test Limit min/max severity
     Set User Severity
@@ -48,7 +48,7 @@ def test_limit_severity_severity(alarm):
     assert severity == 1500
 
 
-def test_severity_policies(alarm):
+def test_severity_policies(alarm) -> None:
     """
     Test severity policies
     """

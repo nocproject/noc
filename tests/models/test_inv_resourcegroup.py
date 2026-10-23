@@ -9,6 +9,6 @@
 from noc.inv.models.resourcegroup import ResourceGroup
 
 
-def test_clean_leagacy_id():
+def test_clean_leagacy_id() -> None:
     left = ResourceGroup._get_collection().find_one({"_legacy_id": {"$exists": True}})
     assert left is None, "_legacy_id field has been left by migration"

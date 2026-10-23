@@ -74,7 +74,7 @@ from noc.core.datastream.base import DataStream
         ),
     ],
 )
-def test_ds_clean_meta(meta, current_meta, expected):
+def test_ds_clean_meta(meta, current_meta, expected) -> None:
     assert DataStream.clean_meta(meta, current_meta) == expected
 
 
@@ -108,5 +108,5 @@ def test_ds_clean_meta(meta, current_meta, expected):
         ),
     ],
 )
-def test_ds_is_moved(meta, meta_filter, expected):
+def test_ds_is_moved(meta, meta_filter, expected: bool) -> None:
     assert DataStream.is_moved(meta, meta_filter) == expected

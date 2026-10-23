@@ -13,7 +13,7 @@ from noc.models import get_model_id, get_model, iter_model_id
 from .util import get_models, get_documents
 
 
-def test_iter_model_id():
+def test_iter_model_id() -> None:
     """
     Check iter_model_id is not empty
     """
@@ -21,7 +21,7 @@ def test_iter_model_id():
 
 
 @pytest.mark.parametrize("model_id", list(iter_model_id()))
-def test_model_loading(model_id):
+def test_model_loading(model_id) -> None:
     """
     Check model referred by id can be loaded
     :return:
@@ -31,7 +31,7 @@ def test_model_loading(model_id):
 
 
 @pytest.mark.parametrize("model_id", list(iter_model_id()))
-def test_model_id(model_id):
+def test_model_id(model_id) -> None:
     """
     Check model has same model_id as referred
     """
@@ -42,39 +42,39 @@ def test_model_id(model_id):
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_meta(model):
+def test_model_meta(model) -> None:
     assert model._meta
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_app_label(model):
+def test_model_app_label(model) -> None:
     assert model._meta.app_label
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_db_table(model):
+def test_model_db_table(model) -> None:
     assert model._meta.db_table
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_meta(model):
+def test_document_meta(model) -> None:
     assert model._meta
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_allow_inheritance(model):
+def test_document_allow_inheritance(model) -> None:
     assert model._meta.get("allow_inheritance") is None, (
         "'allow_inheritance' is obsolete and must not be used"
     )
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_strict(model):
+def test_document_strict(model) -> None:
     assert not model._meta.get("strict", True), "Document must be declared as {'strict': False}"
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_auto_create_index(model):
+def test_document_auto_create_index(model) -> None:
     assert not model._meta.get("auto_create_index", True), (
         "Index autocreation must not be used (Use auto_create_index: False)"
     )

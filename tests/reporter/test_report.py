@@ -24,7 +24,7 @@ from noc.core.mongo.connection import connect
         ("report_object_summary_profile", {"report_type": "profile"}),
     ],
 )
-def test_report(report, params):
+def test_report(report: str, params) -> None:
     path = os.path.realpath(os.path.dirname(__file__))
     with open(os.path.join(path, f"{report}.yml"), "rb") as f:
         cfg = yaml.safe_load(f)

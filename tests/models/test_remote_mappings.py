@@ -38,7 +38,7 @@ def object_mappings():
     return get_object_caps_mock()
 
 
-def test_set_mappings(object_mappings):
+def test_set_mappings(object_mappings) -> None:
     """"""
     rs = RemoteSystem(id=bson.ObjectId(), name="External")
     for _ in range(1, 4):
@@ -47,7 +47,7 @@ def test_set_mappings(object_mappings):
     assert object_mappings.get_mappings() == {rs.name: "1000"}
 
 
-def test_update_mappings(object_mappings):
+def test_update_mappings(object_mappings) -> None:
     """"""
     rs1 = RemoteSystem(id=bson.ObjectId(), name="External")
     rs2 = RemoteSystem(id=bson.ObjectId(), name="Internal")
@@ -63,7 +63,7 @@ def test_update_mappings(object_mappings):
     assert object_mappings.get_mappings() == {}
 
 
-def test_master_mappings(object_mappings):
+def test_master_mappings(object_mappings) -> None:
     """"""
     rs1 = RemoteSystem(id=bson.ObjectId(), name="External")
     rs2 = RemoteSystem(id=bson.ObjectId(), name="Internal")
