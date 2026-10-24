@@ -34,7 +34,7 @@ dependencies = [
   "geojson==3.2.0",
   "geopy==2.4.1",
   "granian==2.8.4",
-  "gufo_noc_speedup==0.1.0",
+  "gufo_noc_speedup==0.1.1",
   "gufo-blob==0.2.0",
   "gufo-http==0.7.0",
   "gufo-loader==2.0.1",
