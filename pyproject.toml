@@ -41,7 +41,7 @@ dependencies = [
   "gufo-ping==0.7.0",
   "gufo-snmp==0.12.0",
   "gufo-traceroute==0.2.0",
-  "hiredis==3.1.0",
+  "hiredis==3.5.0",
   "Jinja2==3.1.6",
   "ldap3==2.10.2.rc2",
   "manhole==1.8.1",
