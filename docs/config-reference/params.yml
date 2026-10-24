@@ -777,8 +777,6 @@ params:
     default: /var/lib/noc/mibs/
   path.npkg_root:
     default: /var/lib/noc/var/pkg
-  path.pm_templates:
-    default: templates/ddash/
   path.repo:
     default: /var/repo
   path.smidump: {}

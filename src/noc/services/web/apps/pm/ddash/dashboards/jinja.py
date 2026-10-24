@@ -6,7 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from contextlib import ExitStack
+from importlib.resources import as_file, files
+from pathlib import Path
 
 # Third-party modules
 from jinja2 import Environment, FileSystemLoader
@@ -15,6 +17,8 @@ import demjson3
 # NOC modules
 from noc.config import config
 from .base import BaseDashboard
+
+PM_TEMPLATES = files("noc.services.web.apps.pm.ddash").joinpath("templates")
 
 
 class JinjaDashboard(BaseDashboard):
@@ -30,14 +34,17 @@ class JinjaDashboard(BaseDashboard):
     def render(self):
         context = self.get_context()
         self.logger.info(f"Context with data: {context}")
-        pm_template_path = []
+        template_paths = []
         for p in config.get_customized_paths(prefer_custom=True):
-            if p:
-                pm_template_path.append(os.path.join(p, "templates/ddash/"))
-            else:
-                pm_template_path.append(config.path.pm_templates)
-        j2_env = Environment(loader=FileSystemLoader(pm_template_path))
-        j2_env.globals["noc_db_metrics"] = config.clickhouse.db
-        tmpl = j2_env.get_template(self.template)
-        data = tmpl.render(context)
+            if not p:
+                continue
+            custom_templates = Path(p) / "services" / "web" / "apps" / "pm" / "ddash" / "templates"
+            if custom_templates.is_dir():
+                template_paths.append(str(custom_templates))
+        with ExitStack() as stack:
+            template_paths.append(str(stack.enter_context(as_file(PM_TEMPLATES))))
+            j2_env = Environment(loader=FileSystemLoader(template_paths))
+            j2_env.globals["noc_db_metrics"] = config.clickhouse.db
+            tmpl = j2_env.get_template(self.template)
+            data = tmpl.render(context)
         return demjson3.decode(data)

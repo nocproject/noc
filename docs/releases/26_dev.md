@@ -56,3 +56,10 @@ NOC 26 introduces routine vulnerability scanning of project dependencies. Identi
 
 NOC 26 streamlines installation and development workflows, introduces `uv`-based package installation, builds Docker images for individual release tags, and drops support for obsolete operating system versions.
 
+## Breaking Changes
+
+### Dynamic Dashboard Templates Movement
+
+Built-in dynamic dashboard templates have moved into the web application. If you have custom dynamic dashboard templates, move them from `<custom root>/templates/ddash` to
+`<custom root>/services/web/apps/pm/ddash/templates`.
+

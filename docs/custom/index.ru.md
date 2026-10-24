@@ -25,7 +25,7 @@
     * `web` - пользовательские веб приложения [Web](../web/index.md)
     * `nbi` - NBI API endpoint [NBI](../nbi-api-reference/index.md)
 * `templates` - `Jinja` шаблоны для различных частей системы
-    * `ddash` - шаблоны для графиков метрик `PM` 
+    * `ddash` - шаблоны для графиков метрик `PM`
 * `tt` - адаптеры для систем эскалации аварии (`TroubleTicket`)
 
 

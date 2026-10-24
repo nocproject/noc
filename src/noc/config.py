@@ -554,7 +554,6 @@ class Config(BaseConfig):
         collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
         supervisor_cfg = StringParameter(default="etc/noc_services.conf")
         npkg_root = StringParameter(default="/var/lib/noc/var/pkg")
-        pm_templates = StringParameter(default="templates/ddash/")
         custom_path = StringParameter()
         mib_path = StringParameter(default="/var/lib/noc/mibs/")
         cdn_url = StringParameter()
