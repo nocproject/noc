@@ -179,8 +179,6 @@ ignore = [
   "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF100", # Unused blanket `noqa` directive
-  "UP014", # Convert `PathInfo` from `NamedTuple` functional to class syntax
-  "UP030", # Use implicit references for positional format fields
   "UP046", # Generic class `BaseResourceAPI` uses `Generic` subclass instead of type parameters
   "UP047", # Generic function `get_reference` should use type parameters
 ]
