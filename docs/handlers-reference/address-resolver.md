@@ -18,16 +18,16 @@ The Address Resolver is applied at the beginning of the [Discovery](../discovery
 At the start of the polling process, it checks a local file (which should be located on the same host as the `Discovery` process) and returns the discovered IP address.
 
 ```python
-    import os
+import os
 
-    FILENAME = "/tmp/device_addresses.txt"
-    
-    def address_resolver(fqdn):
-        if os.path.exists(FILENAME):
-            with open(FILENAME, "r") as f:
-                for ll in f.readlines():
-                    address, host = ll.split(",")
-                    if fqdn.startswith(host):
-                        return address
+FILENAME = "/tmp/device_addresses.txt"
 
+
+def address_resolver(fqdn):
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "r") as f:
+            for ll in f.readlines():
+                address, host = ll.split(",")
+                if fqdn.startswith(host):
+                    return address
 ```

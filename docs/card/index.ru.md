@@ -57,7 +57,6 @@ services/
 Файл карточки:
 
 ```python
-
 from noc.inv.models.firmware import Firmware
 from .base import BaseCard  # Базовый класс
 
@@ -70,8 +69,6 @@ class FirmwarePlanCard(BaseCard):
     def get_data(self):  # Формирование данных для шаблонизатора
         # return {"object": self.object}
         ...
-
-
 ```
 
 Как видно в данной карточке выводится информация о конкретном инстансе. Это часто встречающаяся использование карточек. 
@@ -86,7 +83,6 @@ class FirmwarePlanCard(BaseCard):
 Карточка `path` вывод на географическую карту путь между парой `ManagedObject`
 
 ```python
-
 class PathCard(BaseCard):
     name = "path"
     default_template_name = "path"
@@ -106,7 +102,6 @@ class PathCard(BaseCard):
 В некоторых случаях есть необходимость формировать динамическое наполнение через `API` вместо формирования статического HTML. В этом случае отдаваемые данные формируются через метод `get_ajax_data`. Примером такой карточки служит `alarmheat` - `cards/alarmheat.py`:
 
 ```python
-
 class AlarmHeatCard(BaseCard):
     name = "alarmheat"
     card_css = ["/ui/pkg/leaflet/leaflet.css", "/ui/card/css/alarmheat.css"]
@@ -143,7 +138,6 @@ class AlarmHeatCard(BaseCard):
             "links": links,
             "pops": points,
         }
-
 ```
 
 В данной карточке реализован метод `get_ajax_data`, и доступ к аргументам непосредственно из метода формирования данных.

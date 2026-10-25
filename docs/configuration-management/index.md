@@ -183,8 +183,8 @@ Let's break down the execution of the query step by step:
 ```
 the result:
 ``` python
-{'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
-{'Y': 'description to_AGG1', 'X': 'GigabitEthernet0/0/2'}
+{"Y": "description to_11_2.1", "X": "GigabitEthernet0/0/1"}
+{"Y": "description to_AGG1", "X": "GigabitEthernet0/0/2"}
 ```
 
 In this case, we obtained a list of interfaces with descriptions filled in. Their names are in the variable `X`, and the descriptions are in the variable `Y`.
@@ -202,7 +202,7 @@ In this case, we obtained a list of interfaces with descriptions filled in. Thei
 ```
 the result:
 ``` python
-{'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+{"Y": "description to_11_2.1", "X": "GigabitEthernet0/0/1"}
 ```
 
 We have retained only the interface with the name `GigabitEthernet0/0/1`.

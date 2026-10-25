@@ -890,9 +890,11 @@ class ViewModel(Model, metaclass=ModelBase):
         connect.execute(
             post="\n".join(
                 [
-                    f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name} "
-                    f"TO {cls._get_raw_db_table()} "
-                    f"AS SELECT {cls.get_create_select_sql()}",
+                    (
+                        f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name} "
+                        f"TO {cls._get_raw_db_table()} "
+                        f"AS SELECT {cls.get_create_select_sql()}"
+                    ),
                 ]
             )
         )

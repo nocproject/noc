@@ -19,16 +19,16 @@ Address Resolver применяется в начале опроса [Discovery]
 При старте опроса проверяет локальный файл (должен находиться на одном хосте с процессом `Discovery`) и возвращает найденный IP адрес
 
 ```python
-    import os
+import os
 
-    FILENAME = "/tmp/device_addresses.txt"
-    
-    def address_resolver(fqdn):
-        if os.path.exists(FILENAME):
-            with open(FILENAME, "r") as f:
-                for ll in f.readlines():
-                    address, host = ll.split(",")
-                    if fqdn.startswith(host):
-                        return address
+FILENAME = "/tmp/device_addresses.txt"
 
+
+def address_resolver(fqdn):
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "r") as f:
+            for ll in f.readlines():
+                address, host = ll.split(",")
+                if fqdn.startswith(host):
+                    return address
 ```

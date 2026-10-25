@@ -14,7 +14,9 @@ class DefaultAdminStatusApplicator(QueryApplicator):
 
     CHECK_QUERY = "Match('hints', 'interfaces', 'defaults', 'admin-status')"
     QUERY = [
-        "Match('hints', 'interfaces', 'defaults', 'admin-status', default_status) and "
-        "NotMatch('interfaces', X, 'admin-status') and "
-        "Fact('interfaces', X, 'admin-status', default_status)"
+        (
+            "Match('hints', 'interfaces', 'defaults', 'admin-status', default_status) and "
+            "NotMatch('interfaces', X, 'admin-status') and "
+            "Fact('interfaces', X, 'admin-status', default_status)"
+        )
     ]

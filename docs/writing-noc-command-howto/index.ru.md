@@ -13,49 +13,63 @@
 
 В общем виде структура команды выглядит так:
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Рассмотрим пример детальнее:
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="1"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Импортируем базовый класс команды.
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="2"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Импортируем структуру, содержащую версию NOC
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="5"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Реализалия нашей команды должна находиться в классе `Command`,
 порожденным от базового класса `BaseCommand`
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="6"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Точка входа в команду находится в функции `handle`, поэтому мы
 должны ее переопределить.
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="7"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Функция `BaseCommand.print()` печатает аргумент на stdout, всегда
 используйте ее, вместо встроенной функции `print()` в командах.
 В данном случае мы печатаем версию.
 
+<!-- fmt:off -->
 ``` python title="sample.py" linenums="1" hl_lines="10 11"
 --8<-- "docs/writing-noc-command-howto/sample.py"
 ```
+<!-- fmt:on -->
 
 Эта часть кода является общей для всех команд и отвечает за
 запуск нашей команды из командной строки.
@@ -67,9 +81,11 @@
 Добавим возможность передавать список метрик через параметры.
 Расположим код в файле `commands/check-metrics.py`:
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="1"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py"
 ```
+<!-- fmt:on -->
 
 Запустим на исполнение:
 
@@ -82,180 +98,234 @@ Not configured metrics on profile Порт РРЛ:  Interface | Errors | In
 
 Рассмотрим пример детальнее:
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="1" hl_lines="1 2 3"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py::13"
 ```
+<!-- fmt:on -->
 
 Импортируем стандартные модули python, которые понадобятся нам в дальнейшем.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="1" hl_lines="5 6 7 8 9 10"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py::13"
 ```
+<!-- fmt:on -->
 
 Нам также понадобятся импортировать несколько опеределений NOC.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="13" hl_lines="1"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:13:17"
 ```
+<!-- fmt:on -->
 
 Реализалия нашей команды должна находиться в классе `Command`,
 порожденным от базового класса `BaseCommand`
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="13" hl_lines="2"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:13:17"
 ```
+<!-- fmt:on -->
 
 Функция `add_arguments` позволяет настроить парсер команд `argsparse`
 и настроить парсинг дополнительных аргументов.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="13" hl_lines="3"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:13:17"
 ```
+<!-- fmt:on -->
 
 Мы настраиваем парсер аргументов таким образом, чтобы весь остаток
 командной строки (`REMAINDER`) был помещен в опцию `metrics`
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="1"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 
 Точка входа в команду находится в функции `handle`, поэтому мы
 должны ее переопределить.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="2 3"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Мы проверяем, заданы ли парамеры командной строки (`option["metrics"]`),
 если нет - вызываем функцию `BaseCommand.die()`. Функция `die()` печатает
 сообщение об ошибке в stderr и завершает работу команды с системным кодом ошибки().
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="4"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Функция `connect()` осуществляет соединение с базой mongodb. Она должна быть
 выполнена заранее до любого обращения к базе.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="5"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Мы создаем два пустых списка:
 
 * Метрики интерфейса: `interface_metrics`
 * Метрики объекта: `object_metrics`
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="6"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Мы пробегаем по всем параметрам командной строки (`option["metrics"]`), так как их может
 быть больше одного.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="7"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Нам необходимо по имени метрики получить ее объект (запись в базе).
 В NOC для получения записи по имени используются методы моделей `.get_by_name()`.
 Помимо упрощения кода `.get_by_name()` также обеспечивает кеширование,
 что может сильно повышать производительность.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="8 9 10"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Если запись не найдена, `.get_by_name()` возвращает `None`. Мы используем
 проверку на `None`, чтобы убедиться, что пользователь правильно указал
 имя метрики. Если пользователь указал неверное имя, мы печатаем сообщение
 и переходим к обработке следующей метрики.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="11 12 13 14"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 В этом месте мы проверяем, если metric scope - `Interface`, то добавляем
 метрику в список `iface_metrics`, в противном случае - в `object_metrics`.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="15 16 17"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Если пользователь задал хоть одну объектную метрику, вызываем
 функцию `check_object_metrics` и передаем ей в качестве параметра
 список `object_metrics`
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="17" hl_lines="18 19 20"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:17:36"
 ```
+<!-- fmt:on -->
 Если пользователь задал хоть одну интерфейсную метрику, вызываем
 функцию `check_interface_metrics` и передаем ей в качестве параметра
 список `interface_metrics`
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="1"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 Определим функцию `check_object_metrics`, которая принимает на вход
 список объектных метрик.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="2"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 
 Мы строим словарь `mt_check`, который в качестве ключа использует id метрики,
 а в качестве значения хранит объект метрики.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="3 4 5"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 Мы извлекаем все профили объекта, для которых включен periodic discovery
 и заданы метрики.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="6"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 Мы строим множество `check` по ключам `mt_check`. В дальнейшем мы будем убирать
 из него найденные метрики.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="7 8 9"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 Мы проходим по всем метрикам, заданным в профиле, и, если они присутствуют
 в нашем `check`, удаляем их из множества `check`.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="38" hl_lines="10 11 12 13 14"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:38:51"
 ```
+<!-- fmt:on -->
 
 Если в нашем множестве `checks` остались мерики, пишем сообщение, что они
 не сконфигурированы для профиля.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="53" hl_lines="1"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:53:62"
 ```
+<!-- fmt:on -->
 Определим функцию `check_interface_metrics`, которая принимает на вход
 список интерфейсных метрик.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="54" hl_lines="2"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:53:62"
 ```
+<!-- fmt:on -->
 Мы проходим по всем профилям интерфейсов, для которых сконфигурированы метрики.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="54" hl_lines="3"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:53:62"
 ```
+<!-- fmt:on -->
 Мы строим множество `checks` из всех элементов входных параметров функции
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="54" hl_lines="4 5 6"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:53:62"
 ```
+<!-- fmt:on -->
 
 Мы проходим по всем метрикам, заданным в профиле, и, если они присутствуют
 в нашем `check`, удаляем их из множества `check`.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="54" hl_lines="7 8 9 10"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:53:62"
 ```
+<!-- fmt:on -->
 
 Если в нашем множестве `checks` остались мерики, пишем сообщение, что они
 не сконфигурированы для профиля.
 
+<!-- fmt:off -->
 ``` python title="check-metrics.py" linenums="65" hl_lines="1 2"
 --8<-- "docs/writing-noc-command-howto/check-metrics.py:65:66"
 ```
+<!-- fmt:on -->
 
 Эта часть кода является общей для всех команд и отвечает за
 запуск нашей команды из командной строки.

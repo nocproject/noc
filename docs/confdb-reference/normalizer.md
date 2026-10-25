@@ -133,8 +133,7 @@ values as tuples. So::
 is a tuple. Multi-line tuples must be enclosed by brackets::
 
 ```python
-("a",
- "b")
+("a", "b")
 ```
 
 For single-value tuples either of following variants may be used::
@@ -157,8 +156,7 @@ Syntax generators are defined in [ConfDB Syntax](syntax.md) and allow to inject 
 @match("interface", ANY, "description", REST)
 def normalize_interface_description(self, tokens):
     yield self.make_interface_description(
-        interface=self.interface_name(tokens[2]),
-        description=" ".join(tokens[3:])
+        interface=self.interface_name(tokens[2]), description=" ".join(tokens[3:])
     )
 ```
 
@@ -197,15 +195,13 @@ def normalize_interface_address(self, tokens):
         "ip.address.%s" % tokens[2],
         self.make_unit_inet_address,
         interface=deferrable("interface"),
-        address=tokens[4]
+        address=tokens[4],
     )
+
 
 @match("/ip", "address", INTEGER, "interface", ANY)
 def normalize_interface_address_interface(self, tokens):
-    yield self.defer(
-        "ip.address.%s" % tokens[2],
-        interface=tokens[4]
-    )
+    yield self.defer("ip.address.%s" % tokens[2], interface=tokens[4])
 ```
 
 First generator yields deferrable with key `ip.address.0`. Zero is taken

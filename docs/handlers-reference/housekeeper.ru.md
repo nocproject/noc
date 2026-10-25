@@ -19,14 +19,15 @@ Housekeeper применяется в конце опроса [Discovery](../dis
 Устройствам с [Capabilities](../caps-reference/index.md) `"BRAS | IPoE"` назначается профиль объекта `bras`.
 
 ```python
-    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-    
-    PROF_IPoE = ManagedObjectProfile.objects.get(name="bras")
-    
-    def housekeeper(check):
-         object = check.object
-         caps = object.get_caps()
-         if caps.get("BRAS | IPoE") and object.object_profile != PROF_IPoE:
-              object.object_profile = PROF_IPoE
-              object.save()
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
+PROF_IPoE = ManagedObjectProfile.objects.get(name="bras")
+
+
+def housekeeper(check):
+    object = check.object
+    caps = object.get_caps()
+    if caps.get("BRAS | IPoE") and object.object_profile != PROF_IPoE:
+        object.object_profile = PROF_IPoE
+        object.save()
 ```

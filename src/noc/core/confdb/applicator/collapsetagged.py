@@ -11,11 +11,13 @@ from .query import QueryApplicator
 
 class CollapseTaggedApplicator(QueryApplicator):
     QUERY = [
-        "Collapse("
-        "  'virtual-router', vr,"
-        "  'forwarding-instance', fi,"
-        "  'interfaces', iface,"
-        "  'unit', uint,"
-        "  'bridge', 'switchport', 'tagged',"
-        " joinrange=',')"
+        (
+            "Collapse("
+            "  'virtual-router', vr,"
+            "  'forwarding-instance', fi,"
+            "  'interfaces', iface,"
+            "  'unit', uint,"
+            "  'bridge', 'switchport', 'tagged',"
+            " joinrange=',')"
+        )
     ]

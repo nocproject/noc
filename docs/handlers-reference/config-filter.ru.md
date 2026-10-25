@@ -22,10 +22,11 @@
 Заменяет *password <mypass>* на *password xxx*
 
 ```python
-    import re
+import re
 
-    rx_password = re.compile("password\s+(\S+)")
+rx_password = re.compile("password\s+(\S+)")
 
-    def config_filter(mo, config):
-        return rx_password.sub("xxx", rx_password)
+
+def config_filter(mo, config):
+    return rx_password.sub("xxx", rx_password)
 ```

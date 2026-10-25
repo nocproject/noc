@@ -21,8 +21,10 @@ class Profile(BaseProfile):
     pattern_password = rb"^Password(\(1-16 chars\)|):"
     pattern_more = [
         (
-            rb"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
-            rb"to next page\.\.\.\.",
+            (
+                rb"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
+                rb"to next page\.\.\.\."
+            ),
             b" ",
         ),
         (rb"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", b"y"),

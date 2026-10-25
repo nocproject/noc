@@ -109,11 +109,13 @@ def test_backspace(config: bytes, expected: bytes) -> None:
     ("config", "expected"),
     [
         (
-            b"\x1b[2J\x1b[?7l\x1b[3;23r\x1b[?6l\x1b[24;27H\x1b[?25h\x1b[24;27H"
-            b"\x1b[?6l\x1b[1;24r\x1b[?7l\x1b[2J\x1b[24;27H\x1b[1;24r\x1b[24;27H"
-            b"\x1b[2J\x1b[?7l\x1b[1;24r\x1b[?6l\x1b[24;1H\x1b[1;24r\x1b[24;1H"
-            b"\x1b[24;1H\x1b[2K\x1b[24;1H\x1b[?25h\x1b[24;1H\x1b[24;1Hswitch# "
-            b"\x1b[24;1H\x1b[24;13H\x1b[24;1H\x1b[?25h\x1b[24;13H",
+            (
+                b"\x1b[2J\x1b[?7l\x1b[3;23r\x1b[?6l\x1b[24;27H\x1b[?25h\x1b[24;27H"
+                b"\x1b[?6l\x1b[1;24r\x1b[?7l\x1b[2J\x1b[24;27H\x1b[1;24r\x1b[24;27H"
+                b"\x1b[2J\x1b[?7l\x1b[1;24r\x1b[?6l\x1b[24;1H\x1b[1;24r\x1b[24;1H"
+                b"\x1b[24;1H\x1b[2K\x1b[24;1H\x1b[?25h\x1b[24;1H\x1b[24;1Hswitch# "
+                b"\x1b[24;1H\x1b[24;13H\x1b[24;1H\x1b[?25h\x1b[24;13H"
+            ),
             b"switch# ",
         )
     ],

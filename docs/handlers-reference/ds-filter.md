@@ -15,12 +15,17 @@ DS Filters are applied during the calculation of data from the source (`source`)
 ### Return Data
 
 ```python
-    import datetime
-    from noc.sa.models.managedobject import ManagedObject
+import datetime
+from noc.sa.models.managedobject import ManagedObject
 
-    def ds_filter(data_record):
-        mo = ManagedObject.get_by_id(data_record["id"])
-        ts = datetime.datetime.now()
-        yield {"managed_object": mo.bi_id, "name": mo.name, "ip": mo.address, "ts": ts.strftime("%Y-%m-%d %H:%M:%S")}
 
+def ds_filter(data_record):
+    mo = ManagedObject.get_by_id(data_record["id"])
+    ts = datetime.datetime.now()
+    yield {
+        "managed_object": mo.bi_id,
+        "name": mo.name,
+        "ip": mo.address,
+        "ts": ts.strftime("%Y-%m-%d %H:%M:%S"),
+    }
 ```

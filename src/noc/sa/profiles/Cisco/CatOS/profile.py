@@ -19,9 +19,11 @@ class Profile(BaseProfile):
     convert_mac = BaseProfile.convert_mac_to_dashed
     pattern_more = [(rb"^--More--$", b" "), (rb"^Do you wish to continue y/n [n]?", b"y\n")]
     config_volatile = [
-        r"^This command shows non-default configurations only.*?"
-        r"^Use 'show config all' to show both default and non-default "
-        r"configurations.",
+        (
+            r"^This command shows non-default configurations only.*?"
+            r"^Use 'show config all' to show both default and non-default "
+            r"configurations."
+        ),
         r"^\.+\s*$",
         r"^(?:(?:begin)|(?:end))\s*$",
     ]

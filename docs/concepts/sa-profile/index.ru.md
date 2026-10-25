@@ -79,21 +79,21 @@
 
 1. Вызов скрипта для устройства `ManagedObject`. Пример вызова скрипта `get_version`:
     ```python
-    
-        from noc.core.mongo.connection import connect
-        connect()
-        from noc.sa.models.managedobject import ManagedObject
-    
-        mo = ManagedObject.objects.get(name="<MONAME>")
-        r = mo.scripts.get_version()
-        r
-        {'vendor': 'Huawei',
-         'platform': 'S2326TP-EI',
-         'version': '5.70 (V100R006C05)',
-         'image': 'V100R006C05',
-         'attributes': {'Serial Number': '21',
-          'Patch Version': 'V100R006SPH031'}}
-    
+    from noc.core.mongo.connection import connect
+
+    connect()
+    from noc.sa.models.managedobject import ManagedObject
+
+    mo = ManagedObject.objects.get(name="<MONAME>")
+    r = mo.scripts.get_version()
+    r
+    {
+        "vendor": "Huawei",
+        "platform": "S2326TP-EI",
+        "version": "5.70 (V100R006C05)",
+        "image": "V100R006C05",
+        "attributes": {"Serial Number": "21", "Patch Version": "V100R006SPH031"},
+    }
     ```
 
 2. После вызова система делает `RPC` запрос к сервису [SAE](../../services-reference/sae.md) для получения параметров вызова скрипта:
@@ -168,22 +168,18 @@ r = {
     "vendor": "Cisco",
     "version": "12.4(5)",
     "platform": "IOS",
-    "attributes":
-                {
-                "image": "image.bin",
-                "type": "type1",
-                "count": 2
-                }
-    }
+    "attributes": {"image": "image.bin", "type": "type1", "count": 2},
+}
 
 from noc.sa.interfaces.igetversion import IGetVersion
+
 IGetVersion().clean_result(r)
-{'vendor': 'Cisco',
- 'version': '12.4(5)',
- 'platform': 'IOS',
- 'attributes': {'image': 'image.bin', 'type': 'type1', 'count': 2}}
-
-
+{
+    "vendor": "Cisco",
+    "version": "12.4(5)",
+    "platform": "IOS",
+    "attributes": {"image": "image.bin", "type": "type1", "count": 2},
+}
 ```
 
 ### Настройки взаимодействия с оборудованием
@@ -235,7 +231,7 @@ class Profile(BaseProfile):
         (r"[Cc]onfirm?\S+", "y\n\r"),
         (r" [Aa]re you sure?\S+", "y\n\r"),
         (r"^Delete flash:", "y\n\r"),
-        (r"^Squeeze flash:", "y\n\r")
+        (r"^Squeeze flash:", "y\n\r"),
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
     pattern_syntax_error = r"(Error: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at)"
@@ -247,9 +243,7 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
-    rogue_chars = [
-        re.compile(rb"\x1b\[42D\s+\x1b\[42D")
-    ]
+    rogue_chars = [re.compile(rb"\x1b\[42D\s+\x1b\[42D")]
 
     matchers = {
         "is_kernel_3": {"version": {"$gte": "3.0", "$lt": "5.0"}},
@@ -257,7 +251,8 @@ class Profile(BaseProfile):
         "is_bad_platform": {
             "version": {"$regex": r"5.20.+"},
             "platform": {"$in": ["S5628F", "S5628F-HI"]},
-        }}
+        },
+    }
     config_tokenizer = "indent"
     config_normalizer = "VRPNormalizer"
     confdb_defaults = [
@@ -266,12 +261,9 @@ class Profile(BaseProfile):
     ]
     config_applicators = ["noc.core.confdb.applicator.collapsetagged.CollapseTaggedApplicator"]
 
-    def generate_prefix_list(self, name, pl, strict=True):
-        ...
+    def generate_prefix_list(self, name, pl, strict=True): ...
 
-    def convert_interface_name(self, s):
-        ...
-
+    def convert_interface_name(self, s): ...
 ```
 
 Полный список доступных методов доступен в базовом классе профиля - `noc.core.profile.base.BaseProfile`

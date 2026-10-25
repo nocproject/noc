@@ -17,9 +17,11 @@
 
 ## Реализация функций-обработчиков
 
+<!-- fmt:off -->
 ```  py title="/opt/noc_custom/handlers/hks.py" linenums="1"
 --8<-- "examples/handlers/hk/handler.py"
 ```
+<!-- fmt:on -->
 
 
 Код необходимо расположить в `/opt/noc_custom/handlers/hks.py`

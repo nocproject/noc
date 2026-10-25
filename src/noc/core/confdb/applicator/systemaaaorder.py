@@ -13,7 +13,9 @@ class DefaultSystemAAAOrderApplicator(QueryApplicator):
     """Set forwarding instance type if not set"""
 
     QUERY = [
-        "Match('system', 'aaa', 'service', 'local') and "
-        "NotMatch('system', 'aaa', 'order', 'local') and "
-        "Fact('system', 'aaa', 'order', 'local')"
+        (
+            "Match('system', 'aaa', 'service', 'local') and "
+            "NotMatch('system', 'aaa', 'order', 'local') and "
+            "Fact('system', 'aaa', 'order', 'local')"
+        )
     ]

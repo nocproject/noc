@@ -15,10 +15,12 @@ class IfaceTypeJunosApplicator(QueryApplicator):
     """
 
     QUERY = [
-        "("
-        "Match('meta', 'matchers', 'is_work_em') "
-        "and Match('interfaces', X) and Re('^em.+', X)) or "
-        "(Match('meta', 'matchers', 'is_srx_6xx') "
-        "and Match('interfaces', X) and Re('^reth.+', X)) "
-        "and Fact('interfaces', X, 'type', 'physical')"
+        (
+            "("
+            "Match('meta', 'matchers', 'is_work_em') "
+            "and Match('interfaces', X) and Re('^em.+', X)) or "
+            "(Match('meta', 'matchers', 'is_srx_6xx') "
+            "and Match('interfaces', X) and Re('^reth.+', X)) "
+            "and Fact('interfaces', X, 'type', 'physical')"
+        )
     ]

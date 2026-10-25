@@ -62,8 +62,10 @@ def take_postgresql_version():
     if distr_family == "deb":
         sp = subprocess.run(
             [
-                "dpkg-query -W -f='${package} ${status}\n' postgresql-*|grep \"install ok installed\" | "
-                'grep -Po "(\\d.?\\d+)"|sort -u'
+                (
+                    "dpkg-query -W -f='${package} ${status}\n' postgresql-*|grep \"install ok installed\" | "
+                    'grep -Po "(\\d.?\\d+)"|sort -u'
+                )
             ],
             stdout=subprocess.PIPE,
             shell=True,

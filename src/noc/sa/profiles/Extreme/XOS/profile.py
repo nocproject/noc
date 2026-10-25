@@ -32,8 +32,10 @@ class Profile(BaseProfile):
         ),
         (rb"Are you sure you want to reboot the stack\? \(y/N\)", b"y\n"),
         (
-            rb"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
-            rb"(y - save and reboot, n - reboot without save, <cr> - cancel command)",
+            (
+                rb"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
+                rb"(y - save and reboot, n - reboot without save, <cr> - cancel command)"
+            ),
             b"y\n",
         ),
         (rb"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", b"y\n"),

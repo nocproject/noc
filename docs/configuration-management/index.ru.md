@@ -204,7 +204,7 @@ interface gigabitethernet1/0/24 description Description 2
 ```
 результат:
 ``` python
-{'Y': 'description to_11_2.1', 'X': 'GigabitEthernet0/0/1'}
+{"Y": "description to_11_2.1", "X": "GigabitEthernet0/0/1"}
 ```
 Мы оставили только интерфейс с именем `GigabitEthernet0/0/1`
 

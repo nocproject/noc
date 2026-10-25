@@ -96,9 +96,11 @@ class MACApplication(ExtApplication):
         limit = limit or 50
 
         sql = [
-            f"SELECT last_seen, managed_object, interface,"
-            f" dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as description,"
-            f" MACNumToString(mac) as mac_s, vlan FROM {MACDB._get_db_table()}",
+            (
+                f"SELECT last_seen, managed_object, interface,"
+                f" dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as description,"
+                f" MACNumToString(mac) as mac_s, vlan FROM {MACDB._get_db_table()}"
+            ),
         ]
         filter_x = self.get_filter(mac_query, managed_object, segment, interface_profile, is_uni)
         if filter_x:
@@ -234,9 +236,11 @@ class MACApplication(ExtApplication):
         limit: int | None = None,
     ):
         sql = [
-            f"SELECT ts, managed_object, interface, MACNumToString(mac) as mac_s, vlan, "
-            f" dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as description"
-            f" FROM {MACHISTORY._get_db_table()}",
+            (
+                f"SELECT ts, managed_object, interface, MACNumToString(mac) as mac_s, vlan, "
+                f" dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as description"
+                f" FROM {MACHISTORY._get_db_table()}"
+            ),
         ]
         filter_x = cls.get_filter(mac_query, managed_object, segment, interface_profile, is_uni)
         if filter_x:

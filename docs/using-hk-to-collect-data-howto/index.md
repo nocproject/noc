@@ -20,9 +20,11 @@ Though some known restrictions exists and should be kept in mind:
 
 ## Implementing handler
 
+<!-- fmt:off -->
 ```  py title="/opt/noc_custom/handlers/hks.py" linenums="1"
 --8<-- "examples/handlers/hk/handler.py"
 ```
+<!-- fmt:on -->
 
 Place the resulting code into `/opt/noc_custom/handlers/hks.py`.
 

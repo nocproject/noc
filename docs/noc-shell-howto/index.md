@@ -52,6 +52,7 @@ Example file `~/.ipython/profile_default/startup/00-mongo.py`:
 
 ```python
 from noc.core.mongo.connection import connect
+
 connect()
 ```
 

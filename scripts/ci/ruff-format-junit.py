@@ -42,15 +42,19 @@ def process(out: str | None = None, tee: bool = False) -> int:
     problems = list(iter_problems(tee))
     r = [
         '<?xml version="1.0" encoding="utf-8"?>',
-        f'<testsuite errors="0" failures="{len(problems)}" '
-        f'name="black" skipped="0" tests="{len(problems)}" time="0.0">',
+        (
+            f'<testsuite errors="0" failures="{len(problems)}" '
+            f'name="black" skipped="0" tests="{len(problems)}" time="0.0">'
+        ),
     ]
     for item in problems:
         cls_name = item.path.replace(os.sep, ".")[:-3]
         r += [
-            f'  <testcase classname="black.{cls_name}" file="{escape(item.path)}" line="1" '
-            f'name="black: {item.path}" '
-            'time="0.0">',
+            (
+                f'  <testcase classname="black.{cls_name}" file="{escape(item.path)}" line="1" '
+                f'name="black: {item.path}" '
+                'time="0.0">'
+            ),
             f"    <failure>{escape(item.text)}</failure>",
             "  </testcase>",
         ]

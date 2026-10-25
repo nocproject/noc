@@ -55,54 +55,62 @@ def test_hist_register(config, sample, expected: list[int]) -> None:
             [],
             [],
             {},
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{le="+Inf"} 0\n'
-            "# TYPE test_sum untyped\n"
-            "test_sum{} 0.0\n"
-            "# TYPE test_count untyped\n"
-            "test_count{} 0",
+            (
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{le="+Inf"} 0\n'
+                "# TYPE test_sum untyped\n"
+                "test_sum{} 0.0\n"
+                "# TYPE test_count untyped\n"
+                "test_count{} 0"
+            ),
         ),
         (
             [],
             [],
             {"pool": "default"},
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{pool="default",le="+Inf"} 0\n'
-            "# TYPE test_sum untyped\n"
-            'test_sum{pool="default"} 0.0\n'
-            "# TYPE test_count untyped\n"
-            'test_count{pool="default"} 0',
+            (
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{pool="default",le="+Inf"} 0\n'
+                "# TYPE test_sum untyped\n"
+                'test_sum{pool="default"} 0.0\n'
+                "# TYPE test_count untyped\n"
+                'test_count{pool="default"} 0'
+            ),
         ),
         # Two thresholds
         (
             [0.001, 0.01],
             [0, 999, 1000, 1001, 5000, 9999, 10000, 100000],
             {},
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{le="0.001"} 3\n'
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{le="0.01"} 7\n'
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{le="+Inf"} 8\n'
-            "# TYPE test_sum untyped\n"
-            "test_sum{} 0.127999\n"
-            "# TYPE test_count untyped\n"
-            "test_count{} 8",
+            (
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{le="0.001"} 3\n'
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{le="0.01"} 7\n'
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{le="+Inf"} 8\n'
+                "# TYPE test_sum untyped\n"
+                "test_sum{} 0.127999\n"
+                "# TYPE test_count untyped\n"
+                "test_count{} 8"
+            ),
         ),
         (
             [0.001, 0.01],
             [0, 999, 1000, 1001, 5000, 9999, 10000, 100000],
             {"pool": "default"},
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{pool="default",le="0.001"} 3\n'
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{pool="default",le="0.01"} 7\n'
-            "# TYPE test_bucket untyped\n"
-            'test_bucket{pool="default",le="+Inf"} 8\n'
-            "# TYPE test_sum untyped\n"
-            'test_sum{pool="default"} 0.127999\n'
-            "# TYPE test_count untyped\n"
-            'test_count{pool="default"} 8',
+            (
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{pool="default",le="0.001"} 3\n'
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{pool="default",le="0.01"} 7\n'
+                "# TYPE test_bucket untyped\n"
+                'test_bucket{pool="default",le="+Inf"} 8\n'
+                "# TYPE test_sum untyped\n"
+                'test_sum{pool="default"} 0.127999\n'
+                "# TYPE test_count untyped\n"
+                'test_count{pool="default"} 8'
+            ),
         ),
     ],
 )

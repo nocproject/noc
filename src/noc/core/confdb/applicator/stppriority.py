@@ -18,11 +18,13 @@ class DefaultSTPPriorityApplicator(QueryApplicator):
     )
     QUERY = [
         # STP is globally enabled
-        "Match('hints', 'protocols', 'spanning-tree', 'status', True) and "
-        # Global priority is set
-        "Match('hints', 'protocols', 'spanning-tree', 'priority', X) and "
-        # And priority is not configured
-        "NotMatch('protocols', 'spanning-tree', 'priority') and "
-        # Set priority
-        "Fact('protocols', 'spanning-tree', 'priority', X)"
+        (
+            "Match('hints', 'protocols', 'spanning-tree', 'status', True) and "
+            # Global priority is set
+            "Match('hints', 'protocols', 'spanning-tree', 'priority', X) and "
+            # And priority is not configured
+            "NotMatch('protocols', 'spanning-tree', 'priority') and "
+            # Set priority
+            "Fact('protocols', 'spanning-tree', 'priority', X)"
+        )
     ]

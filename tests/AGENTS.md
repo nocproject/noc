@@ -88,6 +88,7 @@ Data fields prefixed with `$` are metadata. Non-prefixed fields map to model att
 Use `tests/utils.py::check_protocol` to verify an implementation class matches an expected interface:
 ```python
 from tests.utils import check_protocol
+
 check_protocol(ExpectedProtoClass, ActualImplClass)
 ```
 

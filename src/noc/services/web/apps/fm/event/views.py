@@ -138,16 +138,18 @@ class EventApplication(ExtApplication):
         limit: int | None = None,
     ):
         sql = [
-            f"SELECT  e.event_id as id, e.ts as timestamp, nullIf(e.event_class, 0) as event_class_bi_id,"
-            f" nullIf(e.managed_object, 0) as managed_object_bi_id, e.target as target, e.target_name as target_name,"
-            f" IPv4NumToString(e.ip) as address, e.snmp_trap_oid as snmp_trap_oid, e.raw_vars as raw_vars,"
-            f" nullIf(e.administrative_domain, 0) as administrative_domain_bi_id,"
-            f" dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,"
-            f" dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,"
-            f" dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,"
-            f" dictGetOrNull('{config.clickhouse.db_dictionaries}.administrativedomain', ('id', 'name'), e.administrative_domain) as administrative_domain,"
-            f" e.source, e.vars, e.labels, e.severity, e.message, e.data, nullIf(e.remote_system, 0) as remote_system, e.remote_id"
-            f" FROM {Events._get_db_table()} AS e",
+            (
+                f"SELECT  e.event_id as id, e.ts as timestamp, nullIf(e.event_class, 0) as event_class_bi_id,"
+                f" nullIf(e.managed_object, 0) as managed_object_bi_id, e.target as target, e.target_name as target_name,"
+                f" IPv4NumToString(e.ip) as address, e.snmp_trap_oid as snmp_trap_oid, e.raw_vars as raw_vars,"
+                f" nullIf(e.administrative_domain, 0) as administrative_domain_bi_id,"
+                f" dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,"
+                f" dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,"
+                f" dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,"
+                f" dictGetOrNull('{config.clickhouse.db_dictionaries}.administrativedomain', ('id', 'name'), e.administrative_domain) as administrative_domain,"
+                f" e.source, e.vars, e.labels, e.severity, e.message, e.data, nullIf(e.remote_system, 0) as remote_system, e.remote_id"
+                f" FROM {Events._get_db_table()} AS e"
+            ),
         ]
         filter_x = cls.get_filter(
             managed_object,

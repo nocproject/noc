@@ -46,7 +46,6 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         v = self.snmp.get("1.XXXX")
         ...
-
 ```
 
 ## Script Structure
@@ -142,18 +141,18 @@ from noc.core.script.base import BaseScript
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
 
-class Script(BaseScript):
 
+class Script(BaseScript):
     ...
 
     def execute_snmp(self, **kwargs):
         ...
-        
+
         for oid, ports_mask in self.snmp.getnext(
             mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
             display_hints={mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]: render_bin},
         ):
-           ...
+            ...
 ```
 
 The HTTP module in NOC allows you to perform GET and POST requests to interact with network devices using HTTP. To make HTTP requests, you provide a URL as an argument, and the module returns the response. If an error occurs during the HTTP request, it raises an HTTPError exception (noc.core.script.http.base.HTTPError).
@@ -182,11 +181,10 @@ When making an HTTP request, you have the option to use the "Basic" authenticati
 For example, to use "Digest" authentication, you can add `digestauth` to your `profile.py`:
 
 ```python
-
-    enable_http_session = True
-    http_request_middleware = [
-        "digestauth",
-    ]
+enable_http_session = True
+http_request_middleware = [
+    "digestauth",
+]
 ```
 
 If necessary, you can add custom middleware handlers for your profile. These handlers inherit from the `BaseMiddleware` class and should be placed in the `<profile>/middleware/` folder. To use your custom middleware, add an import statement in the `http_request_middleware` setting in the profile:
@@ -194,7 +192,6 @@ If necessary, you can add custom middleware handlers for your profile. These han
 For example:
 
 ```python
-
 # Python modules
 import orjson
 import hashlib
@@ -212,7 +209,6 @@ class AuthMiddeware(BaseMiddleware):
     """
 
     name = "customauth"
-
 ```
 
 
@@ -231,12 +227,11 @@ from noc.core.script.rtsp.error import RTSPConnectionRefused, RTSPAuthFailed
 
 
 class Script(BaseScript):
-
     ...
 
     def execute(self, **kwargs):
         ...
-        
+
         try:
             check = self.rtsp("DESCRIBE", "/Streaming/Channels/101/")
         except RTSPConnectionRefused:
@@ -256,7 +251,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "<profile_name>.get_interfaces"
     interface = IGetInterfaces
-
 ```
 
 In this case, the functionality of the base script will be sufficient.

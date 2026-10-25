@@ -77,7 +77,7 @@ class BaseAction(metaclass=ActionMetaclass):
         self.env = env
         self.logger = logger
 
-    async def execute(self, **kwargs: str) -> None | str | object:
+    async def execute(self, **kwargs: str) -> str | object | None:
         """
         Process request and generate response.
 

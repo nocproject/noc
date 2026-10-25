@@ -111,7 +111,6 @@ class KeyOutageApplication(ExtApplication):
     menu = "Оперативная обстановка"
     glyph = "bolt"
     link = "/api/card/view/projectoutage/%s/?refresh=100"
-
 ```
 
 Уже на основе базовых классов расширений строятся приложения.
@@ -163,7 +162,6 @@ class AdministrativeDomainApplication(ExtModelApplication):
                 for p in path
             ]
         }
-
 ```
 
 В нём объявлены место приложения в меню (`menu`) (строится относительно меню модуля), Заголовок (`title`) пункта меню 
@@ -203,7 +201,7 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, report_type=None, **kwargs):
 
         ...
-        
+
         data = [("1.2.2.2.2.2", _("Is Managed, objects not processed yet"), 0, "")]
         # columns = ["ID", "Value", "Percent", TableColumn(_("Detail"), format="url")]
         columns = [
@@ -215,7 +213,6 @@ class ReportFilterApplication(SimpleReport):
         ]
 
         return self.from_dataset(title=self.title, columns=columns, data=data)
-
 ```
 
 Сам отчёт состоит из отдельных секций, это позволяет выводить разные виды данных в одном отчёте. 

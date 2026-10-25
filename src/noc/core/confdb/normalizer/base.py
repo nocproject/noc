@@ -240,7 +240,7 @@ class BaseNormalizer(metaclass=BaseNormalizerMetaclass):
                             yield rt
                 except (ValueError, ValidationError) as e:
                     if self.errors_policy == "stop":
-                        raise StopIteration(str(e))
+                        return
                     elif self.errors_policy == "ignore":
                         continue
                     raise e

@@ -45,7 +45,6 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         v = self.snmp.get("1.XXXX")
         ...
-
 ```
 
 Структура файла скрипта следующая
@@ -141,18 +140,18 @@ from noc.core.script.base import BaseScript
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
 
-class Script(BaseScript):
 
+class Script(BaseScript):
     ...
 
     def execute_snmp(self, **kwargs):
         ...
-        
+
         for oid, ports_mask in self.snmp.getnext(
             mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
             display_hints={mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]: render_bin},
         ):
-           ...
+            ...
 ```
 
 ### HTTP
@@ -188,11 +187,10 @@ class Script(BaseScript):
 Например, для `Digest` аутентификации в `profile.py` добавляются `digestauth`:
 
 ```python
-
-    enable_http_session = True
-    http_request_middleware = [
-        "digestauth",
-    ]
+enable_http_session = True
+http_request_middleware = [
+    "digestauth",
+]
 ```
 
 При необходимости можно добавлять обработчики для профиля. Они наследуются от класса `BaseMiddleware` и помещаются в папку 
@@ -202,7 +200,6 @@ class Script(BaseScript):
 Пример:
 
 ```python
-
 # Python modules
 import orjson
 import hashlib
@@ -220,7 +217,6 @@ class AuthMiddeware(BaseMiddleware):
     """
 
     name = "customauth"
-
 ```
 
 
@@ -243,12 +239,11 @@ from noc.core.script.rtsp.error import RTSPConnectionRefused, RTSPAuthFailed
 
 
 class Script(BaseScript):
-
     ...
 
     def execute(self, **kwargs):
         ...
-        
+
         try:
             check = self.rtsp("DESCRIBE", "/Streaming/Channels/101/")
         except RTSPConnectionRefused:
@@ -271,7 +266,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "<profile_name>.get_interfaces"
     interface = IGetInterfaces
-
 ```
 
 В этом случае будет достаточно фунционала базового скрипта.

@@ -98,7 +98,6 @@ The adapter specifies the external system class and data retrieval classes (whic
 For example:
 
 ```python
-
 class ZBRemoteSystem(BaseRemoteSystem):
     """
     Base Extraction Class
@@ -112,21 +111,22 @@ class ZBRemoteSystem(BaseRemoteSystem):
     GROUPS_FILTER - list groups for extract
     """
 
+
 @ZBRemoteSystem.extractor
 class ZBAdministrativeDomainExtractor(BaseExtractor):
     """
     Extracting Administrative Domains
 
-    To extract Administrative Domains, we support a hierarchy 
-    by specifying the parent Administrative Domain (Parent). 
-    It's essential to ensure that parent Administrative Domains 
-    come before their child domains in the extraction process. 
+    To extract Administrative Domains, we support a hierarchy
+    by specifying the parent Administrative Domain (Parent).
+    It's essential to ensure that parent Administrative Domains
+    come before their child domains in the extraction process.
     This can be achieved by using numerical IDs.
     """
 
     name = "administrativedomain"
     model = AdministrativeDomain
-    data = [["zb.root", u"Zabbix", None]]
+    data = [["zb.root", "Zabbix", None]]
 ```
 
 ## External System Adapter
@@ -226,7 +226,6 @@ where files with loader classes are stored. For example, in the loader for `Mana
 * `purge` method - allows you to override the system's behavior when deleting. In the example, instead of removing the device from the system, it is transitioned to unmanaged status, and the container reference is cleared.
 
 ```python
-
 class ManagedObjectLoader(BaseLoader):
     """
     Managed Object loader
@@ -263,7 +262,6 @@ class ManagedObjectLoader(BaseLoader):
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
-
 ```
 
 **Loading** the extracted data into NOC is done using the `./noc etl load <REMOTE_SYSTEM_NAME>` command. The procedure works as follows:

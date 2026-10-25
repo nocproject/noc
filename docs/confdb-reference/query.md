@@ -45,7 +45,7 @@ Predicate is coded as python function call
 
 
 ```python
-Match('interface', X, 'description', Y)
+Match("interface", X, "description", Y)
 ```
 
 See [Query Builtin-predicates](#built-in-predicates) for possible predicates and examples
@@ -144,7 +144,7 @@ Params:
 | `*args` | ConfDB path |
 
 ```python
-Match('interface', X, 'description', Y)
+Match("interface", X, "description", Y)
 ```
 
 #### NotMatch(self, _input, *args)
@@ -159,7 +159,7 @@ Params:
 | `*args` | ConfDB path |
 
 ```python
-NotMatch('interface', X, 'description')
+NotMatch("interface", X, "description")
 ```
 
 ### ConfDB Manipulation
@@ -175,7 +175,7 @@ Params:
 | `*args` | ConfDB path of fact, eigther constants or bound variables |
 
 ```python
-Fact('interface', X, 'hints', 'test')
+Fact("interface", X, "hints", "test")
 ```
 
 ### Filtering and Checking
@@ -280,7 +280,7 @@ Params:
 | `args` | Values or bound variables |
 
 ```python
-Sprintf(y, 'x = %s, y = %s', x, '2')
+Sprintf(y, "x = %s, y = %s", x, "2")
 ```
 
 ### Examples

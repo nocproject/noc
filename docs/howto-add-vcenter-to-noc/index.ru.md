@@ -80,14 +80,13 @@
 Для взаимодействия скриптов с *vCenter* используется библиотека  [pyvmomi](https://github.com/vmware/pyvmomi), вызов происходит через обращение `self.vim` в скрипте, например, получение данных о *vCenter* выглядит следующим образом:
 
 ```python
-    def execute_cli(self):
-        v = self.vim.content.about
-        return {
-            "vendor": "VMWare",
-            "platform": str(v.name),
-            "version": v.version,
-        }
-
+def execute_cli(self):
+    v = self.vim.content.about
+    return {
+        "vendor": "VMWare",
+        "platform": str(v.name),
+        "version": v.version,
+    }
 ```
 
 ## Режим работы без использования vCenter

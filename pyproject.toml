@@ -110,7 +110,7 @@ docs = [
   "cachetools==5.5.2", # For {{ config_param() }}
 ]
 lint = [
-  "ruff==0.15.18",
+  "ruff==0.17.2",
   "mypy==2.4.0",
   "mongo-types==0.15.1",
   "types-cachetools==5.5.0.20240820",
@@ -159,6 +159,7 @@ ignore = [
   "PLR0911", # Too many return statements
   "PLR0913", # Too many arguments to function call
   "PLR0915", # Too many statements
+  "PLR0917", # Too many positional arguments (6 > 5)
   "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
   "PLR1704", # @todo: Manual work! Redefining argument with the local name `name`
   "RET503", # @todo: Manual work! Missing explicit `return` at the end of function able to return non-`None` value

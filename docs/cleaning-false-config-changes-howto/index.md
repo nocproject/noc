@@ -62,14 +62,15 @@ snmp mib expression owner nat name 1
   expression 259773
 """
 
+
 def nat_translations_counter(managed_object, config):
-    data =  re.sub(r"\s\sexpression\s\d+", "  expression 0", config)
+    data = re.sub(r"\s\sexpression\s\d+", "  expression 0", config)
     return data
 
 
 result = nat_translations_counter("", cfg_sample)
 
-print (result)
+print(result)
 ```
 
 Run it:
@@ -144,8 +145,9 @@ Copy the previously prepared function and import the necessary modules into the 
 ```python
 import re
 
+
 def nat_translations_counter(managed_object, config):
-    data =  re.sub(r"\s\sexpression\s\d+", "  expression 0", config)
+    data = re.sub(r"\s\sexpression\s\d+", "  expression 0", config)
     return data
 ```
 

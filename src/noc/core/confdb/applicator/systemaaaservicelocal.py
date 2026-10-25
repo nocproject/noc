@@ -13,7 +13,9 @@ class DefaultSystemAAAServiceLocalApplicator(QueryApplicator):
     """Set forwarding instance type if not set"""
 
     QUERY = [
-        "NotMatch('system', 'aaa', 'service', service, 'type', 'local') and "
-        "Fact('system', 'aaa', 'service', 'local', 'type', 'local')"
+        (
+            "NotMatch('system', 'aaa', 'service', service, 'type', 'local') and "
+            "Fact('system', 'aaa', 'service', 'local', 'type', 'local')"
+        )
     ]
     CONFIG = {"default": "local"}

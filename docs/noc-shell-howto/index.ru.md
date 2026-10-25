@@ -60,9 +60,8 @@ In [6]:
 
 ```python
 from noc.core.mongo.connection import connect
+
 connect()
-
-
 ```
 
 Необходимо отметить, что при работе через консоль разработчика не проверяются права доступа к записям

@@ -99,7 +99,6 @@ class AdministrativeDomain(BaseModel):
 В адаптере указывается класс внешней системы и классы получения данных (реализуют работу с отдельной моделью данных). Пример:
 
 ```python
-
 class ZBRemoteSystem(BaseRemoteSystem):
     """
     Базовый класс для Выгрузки.
@@ -112,6 +111,7 @@ class ZBRemoteSystem(BaseRemoteSystem):
     GROUPS_FILTER - list groups for extract
     """
 
+
 @ZBRemoteSystem.extractor
 class ZBAdministrativeDomainExtractor(BaseExtractor):
     """
@@ -122,7 +122,7 @@ class ZBAdministrativeDomainExtractor(BaseExtractor):
 
     name = "administrativedomain"
     model = AdministrativeDomain
-    data = [["zb.root", u"Заббикс", None]]
+    data = [["zb.root", "Заббикс", None]]
 ```
 
 В начале описывается класс внешней системы - `ZBRemoteSystem`, он будет указан в ссылке на адаптер (`Handler`) настроек. 
@@ -222,7 +222,6 @@ managedobjectprofile |        2 |        0 |        0
 оно переводится в неуправляемые и очищается ссылка на контейнер
 
 ```python
-
 class ManagedObjectLoader(BaseLoader):
     """
     Managed Object loader
@@ -259,7 +258,6 @@ class ManagedObjectLoader(BaseLoader):
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
-
 ```
 
 

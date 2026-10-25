@@ -55,7 +55,6 @@ Here is an example of a simple card for the `Firmware` model, where an instance 
 Card File:
 
 ```python
-
 from noc.inv.models.firmware import Firmware
 from .base import BaseCard  # Base class
 
@@ -81,7 +80,6 @@ In addition to cards that display data from specific models, cards can also be i
 The `path` card, for instance, is used to visualize the geographical path between a pair of `ManagedObjects`.
 
 ```python
-
 class PathCard(BaseCard):
     name = "path"
     default_template_name = "path"
@@ -100,7 +98,6 @@ In the example, you can see the use of the `leaflet` library for rendering a geo
 In some cases, there is a need to generate dynamic content via an API instead of creating static HTML. In such cases, the data returned is generated through the `get_ajax_data` method. An example of such a card is the `alarmheat` card found in `cards/alarmheat.py`.
 
 ```python
-
 class AlarmHeatCard(BaseCard):
     name = "alarmheat"
     card_css = ["/ui/pkg/leaflet/leaflet.css", "/ui/card/css/alarmheat.css"]
@@ -137,7 +134,6 @@ class AlarmHeatCard(BaseCard):
             "links": links,
             "pops": points,
         }
-
 ```
 
 In this card, the get_ajax_data method is implemented, and access to the arguments is directly available from the data generation method.

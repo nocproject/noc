@@ -18,7 +18,9 @@ class DefaultAAASourceAddressLookupApplicator(QueryApplicator):
     )
     QUERY = [
         # Getting source-ip from interface address by default-interface
-        "((Match('hints', 'system', 'aaa', 'service-type', stype, 'default-interface', interface) and "
-        " Match('virtual-router', VR, 'forwarding-instance', FI, 'interfaces', interface, 'unit', unit, 'inet', 'address', source)) and "
-        " Fact('hints', 'system', 'aaa', 'service-type', stype, 'default-address', source))"
+        (
+            "((Match('hints', 'system', 'aaa', 'service-type', stype, 'default-interface', interface) and "
+            " Match('virtual-router', VR, 'forwarding-instance', FI, 'interfaces', interface, 'unit', unit, 'inet', 'address', source)) and "
+            " Fact('hints', 'system', 'aaa', 'service-type', stype, 'default-address', source))"
+        )
     ]

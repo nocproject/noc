@@ -99,7 +99,7 @@ class Job:
         self.locks = list(locks) if locks is not None else None
         self.depends_on: list[ReferenceType[Job]] | None = None
         self._task: ReferenceType[asyncio.Task] | None = None
-        self.results: dict[str, None | str | object] = {}
+        self.results: dict[str, str | object | None] = {}
         self._result_is_dirty = False
 
     def __str__(self) -> str:

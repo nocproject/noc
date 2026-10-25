@@ -23,9 +23,11 @@ class Profile(BaseProfile):
     pattern_more = [
         (rb"^--More-- or \(q\)uit$", b" "),
         (
-            rb"This operation may take a few minutes.\n"
-            rb"Management interfaces will not be available during this time.\n"
-            rb"Are you sure you want to save\?\s*\(y/n\):\s*",
+            (
+                rb"This operation may take a few minutes.\n"
+                rb"Management interfaces will not be available during this time.\n"
+                rb"Are you sure you want to save\?\s*\(y/n\):\s*"
+            ),
             b"y\n",
         ),
         (rb"Would you like to save them now\?", b"n"),

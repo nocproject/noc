@@ -22,11 +22,11 @@ Config Diff Filter применяется после [Config Filter](config-filt
 Удалить *ntp date XXX*
 
 ```python
+import re
 
-    import re
+rx_ntp = re.compile("^ntp\s+date\s+\d+$", re.MULTILINE)
 
-    rx_ntp = re.compile("^ntp\s+date\s+\d+$", re.MULTILINE)
 
-    def config_diff_filter(mo, config):
-        return rx_ntp.sub("", rx_password)
+def config_diff_filter(mo, config):
+    return rx_ntp.sub("", rx_password)
 ```

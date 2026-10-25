@@ -56,8 +56,10 @@ class ReportDiscoveryLinks(ReportSource):
             url = f"/main/reportconfig/{od_report.id}/run?" + "&".join(
                 [
                     "output_type=xlsx",
-                    "fields=name,address,object_profile,avail,profile,administrativedomain,"
-                    "segment,pool,link_count",
+                    (
+                        "fields=name,address,object_profile,avail,profile,administrativedomain,"
+                        "segment,pool,link_count"
+                    ),
                     "detail_query=%s&pool=%s",
                 ]
             )
