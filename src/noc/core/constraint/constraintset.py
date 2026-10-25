@@ -7,13 +7,10 @@
 
 # Python modules
 from collections import defaultdict
-from typing import TypeVar
 from collections.abc import Iterable
 
 # NOC modules
 from .base import BaseConstraint
-
-BC = TypeVar("BC", bound=BaseConstraint)
 
 
 class ConstraintSet:
@@ -24,7 +21,7 @@ class ConstraintSet:
     def __init__(self: "ConstraintSet") -> None:
         self._data: defaultdict[type[BaseConstraint], list[BaseConstraint]] = defaultdict(list)
 
-    def get(self: "ConstraintSet", item: type[BC]) -> list[BC] | None:
+    def get[BC: BaseConstraint](self, item: type[BC]) -> list[BC] | None:
         """
         Get item.
 

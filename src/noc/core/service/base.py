@@ -20,7 +20,6 @@ import cachetools
 from functools import partial
 from typing import (
     Any,
-    TypeVar,
     Never,
 )
 from collections.abc import Callable, Awaitable, Coroutine, Iterable
@@ -70,7 +69,6 @@ from .middleware.logging import LoggingMiddleware
 from .middleware.span import SpanMiddleware
 from ..router.datastream import RouteDataStreamClient
 
-T = TypeVar("T")
 DCS_SLOTS_CACHE = {}  # PROCESS -> object cache
 dcs_slot_lock = threading.Lock()
 
@@ -184,7 +182,7 @@ class BaseService:
         """Return argument parser"""
         return argparse.ArgumentParser()
 
-    def start_background_task(
+    def start_background_task[T](
         self, coro: Coroutine[Any, Any, T], *, name: str | None = None
     ) -> asyncio.Task[T]:
         """Create a task and retain its reference until it completes."""
@@ -883,7 +881,7 @@ class BaseService:
             self.executors[name] = executor
         return executor
 
-    def run_in_executor(
+    def run_in_executor[T](
         self, name: str, fn: Callable[[Any], T], *args: Any, **kwargs: Any
     ) -> asyncio.Future:
         executor = self.get_executor(name)

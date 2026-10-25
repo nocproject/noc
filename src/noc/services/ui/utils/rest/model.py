@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, TypeVar
+from typing import Any
 from collections.abc import Callable
 from http import HTTPStatus
 
@@ -25,10 +25,7 @@ from .base import BaseResourceAPI
 from ...models.utils import SummaryItem
 
 
-T = TypeVar("T", bound=Model)
-
-
-class ModelResourceAPI(BaseResourceAPI[T]):
+class ModelResourceAPI[T: Model](BaseResourceAPI[T]):
     """
     Generic Django-backed REST api.
     """

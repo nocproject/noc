@@ -12,7 +12,7 @@ import os
 import datetime
 import functools
 from collections import OrderedDict
-from typing import TypeVar, Any, cast
+from typing import Any, cast
 from http import HTTPStatus
 
 # Third-party modules
@@ -43,8 +43,6 @@ from .api import view, api
 from .site import site
 
 __all__ = ["Application", "api", "view"]
-
-T = TypeVar("T")
 
 
 class BoundView:
@@ -245,7 +243,7 @@ class Application(metaclass=ApplicationBase):
         return r
 
     @staticmethod
-    def get_object_or_404(model: type[T], *args, **kwargs) -> T:
+    def get_object_or_404[T](model: type[T], *args, **kwargs) -> T:
         """
         Shortcut to get_object_or_404
         """

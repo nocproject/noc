@@ -11,7 +11,7 @@ import datetime
 import socket
 import struct
 from dataclasses import dataclass, field
-from typing import Any, TypeVar, ClassVar
+from typing import Any, ClassVar
 from collections.abc import AsyncIterable, Callable
 import threading
 
@@ -24,8 +24,6 @@ from noc.core.service.loader import get_service
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 from noc.core.models.inputsources import InputSource
 from noc.core.threadpool import ThreadPoolExecutor
-
-T = TypeVar("T")
 
 TCP_CHECK = "TCP"
 FAIL_CHECK = "FAIL"
@@ -305,7 +303,7 @@ class BaseChecker:
         """
         raise NotImplementedError()
 
-    async def run_in_executor(self, fn: Callable[[], T]) -> T:
+    async def run_in_executor[T](self, fn: Callable[[], T]) -> T:
         """Run function on executor."""
         with BaseChecker._executor_lock:
             executor = BaseChecker._executor

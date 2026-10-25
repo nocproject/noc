@@ -7,7 +7,7 @@
 
 # Python modules
 from collections.abc import Callable
-from typing import TypeVar, Any, Concatenate, ParamSpec
+from typing import Any, Concatenate
 
 # Third-party modules
 from django.http import HttpRequest
@@ -18,13 +18,8 @@ from .access import HasPerm, Permit, Deny, Permission
 
 __all__ = ["api", "view"]
 
-P = ParamSpec("P")
-R = TypeVar("R")
-T = TypeVar("T")
-Self = TypeVar("Self")
 
-
-def view(
+def view[**P, R, Self](
     url: str,
     access: str | bool | Permission,
     url_name: str | None = None,

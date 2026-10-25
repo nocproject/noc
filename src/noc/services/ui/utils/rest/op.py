@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import TypeVar
 from collections.abc import Callable
 from http import HTTPStatus
 
@@ -18,9 +17,6 @@ from mongoengine.document import Document
 # NOC modules
 from noc.models import is_document
 from noc.core.validators import is_objectid, is_int
-
-TModel = TypeVar("TModel", bound=Model)
-TDoc = TypeVar("TDoc", bound=Document)
 
 
 class ListOp:
@@ -47,8 +43,8 @@ class FilterExact(ListOp):
         return inner
 
 
-class RefFilter(ListOp):
-    def __init__(self, name: str, model: TModel | TDoc) -> None:
+class RefFilter[T: Model | Document](ListOp):
+    def __init__(self, name: str, model: T) -> None:
         super().__init__(name)
         self.model = model
 

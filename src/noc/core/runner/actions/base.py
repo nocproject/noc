@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import TypeVar, Any, cast
+from typing import Any, cast
 from collections.abc import Callable
 import enum
 from logging import Logger
@@ -19,9 +19,6 @@ from gufo.loader import Loader
 from noc.config import config
 from noc.core.error import NOCError
 from ..env import Environment
-
-REQ = TypeVar("REQ")
-RESP = TypeVar("RESP")
 
 
 class ActionResultCode(enum.Enum):

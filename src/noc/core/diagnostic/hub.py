@@ -10,7 +10,7 @@ import datetime
 import logging
 import itertools
 from functools import partial
-from typing import Any, TypeVar
+from typing import Any
 from collections.abc import Iterable
 
 # Third-party modules
@@ -50,8 +50,6 @@ FM_DIAGS = {SNMPTRAP_DIAG, SYSLOG_DIAG}
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
-T = TypeVar("T")
-
 
 def json_default(obj):
     if isinstance(obj, BaseModel):
@@ -88,7 +86,7 @@ class DiagnosticHub:
 
     """
 
-    def __init__(
+    def __init__[T](
         self,
         o: T,
         dry_run: bool = False,
@@ -478,7 +476,7 @@ class DiagnosticHub:
         self.__object._reset_caches(self.__object.id)
 
     @classmethod
-    def sync_alarms(
+    def sync_alarms[T](
         cls,
         o: T,
         diagnostics: list[DiagnosticItem],

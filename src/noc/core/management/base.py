@@ -8,7 +8,7 @@
 # Python modules
 import sys
 import argparse
-from typing import Never, TextIO, TypeVar
+from typing import Never, TextIO
 from collections.abc import Sequence, Iterable, Iterator
 from pathlib import Path
 import resource
@@ -18,8 +18,6 @@ from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-
-T = TypeVar("T")
 
 
 class CommandError(Exception):
@@ -244,7 +242,7 @@ class BaseCommand:
         """
         raise CommandError(msg)
 
-    def progress(self, iterable: Iterable[T], max_value: int | None = None) -> Iterator[T]:
+    def progress[T](self, iterable: Iterable[T], max_value: int | None = None) -> Iterator[T]:
         """Wrap an iterable with a progress bar.
 
         The progress bar can be disabled using the ``no_progressbar`` option.

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, TypeVar
+from typing import Any
 from collections.abc import Callable
 from http import HTTPStatus
 
@@ -26,10 +26,7 @@ from .base import BaseResourceAPI
 from ...models.utils import SummaryItem
 
 
-T = TypeVar("T", bound=Document)
-
-
-class DocumentResourceAPI(BaseResourceAPI[T]):
+class DocumentResourceAPI[T: Document](BaseResourceAPI[T]):
     """
     Generic mongoengine-backed REST api.
     """
