@@ -2192,10 +2192,6 @@ msgstr ""
 msgid "never"
 msgstr ""
 
-#: services/web/apps/main/reportbackups/views.py:21
-msgid "Backup Status"
-msgstr ""
-
 #: services/web/apps/main/reportconfig/views.py:33
 msgid "Report Config"
 msgstr ""

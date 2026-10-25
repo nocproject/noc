@@ -87,13 +87,6 @@ class Config(BaseConfig):
         db_ttl = SecondsParameter(default="5y")
         config_changed_ttl = SecondsParameter(default="1y")
 
-    class backup(ConfigSection):
-        keep_days = SecondsParameter(default="14d")
-        keep_weeks = SecondsParameter(default="12w")
-        keep_day_of_week = IntParameter(default=6)
-        keep_months = IntParameter(default=12)
-        keep_day_of_month = IntParameter(default=1)
-
     class bh(ConfigSection):
         bulk_ping_timeout = SecondsParameter(default="5s")
         bulk_ping_interval = FloatParameter(default=0.1)

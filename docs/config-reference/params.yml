@@ -30,16 +30,6 @@ params:
   audit.login_ttl:
     default: '2592000'
   audit.reboot_ttl: {}
-  backup.keep_day_of_month:
-    default: '1'
-  backup.keep_day_of_week:
-    default: '6'
-  backup.keep_days:
-    default: '1209600'
-  backup.keep_months:
-    default: '12'
-  backup.keep_weeks:
-    default: '7257600'
   bh.bulk_ping_interval:
     default: '0.1'
   bh.bulk_ping_max_jobs:

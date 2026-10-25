@@ -2,7 +2,6 @@
 * [Global Configuration](global.md)
 * [[activator] Section](activator.md)
 * [[audit] section](audit.md)
-* [[backup] section](backup.md)
 * [[bi] section](bi.md)
 * [[biosegmentation] section](biosegmentation.md)
 * [[cache] section](cache.md)

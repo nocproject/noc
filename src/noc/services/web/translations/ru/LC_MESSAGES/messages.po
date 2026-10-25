@@ -2196,10 +2196,6 @@ msgstr "Внешние системы"
 msgid "never"
 msgstr "никогда"
 
-#: services/web/apps/main/reportbackups/views.py:21
-msgid "Backup Status"
-msgstr "Статус резервного копирования"
-
 #: services/web/apps/main/reportconfig/views.py:33
 msgid "Report Config"
 msgstr "Настройки отчётов"
