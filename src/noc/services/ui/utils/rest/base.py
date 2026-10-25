@@ -1,17 +1,13 @@
 # ----------------------------------------------------------------------
 # BaseResourceAPI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import typing
-from typing import (
-    Any,
-    TypeVar,
-    Generic,
-)
+from typing import Any
 from collections.abc import Callable, Iterable
 import inspect
 from http import HTTPStatus
@@ -31,7 +27,6 @@ from ...models.status import StatusResponse
 from .op import ListOp
 
 
-T = TypeVar("T")  # , bound=Model)
 GET = ["GET"]
 POST = ["POST"]
 PUT = ["PUT"]
@@ -41,7 +36,7 @@ X_NOC_LIMIT = "X-NOC-Limit"
 X_NOC_OFFSET = "X-NOC-Offset"
 
 
-class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
+class BaseResourceAPI[T](metaclass=ABCMeta):
     """
     Generic Abstract REST api.
 

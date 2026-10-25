@@ -10,7 +10,7 @@ import itertools
 import logging
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pathlib import Path
-from typing import TypeVar, Generic, Any
+from typing import Any
 from collections.abc import Iterable
 
 # NOC modules
@@ -19,10 +19,8 @@ from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T")
 
-
-class BaseParameter(Generic[T]):
+class BaseParameter[T]:
     PARAM_NUMBER = itertools.count()
 
     def __init__(self, default: T | str | None = None, help: str | None = None) -> None:
@@ -147,7 +145,7 @@ class FloatParameter(BaseParameter[float]):
         return float(v)
 
 
-class MapParameter(BaseParameter[T], Generic[T]):
+class MapParameter[T](BaseParameter[T]):
     def __init__(
         self, mappings: dict[str, T], default: str | None = None, help: str | None = None
     ) -> None:
@@ -263,7 +261,7 @@ class BytesSizeParameter(BaseParameter[int]):
         return f"{self.value}s"
 
 
-class ListParameter(BaseParameter[list[T]], Generic[T]):
+class ListParameter[T](BaseParameter[list[T]]):
     def __init__(
         self, item: BaseParameter[T], default: Any = None, help: str | None = None
     ) -> None:

@@ -1,19 +1,16 @@
 # ----------------------------------------------------------------------
 # ETL-specific types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Generic, TypeVar, Any, Annotated
+from typing import Any, Annotated
 
 # Third-party modules
 from pydantic_core import CoreSchema, core_schema
 from pydantic import GetCoreSchemaHandler, BaseModel, StringConstraints
-
-
-T = TypeVar("T")
 
 
 class RemoteReference(BaseModel):
@@ -43,7 +40,7 @@ class CapsItem(BaseModel):
     value: str | bool | int | list[Any]
 
 
-class Reference(Generic[T]):
+class Reference[T]:
     def __init__(self, name: str, model: T, value: Any, remote_system: str | None = None) -> None:
         self.name = name
         self.model = model

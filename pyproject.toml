@@ -178,7 +178,6 @@ ignore = [
   "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF100", # Unused blanket `noqa` directive
-  "UP046", # Generic class `BaseResourceAPI` uses `Generic` subclass instead of type parameters
 ]
 # Enable
 select = [
