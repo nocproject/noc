@@ -668,8 +668,6 @@ params:
   mrt.enable_command_logging: {}
   mrt.max_concurrency:
     default: '50'
-  msgstream.ch.auto_pause_disable_if_subscribers: {}
-  msgstream.ch.auto_pause_time: {}
   msgstream.ch.replication_factor:
     default: '1'
   msgstream.ch.retention_max_age:
@@ -682,31 +680,24 @@ params:
     default: '52428800'
   msgstream.client_class:
     default: noc.core.msgstream.kafka.KafkaClient
-  msgstream.dispose.auto_pause_disable_if_subscribers: {}
-  msgstream.dispose.auto_pause_time: {}
   msgstream.dispose.retention_max_age:
     default: '86400'
   msgstream.dispose.retention_max_bytes: {}
   msgstream.dispose.segment_max_age:
     default: '3600'
   msgstream.dispose.segment_max_bytes: {}
-  msgstream.events.auto_pause_disable_if_subscribers: {}
-  msgstream.events.auto_pause_time: {}
   msgstream.events.retention_max_age:
     default: '86400'
   msgstream.events.retention_max_bytes: {}
   msgstream.events.segment_max_age:
     default: '3600'
   msgstream.events.segment_max_bytes: {}
-  msgstream.jobs.auto_pause_time: {}
   msgstream.jobs.retention_max_age:
     default: '86400'
   msgstream.jobs.retention_max_bytes: {}
   msgstream.jobs.segment_max_age:
     default: '3600'
   msgstream.jobs.segment_max_bytes: {}
-  msgstream.kafkasender.auto_pause_disable_if_subscribers: {}
-  msgstream.kafkasender.auto_pause_time: {}
   msgstream.kafkasender.retention_max_age:
     default: '3600'
   msgstream.kafkasender.retention_max_bytes: {}
@@ -715,16 +706,12 @@ params:
   msgstream.kafkasender.segment_max_bytes: {}
   msgstream.max_message_size:
     default: '921600'
-  msgstream.message.auto_pause_disable_if_subscribers: {}
-  msgstream.message.auto_pause_time: {}
   msgstream.message.retention_max_age:
     default: '3600'
   msgstream.message.retention_max_bytes: {}
   msgstream.message.segment_max_age:
     default: '1800'
   msgstream.message.segment_max_bytes: {}
-  msgstream.metrics.auto_pause_disable_if_subscribers: {}
-  msgstream.metrics.auto_pause_time: {}
   msgstream.metrics.retention_max_age:
     default: '3600'
   msgstream.metrics.retention_max_bytes: {}
@@ -733,7 +720,6 @@ params:
   msgstream.metrics.segment_max_bytes: {}
   msgstream.metrics_send_delay:
     default: '0.25'
-  msgstream.submit.auto_pause_time: {}
   msgstream.submit.retention_max_age:
     default: '86400'
   msgstream.submit.retention_max_bytes: {}

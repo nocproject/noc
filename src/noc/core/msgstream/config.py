@@ -24,8 +24,6 @@ class StreamConfig:
     segment_bytes: int = 0
     retention_ages: int = 86400
     segment_ages: int = 3600
-    auto_pause_time: bool = False
-    auto_pause_disable: bool = False
     replication_factor: int | None = None
 
     @property

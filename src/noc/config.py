@@ -697,10 +697,6 @@ class Config(BaseConfig):
                 default=0,
                 help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
             )
-            auto_pause_time = SecondsParameter(
-                default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
-            )
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class dispose(ConfigSection):
             retention_max_age = SecondsParameter(
@@ -719,26 +715,18 @@ class Config(BaseConfig):
                 default=0,
                 help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
             )
-            auto_pause_time = SecondsParameter(
-                default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
-            )
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class message(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
             retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
             segment_max_bytes = BytesSizeParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class ch(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
             retention_max_bytes = BytesSizeParameter(default="100M")
             segment_max_age = SecondsParameter(default="30M")
             segment_max_bytes = BytesSizeParameter(default="50M")
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
             replication_factor = IntParameter(
                 default=1, help="Replicaton factor for clickhouse streams"
             )
@@ -748,30 +736,24 @@ class Config(BaseConfig):
             retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
             segment_max_bytes = BytesSizeParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class metrics(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
             retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
             segment_max_bytes = BytesSizeParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class jobs(ConfigSection):
             retention_max_age = SecondsParameter(default="24h")
             retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="1h")
             segment_max_bytes = BytesSizeParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
 
         class submit(ConfigSection):
             retention_max_age = SecondsParameter(default="24h")
             retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="1h")
             segment_max_bytes = BytesSizeParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
