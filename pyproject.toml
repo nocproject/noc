@@ -179,7 +179,6 @@ ignore = [
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF100", # Unused blanket `noqa` directive
   "UP046", # Generic class `BaseResourceAPI` uses `Generic` subclass instead of type parameters
-  "UP047", # Generic function `get_reference` should use type parameters
 ]
 # Enable
 select = [

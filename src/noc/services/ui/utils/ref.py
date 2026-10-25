@@ -1,12 +1,9 @@
 # ----------------------------------------------------------------------
 # get_reference
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Python modules
-from typing import TypeVar
 
 # Third-party modules
 from django.db.models import Model
@@ -19,11 +16,7 @@ from ..models.utils import Reference
 from ..models.label import LabelItem
 
 
-TModel = TypeVar("TModel", bound=Model)
-TDoc = TypeVar("TDoc", bound=Document)
-
-
-def get_reference(item: TModel | TDoc | None) -> Reference | None:
+def get_reference(item: Model | Document | None) -> Reference | None:
     if not item:
         return None
     return Reference(id=str(item.id), label=str(item))

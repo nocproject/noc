@@ -73,7 +73,7 @@ class IOLoopContext:
             return True
 
 
-def run_sync(cb: Callable[[], T]) -> T:
+def run_sync[T](cb: Callable[[], T]) -> T:
     """
     Run callable on dedicated IOLoop in safe manner
     and return result or raise error
