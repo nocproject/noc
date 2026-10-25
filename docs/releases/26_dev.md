@@ -58,6 +58,25 @@ NOC 26 streamlines installation and development workflows, introduces `uv`-based
 
 ## Breaking Changes
 
+### Device Profile Pager Configuration
+
+Device profiles must define pager handling with `pattern_more` as a list of `(pattern, command)` pairs. Check custom device profiles for `command_more` declarations or string/bytes values assigned directly to `pattern_more` and update them before upgrading; profile loading now raises `RuntimeError` for these legacy forms.
+
+Before:
+
+```python
+class Profile(BaseProfile):
+    pattern_more = rb"^--More--"
+    command_more = b" "
+```
+
+After:
+
+```python
+class Profile(BaseProfile):
+    pattern_more = [(rb"^--More--", b" ")]
+```
+
 ### Dynamic Dashboard Templates Movement
 
 Built-in dynamic dashboard templates have moved into the web application. If you have custom dynamic dashboard templates, move them from `<custom root>/templates/ddash` to

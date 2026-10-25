@@ -12,7 +12,7 @@ import warnings
 from itertools import product
 
 # Third-party modules
-from typing import Any, cast
+from typing import Any, ClassVar, cast
 from collections.abc import Callable
 
 # NOC modules
@@ -49,19 +49,16 @@ class BaseProfileMetaclass(type):
     ) -> type["BaseProfile"]:
         n = cast(type["BaseProfile"], type.__new__(mcs, name, bases, attrs))
         n.rogue_char_cleaners = n._get_rogue_chars_cleaners()
-        if n.command_more:
-            warnings.warn(
-                f"{n.name}: 'command_more' is deprecated and will be removed in NOC 20.3",
-                RemovedInNOC2003Warning,
+        if "command_more" in attrs:
+            raise RuntimeError(
+                f"{n.name}: 'command_more' is no longer supported; "
+                "use 'pattern_more = [(pattern, command)]' instead"
             )
         if isinstance(n.pattern_more, (str, bytes)):
-            warnings.warn(
-                f"{n.name}: 'pattern_more' must be a list of (pattern, command). "
-                "Support for textual 'command_more' will be removed in NOC 20.3",
-                RemovedInNOC2003Warning,
+            raise RuntimeError(
+                f"{n.name}: scalar 'pattern_more' is no longer supported; "
+                "use 'pattern_more = [(pattern, command)]' instead"
             )
-            n.pattern_more = [(n.pattern_more, n.command_more)]
-            n.command_more = None
         # Fix binary attributes
         for attr in mcs.BINARY_ATTRS:
             v = getattr(n, attr, None)
@@ -71,23 +68,6 @@ class BaseProfileMetaclass(type):
                     RemovedInNOC2003Warning,
                 )
                 setattr(n, attr, smart_bytes(v))
-        # Fix command_more
-        pattern_more = []
-        for pattern, cmd in n.pattern_more:
-            if not isinstance(pattern, bytes):
-                warnings.warn(
-                    f"{n.name}: 'pattern_more' {pattern!r} pattern must be of binary type. "
-                    "Support for text values will be removed in NOC 20.2"
-                )
-                pattern = smart_bytes(pattern)
-            if isinstance(cmd, str):
-                warnings.warn(
-                    f"{n.name}: 'pattern_more' {cmd!r} command must be of binary type. "
-                    "Support for text values will be removed in NOC 20.2"
-                )
-                cmd = smart_bytes(cmd)
-            pattern_more.append((pattern, cmd))
-        n.pattern_more = pattern_more
         # Build patterns
         n.patterns = n._get_patterns()
         # Build effective snmp_display_hints for subclasses
@@ -152,12 +132,11 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     (CLI Session)
     """
 
-    pattern_more = rb"^---MORE---"
+    pattern_more: ClassVar[list[tuple[bytes, bytes]]] = [(rb"^---MORE---", b"\n")]
     """
     Optional[regexp]: Regular expression to catch pager
     (Used in command results)
-    If pattern_more is string, send command_more
-    If pattern_more is a list of (pattern,command) send appropriate command
+    List of (pattern, command) pairs to handle pager prompts
     """
 
     pattern_syntax_error = None
@@ -208,12 +187,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     my.very.long.hos(config)#
     In this case set `can_strip_hostname_to` = 16
     None by default
-    """
-
-    command_more = b"\n"
-    """
-    bytes: Sequence to be send to list forward pager
-    If pattern_more is string and is matched
     """
 
     command_submit = b"\n"
@@ -1182,24 +1155,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         Return dict of compiled regular expressions
         """
 
-        def get_commands(pattern_more) -> list[bytes | dict[tuple[str, ...], str]]:
-            commands = []
-            for x in pattern_more:
-                c = x[1]
-                if isinstance(c, bytes):
-                    commands.append(c)
-                elif isinstance(c, dict):
-                    cnew = {}
-                    for ck, cv in c.items():
-                        if isinstance(ck, str):
-                            cnew[(ck,)] = cv
-                        elif isinstance(ck, tuple):
-                            cnew[ck] = cv
-                        elif ck is None:
-                            cnew[None] = cv
-                    commands.append(cnew)
-            return commands
-
         patterns = {
             "username": re.compile(cls.pattern_username, re.DOTALL | re.MULTILINE),
             "password": re.compile(cls.pattern_password, re.DOTALL | re.MULTILINE),
@@ -1217,7 +1172,7 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
             patterns["setup"] = re.compile(cls.pattern_start_setup, re.DOTALL | re.MULTILINE)
         # .more_patterns is a list of (pattern, command)
         more_patterns = [x[0] for x in cls.pattern_more]
-        patterns["more_commands"] = get_commands(cls.pattern_more)
+        patterns["more_commands"] = [command for _, command in cls.pattern_more]
         # Merge pager patterns
         patterns["pager"] = re.compile(
             b"|".join(b"(%s)" % p for p in more_patterns), re.DOTALL | re.MULTILINE
