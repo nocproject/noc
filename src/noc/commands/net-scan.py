@@ -20,7 +20,7 @@ from gufo.ping import Ping
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.validators import is_ipv4
-from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.perf import metrics
 from noc.core.ip import IP
 from noc.config import config
@@ -164,7 +164,7 @@ class Command(BaseCommand):
             self.print(f"SNMP Credentials: {snmp_creds}")
         # result = defaultdict(lambda: {"checks": [], "source": "network-scan", "data": {}})
         with progressbar.ProgressBar(max_value=len(addr_list)) as bar:
-            run_sync(runner)
+            asyncio.run(runner(), loop_factory=get_loop_factory())
         downs = metrics.get("address_down").value if metrics.get("address_down") else 0
         ups = metrics.get("address_up").value if metrics.get("address_up") else 0
         self.stdout.write(

@@ -16,7 +16,7 @@ from gufo.ping import Ping
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
-from noc.core.ioloop.util import setup_asyncio, run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.perf import metrics
 from noc.config import config
 
@@ -57,8 +57,7 @@ class Command(BaseCommand):
         addr_list = self.get_addresses(addresses, input)
         lock: asyncio.Lock | None = None
         ping = Ping(tos=config.ping.tos, timeout=1.0)
-        setup_asyncio()
-        run_sync(runner)
+        asyncio.run(runner(), loop_factory=get_loop_factory())
         self.stdout.write(
             f"Stat: down - {metrics.get('address_down').value}; up - {metrics.get('address_up').value}"
         )

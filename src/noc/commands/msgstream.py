@@ -8,12 +8,12 @@
 # Python modules
 import datetime
 import argparse
-import functools
+import asyncio
 from dateutil.parser import parse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.msgstream.metadata import Metadata, PartitionMetadata
 from noc.core.debug import error_report
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             async with MessageStreamClient() as client:
                 return await client.fetch_partition_metadata(stream, partition)
 
-        meta: Metadata = run_sync(get_meta)
+        meta: Metadata = asyncio.run(get_meta(), loop_factory=get_loop_factory())
         self.print(f"# Brokers ({len(meta.brokers)})")
         self.print(f"{'ID':20} | HOST:PORT")
         b_map = {}
@@ -113,8 +113,8 @@ class Command(BaseCommand):
             for p in sorted(meta.metadata[stream]):
                 print(f"    ### Partition: {p}")
                 try:
-                    p_meta: PartitionMetadata = run_sync(
-                        functools.partial(get_partition_meta, stream, p)
+                    p_meta: PartitionMetadata = asyncio.run(
+                        get_partition_meta(stream, p), loop_factory=get_loop_factory()
                     )
                 except Exception as e:
                     print(f"[{stream}|{p}] Failed getting data for partition: {e}")
@@ -146,14 +146,14 @@ class Command(BaseCommand):
                     replication_factor=rf,
                 )
 
-        run_sync(create)
+        asyncio.run(create(), loop_factory=get_loop_factory())
 
     def handle_delete_stream(self, name: str, *args, **kwargs):
         async def delete():
             async with MessageStreamClient() as client:
                 await client.delete_stream(name)
 
-        run_sync(delete)
+        asyncio.run(delete(), loop_factory=get_loop_factory())
 
     def handle_alter_stream(
         self,
@@ -174,7 +174,7 @@ class Command(BaseCommand):
                     replication_factor=rf,
                 )
 
-        run_sync(alter)
+        asyncio.run(alter(), loop_factory=get_loop_factory())
 
     def handle_subscribe(
         self,
@@ -208,7 +208,7 @@ class Command(BaseCommand):
         if start_ts:
             start_offset = None
             start_ts *= 1000000000
-        run_sync(subscribe)
+        asyncio.run(subscribe(), loop_factory=get_loop_factory())
 
     def handle_set_cursor(
         self, name: str, stream: str, partition: int = 0, offset: int = 0, *args, **kwargs
@@ -219,7 +219,7 @@ class Command(BaseCommand):
                     stream=stream, partition=partition, cursor_id=name, offset=offset
                 )
 
-        run_sync(set_cursor)
+        asyncio.run(set_cursor(), loop_factory=get_loop_factory())
 
     def handle_fetch_cursor(self, name: str, stream: str, partition: int = 0, *args, **kwargs):
         async def fetch_cursor():
@@ -229,4 +229,4 @@ class Command(BaseCommand):
                 )
                 print(cursor)
 
-        run_sync(fetch_cursor)
+        asyncio.run(fetch_cursor(), loop_factory=get_loop_factory())

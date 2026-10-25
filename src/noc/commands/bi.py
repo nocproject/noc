@@ -8,11 +8,11 @@
 # Python modules
 import os
 import datetime
+import asyncio
 import gzip
 import time
 import random
 import argparse
-from functools import partial
 from gc import collect
 
 # Third-party modules
@@ -30,7 +30,7 @@ from noc.core.bi.dictionaries.loader import loader
 from noc.core.clickhouse.model import DictionaryModel
 from noc.core.msgstream.client import MessageStreamClient
 from noc.config import config
-from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.models import get_model, is_document
 
 BATCH_SIZE = 10000
@@ -224,7 +224,7 @@ class Command(BaseCommand):
                     r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", lt)
                     data.append(orjson.dumps(r))
                 table = bi_dict_model._meta.db_table
-                run_sync(partial(upload, table, data))
+                asyncio.run(upload(table, data), loop_factory=get_loop_factory())
 
     def handle_clean(self, *args, **options):
         for ecls in self.EXTRACTORS:
@@ -271,5 +271,5 @@ class Command(BaseCommand):
             with gzip.open(path, "rb") as f:
                 data = f.read().splitlines()
             table = fn.split("-", 1)[0]
-            run_sync(partial(upload, table, data))
+            asyncio.run(upload(table, data), loop_factory=get_loop_factory())
             os.unlink(path)

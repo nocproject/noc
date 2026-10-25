@@ -20,6 +20,7 @@ from gufo.ping import Ping
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.ip import IP
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.mib import mib
@@ -328,11 +329,11 @@ class Command(BaseCommand):
         # Ping
         self.ping = Ping(tos=config.ping.tos)
         self.jobs = jobs
-        asyncio.run(ping_task())
+        asyncio.run(ping_task(), loop_factory=get_loop_factory())
         print("ver.16")
         print("enable_ping ", len(self.enable_ping))
         # snmp
-        asyncio.run(snmp_task())
+        asyncio.run(snmp_task(), loop_factory=get_loop_factory())
         print("enable_snmp ", len(self.enable_snmp))
 
         data = "IP;Available via ICMP;IP enable;is_managed;suggest name;SMNP sysname;SNMP sysObjectId;Vendor;Model;Name;pool;labels\n"

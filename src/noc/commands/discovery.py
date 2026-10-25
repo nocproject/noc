@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import argparse
 import time
 from collections import defaultdict
-from functools import partial
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -22,6 +22,7 @@ from noc.core.cache.base import cache
 from noc.core.span import Span, get_spans
 from noc.core.service.pub import publish
 from noc.core.comp import smart_bytes
+from noc.core.ioloop.util import get_loop_factory
 from noc.services.discovery.jobs.base import get_discovery_job
 
 
@@ -189,7 +190,6 @@ class ServiceStub:
         :return:
         """
         from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-        from noc.core.ioloop.util import run_sync
 
         dcs = get_dcs(DEFAULT_DCS)
-        return run_sync(partial(dcs.get_slot_limit, slot_name))
+        return asyncio.run(dcs.get_slot_limit(slot_name), loop_factory=get_loop_factory())

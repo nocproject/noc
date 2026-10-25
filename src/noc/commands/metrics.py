@@ -7,13 +7,13 @@
 
 # Python modules
 import argparse
+import asyncio
 import gzip
 import os
 import random
 import datetime
 import time
 from dateutil.parser import parse
-from functools import partial
 from collections import defaultdict
 from typing import Any
 from collections.abc import Iterable
@@ -25,7 +25,7 @@ import orjson
 from noc.config import config
 from noc.core.management.base import BaseCommand
 from noc.core.msgstream.client import MessageStreamClient
-from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.cdag.graph import CDAG
 from noc.core.service.loader import get_service
 
@@ -154,7 +154,7 @@ class Command(BaseCommand):
                 with open(fn) as f:
                     records = f.read().replace("\r", "").splitlines()
             table = fn.split("-", 1)[0]
-            run_sync(partial(upload, table, records))
+            asyncio.run(upload(table, records), loop_factory=get_loop_factory())
             if rm:
                 os.unlink(fn)
 
@@ -336,7 +336,7 @@ class Command(BaseCommand):
             data["ts"] = time.time_ns()
             # data["managed_object"]
             # data["sla_probe"]
-            run_sync(partial(upload, orjson.dumps([data])))
+            asyncio.run(upload(orjson.dumps([data])), loop_factory=get_loop_factory())
             time.sleep(5)
             self.print("Register Metric", data)
 

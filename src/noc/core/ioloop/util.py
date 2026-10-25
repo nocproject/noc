@@ -10,14 +10,12 @@ import asyncio
 import logging
 
 # Third-party modules
-from typing import TypeVar
 from collections.abc import Callable
 
 # NOC modules
 from noc.config import config
 
 logger = logging.getLogger(__name__)
-T = TypeVar("T")
 
 USE_UVLOOP = False
 
@@ -134,6 +132,26 @@ class NOCEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
         :return:
         """
         self._local._set_called = False
+
+
+def get_loop_factory() -> Callable[[], asyncio.AbstractEventLoop]:
+    """Get the event loop factory according to the NOC configuration.
+
+    Returns:
+        Event loop factory.
+
+    Examples:
+        Run a coroutine using the configured event loop::
+
+            asyncio.run(main(), loop_factory=get_loop_factory())
+
+        Create an event loop directly::
+
+            loop = get_loop_factory()()
+    """
+    if config.features.use_uvloop and USE_UVLOOP:
+        return uvloop.new_event_loop
+    return asyncio.new_event_loop
 
 
 if USE_UVLOOP:

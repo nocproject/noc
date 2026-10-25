@@ -7,9 +7,9 @@
 
 # Python modules
 import argparse
+import asyncio
 from datetime import datetime, timedelta
 from collections import defaultdict
-from functools import partial
 import math
 import csv
 import time
@@ -24,7 +24,7 @@ from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.loader import get_dcs
-from noc.core.ioloop.util import run_sync
+from noc.core.ioloop.util import get_loop_factory
 from noc.main.models.pool import Pool
 
 
@@ -391,7 +391,10 @@ class Command(BaseCommand):
     def get_max_slots(cls, scheduler: Scheduler) -> int:
         slots = 0
         if scheduler.pool:
-            slots = run_sync(partial(cls.get_slot_limits, f"{scheduler.name}-{scheduler.pool}"))
+            slots = asyncio.run(
+                cls.get_slot_limits(f"{scheduler.name}-{scheduler.pool}"),
+                loop_factory=get_loop_factory(),
+            )
         return slots
 
     def handle_stats(
