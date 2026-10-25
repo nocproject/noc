@@ -8,10 +8,12 @@
 # Python modules
 import logging
 import datetime
+from collections.abc import Iterator
 
 # NOC modules
 from noc.core.mongo.connection import get_db
-from .loader import MigrationLoader
+from noc.settings import INSTALLED_APPS
+from .base import BaseMigration, migration_loaders
 
 
 class MigrationRunner:
@@ -20,12 +22,67 @@ class MigrationRunner:
         self.hist_coll = self.db["migrations"]
         self.logger = logging.getLogger("migration")
 
+    @staticmethod
+    def iter_app_migrations(app: str) -> Iterator[BaseMigration]:
+        """Yield an application's migrations in sequence order."""
+        prev_name: str | None = None
+        loader = migration_loaders[app]
+        for migration_class in (loader[name] for name in loader):
+            migration = migration_class()
+            if prev_name:
+                # Implicit dependency from previous migration
+                migration.add_dependency(prev_name)
+            yield migration
+            prev_name = migration.get_name()
+
+    @classmethod
+    def iter_plan(cls) -> Iterator[BaseMigration]:
+        """Yield migrations in dependency order."""
+
+        def iter_chain(app: str) -> Iterator[BaseMigration]:
+            for migration in cls.iter_app_migrations(app):
+                while app in pending:
+                    yield pending.pop(app)
+                yield migration
+            while app in pending:
+                yield pending.pop(app)
+
+        seen: set[str] = set()
+        chains: dict[str, Iterator[BaseMigration]] = {}
+        apps: list[str] = []
+        pending: dict[str, BaseMigration] = {}
+        for app in INSTALLED_APPS:
+            if not app.startswith("noc.") or app[4:] not in migration_loaders:
+                continue
+            app = app[4:]
+            apps.append(app)
+            chains[app] = iter_chain(app)
+        while chains:
+            previous_seen: int = len(seen)
+            for app in apps:
+                if app not in chains:
+                    continue
+                has_migrations: bool = False
+                for migration in chains[app]:
+                    has_migrations = True
+                    if migration.is_resolved(seen):
+                        yield migration
+                        seen.add(migration.get_name())
+                        continue
+                    pending[app] = migration
+                    break
+                if not has_migrations:
+                    del chains[app]
+            if pending and previous_seen == len(seen):
+                deps = ", ".join(migration.get_name() for migration in pending.values())
+                msg = f"Circular dependencies between {deps}"
+                raise ValueError(msg)
+
     def migrate(self):
         self.logger.info("Migrating")
         applied = self.get_history()
-        loader = MigrationLoader()
         # Apply all pending migrations
-        for migration in loader.iter_plan():
+        for migration in self.iter_plan():
             name = migration.get_name()
             if migration.is_applied(applied):
                 continue  # Already applied, skip

@@ -6,10 +6,29 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from pathlib import Path
+
+# Third-party modules
+from gufo.loader import Loader
 
 # NOC modules
+from noc.config import config
 from noc.core.mongo.connection import get_db, Database
+from noc.settings import INSTALLED_APPS
 from .db import db
+
+
+def _has_migrations(app: str) -> bool:
+    """Check whether an application has a repository or custom migrations package."""
+    custom_path = Path(config.path.custom_path) if config.path.custom_path else None
+    for path in config.get_customized_paths(app, "migrations"):
+        root = Path(path)
+        is_custom = custom_path is not None and root.is_relative_to(custom_path)
+        if not root.is_absolute() and not is_custom:
+            root = config.noc_base / root
+        if root.is_dir():
+            return True
+    return False
 
 
 class BaseMigration:
@@ -56,7 +75,7 @@ class BaseMigration:
     @classmethod
     def get_name(cls) -> str:
         parts = cls.__module__.split(".")
-        return f"{parts[1]}.{parts[3]}"
+        return f"{parts[-3]}.{parts[-1]}"
 
     @property
     def mongo_db(self) -> Database:
@@ -64,3 +83,12 @@ class BaseMigration:
 
     def migrate(self) -> None:
         """Actual migration code."""
+
+
+migration_loaders: dict[str, Loader[type[BaseMigration]]] = {
+    app[4:]: Loader[type[BaseMigration]](
+        bases=config.iter_customized_bases(f"{app}.migrations"),
+    )
+    for app in INSTALLED_APPS
+    if app.startswith("noc.") and _has_migrations(app[4:])
+}
