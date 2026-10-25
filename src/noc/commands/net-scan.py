@@ -136,25 +136,22 @@ class Command(BaseCommand):
         async def runner():
             nonlocal lock
             lock = asyncio.Lock()
-
-            if not dry_run:
-                queue = asyncio.Queue()
-                loop = asyncio.get_running_loop()
-                loop.create_task(self.register_data(pool, queue))
-            else:
-                queue = None
-            tasks = [
-                asyncio.create_task(
-                    self.check_worker(
-                        queue, lock, addr_list, checks, ports, bar, print_out=print_out
-                    ),
-                    name=f"check-{i}",
-                )
-                for i in range(min(jobs, len(addr_list)))
-            ]
-            await asyncio.gather(*tasks)
-            if queue:
-                queue.put_nowait(None)
+            async with asyncio.TaskGroup() as task_group:
+                if not dry_run:
+                    queue = asyncio.Queue()
+                    task_group.create_task(self.register_data(pool, queue))
+                else:
+                    queue = None
+                async with asyncio.TaskGroup() as worker_group:
+                    for i in range(min(jobs, len(addr_list))):
+                        worker_group.create_task(
+                            self.check_worker(
+                                queue, lock, addr_list, checks, ports, bar, print_out=print_out
+                            ),
+                            name=f"check-{i}",
+                        )
+                if queue is not None:
+                    queue.put_nowait(None)
 
         addr_list = self.get_addresses(addresses, input, rule, ip_scan)
         lock: asyncio.Lock | None = None
@@ -266,7 +263,7 @@ class Command(BaseCommand):
             if print_out:
                 self.print_out(addr, rtt, params["checks"])
 
-    async def register_data(self, pool, queue):
+    async def register_data(self, pool, queue) -> None:
         self.print("Run register data task")
         while True:
             item = await queue.get()

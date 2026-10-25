@@ -83,7 +83,7 @@ class SyslogCollectorService(BaseService):
         self.storm_protection.raise_alarm_handler = self.on_storm_raise_alarm
         self.storm_protection.close_alarm_handler = self.on_storm_close_alarm
         # Start tracking changes
-        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.start_background_task(self.get_object_mappings())
 
     def on_storm_raise_alarm(self, ip_address):
         cfg = self.address_configs[ip_address]

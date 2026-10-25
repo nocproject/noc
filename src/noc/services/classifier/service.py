@@ -184,19 +184,19 @@ class ClassifierService(BaseService):
         self.slot_number, self.total_slots = await self.acquire_slot()
         # Start tracking changes
         if config.datastream.enable_cfgevent:
-            asyncio.get_running_loop().create_task(self.get_event_config_mappings())
+            self.start_background_task(self.get_event_config_mappings())
             await self.event_config_ready.wait()
             self.logger.info("Handlers are loaded: %s", self.action_set.add_handlers)
         else:
             await self.load_event_configs()
             self.action_set.load()
         if config.datastream.enable_cfgeventrules:
-            asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
+            self.start_background_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
         else:
             self.pattern_set.load()
         if config.datastream.enable_cfgtarget:
-            asyncio.get_running_loop().create_task(self.get_object_mappings())
+            self.start_background_task(self.get_object_mappings())
             await self.event_source_ready.wait()
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()

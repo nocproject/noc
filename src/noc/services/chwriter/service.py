@@ -38,6 +38,9 @@ class CHWriterService(BaseService):
         self.is_sharded = False
         self.stopping = False
         self.restore_timeout = None
+        self.subscribe_ch_streams_task: asyncio.Task[None] | None = None
+        self.flush_data_task: asyncio.Task[None] | None = None
+        self.stream_tasks: set[asyncio.Task[None]] = set()
         # Get clickhouse address
         if config.clickhouse.cluster and config.chwriter.write_to:
             # Distributed configuration
@@ -54,8 +57,20 @@ class CHWriterService(BaseService):
         check_callback = PeriodicCallback(self.check_channels, config.chwriter.batch_delay_ms)
         check_callback.start()
         self.logger.info("Sending records to %s", self.ch_address)
-        asyncio.create_task(self.subscribe_ch_streams())
-        asyncio.create_task(self.flush_data())
+        self.subscribe_ch_streams_task = asyncio.create_task(self.subscribe_ch_streams())
+        self.subscribe_ch_streams_task.add_done_callback(
+            lambda task: (
+                setattr(self, "subscribe_ch_streams_task", None)
+                if self.subscribe_ch_streams_task is task
+                else None
+            )
+        )
+        self.flush_data_task = asyncio.create_task(self.flush_data())
+        self.flush_data_task.add_done_callback(
+            lambda task: (
+                setattr(self, "flush_data_task", None) if self.flush_data_task is task else None
+            )
+        )
 
     async def iter_ch_streams(self) -> AsyncIterable[str]:
         """
@@ -81,10 +96,14 @@ class CHWriterService(BaseService):
         """
         if MessageStreamClient.has_bulk_mode():
             streams = [stream async for stream in self.iter_ch_streams()]
-            asyncio.create_task(self.process_stream_bulk(streams))
+            task = asyncio.create_task(self.process_stream_bulk(streams))
+            self.stream_tasks.add(task)
+            task.add_done_callback(self.stream_tasks.discard)
             return
         async for stream in self.iter_ch_streams():
-            asyncio.create_task(self.process_stream(stream))
+            task = asyncio.create_task(self.process_stream(stream))
+            self.stream_tasks.add(task)
+            task.add_done_callback(self.stream_tasks.discard)
             await asyncio.sleep(0.25)  # Shift subscriptions in time
 
     def get_cursor_id(self) -> str:

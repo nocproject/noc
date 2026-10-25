@@ -23,7 +23,7 @@ from typing import (
     TypeVar,
     Never,
 )
-from collections.abc import Callable, Awaitable, Iterable
+from collections.abc import Callable, Awaitable, Coroutine, Iterable
 import socket
 
 # Third-party modules
@@ -140,6 +140,7 @@ class BaseService:
         set_service(self)
         sys.excepthook = excepthook
         self.loop: asyncio.BaseEventLoop | None = None
+        self.background_tasks: set[asyncio.Task[Any]] = set()
         self.logger = logging.getLogger()
         self.service_id = str(uuid.uuid4())
         self.executors = {}
@@ -182,6 +183,15 @@ class BaseService:
     def create_parser(self) -> argparse.ArgumentParser:
         """Return argument parser"""
         return argparse.ArgumentParser()
+
+    def start_background_task(
+        self, coro: Coroutine[Any, Any, T], *, name: str | None = None
+    ) -> asyncio.Task[T]:
+        """Create a task and retain its reference until it completes."""
+        task = asyncio.create_task(coro, name=name)
+        self.background_tasks.add(task)
+        task.add_done_callback(self.background_tasks.discard)
+        return task
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         """Apply additional parser arguments"""
@@ -558,7 +568,7 @@ class BaseService:
         if config.message.embedded_router and self.use_router:
             self.router = Router()
             self.router.load()
-            asyncio.get_running_loop().create_task(self.get_mx_routes_config())
+            self.start_background_task(self.get_mx_routes_config())
         if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
         if self.use_telemetry or self.use_router:
@@ -744,7 +754,7 @@ class BaseService:
                 set_cursor = set_cursor_async
                 cursor_cond = async_cursor_condition or asyncio.Condition()
                 cursor_offset: int = -1
-                asyncio.get_running_loop().create_task(cursor_setter())
+                self.start_background_task(cursor_setter())
             else:
                 set_cursor = set_cursor_sync
         else:

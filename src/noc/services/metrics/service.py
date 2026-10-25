@@ -85,6 +85,7 @@ class MetricsService(BaseService):
         self.scope_cdag: dict[str, CDAG] = {}  # Scope graph cache
         self.cards: dict[MetricKey, Card] = {}  # Metric cards
         self.graph: CDAG | None = None  # Service Metric Graph
+        self.log_runner_task: asyncio.Task[None] | None = None
         # Graph node State
         self.change_log: ChangeLog | None = None
         self.start_state: dict[str, dict[str, Any]] = {}
@@ -118,15 +119,20 @@ class MetricsService(BaseService):
         Card.compose_node_inputs |= self.compose_inputs
         self.graph = CDAG("metrics")
         if global_config.metrics.flush_interval > 0:
-            asyncio.create_task(self.log_runner())
+            self.log_runner_task = asyncio.create_task(self.log_runner())
+            self.log_runner_task.add_done_callback(
+                lambda task: (
+                    setattr(self, "log_runner_task", None) if self.log_runner_task is task else None
+                )
+            )
         # Start tracking changes
-        asyncio.get_running_loop().create_task(self.get_metric_rules_mappings())
-        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.start_background_task(self.get_metric_rules_mappings())
+        self.start_background_task(self.get_object_mappings())
         # Callbacks
         report_callback = PeriodicCallback(self.report, 60000)
         report_callback.start()
         # Subscribe metrics stream
-        asyncio.get_running_loop().create_task(self.subscribe_metrics())
+        self.start_background_task(self.subscribe_metrics())
 
     async def subscribe_metrics(self) -> None:
         self.logger.info("Waiting for rules")

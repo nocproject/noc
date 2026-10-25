@@ -65,6 +65,7 @@ class BeefCLI(CLI):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.state = "notconnected"
+        self.state_tasks: set[asyncio.Task[None]] = set()
 
     def get_stream(self) -> BaseStream:
         return BeefStream(self)
@@ -74,7 +75,9 @@ class BeefCLI(CLI):
         super().set_state(state)
         # Force state enter reply
         if changed:
-            asyncio.get_running_loop().create_task(self.stream.enter_state(state))
+            task = asyncio.get_running_loop().create_task(self.stream.enter_state(state))
+            self.state_tasks.add(task)
+            task.add_done_callback(self.state_tasks.discard)
 
     async def reply_state(self, state):
         self.logger.debug("Replying '%s' state", state)

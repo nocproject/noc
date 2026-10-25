@@ -85,6 +85,7 @@ class Scheduler:
         self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor: ThreadPoolExecutor | None = None
+        self.scheduler_task: asyncio.Task[None] | None = None
         self.run_callback = None
         self.check_time = check_time
         self.read_ahead_interval = datetime.timedelta(milliseconds=check_time)
@@ -136,7 +137,12 @@ class Scheduler:
             self.reset_to_waiting(reset_statuses)
         self.ensure_indexes()
         self.logger.info("Running scheduler")
-        asyncio.create_task(self.scheduler_loop())
+        self.scheduler_task = asyncio.create_task(self.scheduler_loop())
+        self.scheduler_task.add_done_callback(
+            lambda task: (
+                setattr(self, "scheduler_task", None) if self.scheduler_task is task else None
+            )
+        )
 
     def get_collection(self):
         """

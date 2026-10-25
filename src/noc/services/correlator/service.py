@@ -112,6 +112,8 @@ class CorrelatorService(BaseService):
         self.is_default_scheduler = False
         # Scheduler
         self.scheduler: Scheduler | None = None
+        self.update_object_statuses_task: asyncio.Task[None] | None = None
+        self.dispose_stream_task: asyncio.Task[None] | None = None
         # Locks
         self.topo_rca_lock: RCALock | None = None
 
@@ -146,14 +148,28 @@ class CorrelatorService(BaseService):
             # Run on first slot on Default Pool
             self.logger.info("Started Watchers Job")
             self.scheduler.submit(jcls=ALARM_WATCHER_JCLS, key="", keep_ts=True)
-        asyncio.create_task(self.update_object_statuses())
+        self.update_object_statuses_task = asyncio.create_task(self.update_object_statuses())
+        self.update_object_statuses_task.add_done_callback(
+            lambda task: (
+                setattr(self, "update_object_statuses_task", None)
+                if self.update_object_statuses_task is task
+                else None
+            )
+        )
         # Subscribe stream, move to separate task to let the on_activate to terminate
-        self.loop.create_task(
+        self.dispose_stream_task = self.loop.create_task(
             self.subscribe_stream(
                 f"dispose.{config.pool}",
                 self.slot_number,
                 self.on_dispose_event,
                 async_cursor=config.correlator.allowed_async_cursor,
+            )
+        )
+        self.dispose_stream_task.add_done_callback(
+            lambda task: (
+                setattr(self, "dispose_stream_task", None)
+                if self.dispose_stream_task is task
+                else None
             )
         )
 

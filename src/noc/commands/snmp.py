@@ -185,16 +185,15 @@ class Command(BaseCommand):
         **options,
     ):
         async def main():
-            loop = asyncio.get_running_loop()
-            # Schedule workers
             queue = asyncio.Queue()
-            for _ in range(self.jobs):
-                loop.create_task(
-                    self.poll_worker(
-                        queue, community, username, oid, timeout, self.version, f"worker-{_}"
+            async with asyncio.TaskGroup() as task_group:
+                for i in range(self.jobs):
+                    task_group.create_task(
+                        self.poll_worker(
+                            queue, community, username, oid, timeout, self.version, f"worker-{i}"
+                        )
                     )
-                )
-            await self.poll_task(queue)
+                await self.poll_task(queue)
 
         self.addresses = set()
         # Direct addresses

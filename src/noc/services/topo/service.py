@@ -33,14 +33,14 @@ class TopoService(BaseService):
 
     async def on_activate(self) -> None:
         await super().on_activate()
-        asyncio.get_running_loop().create_task(self.get_topology())
+        self.start_background_task(self.get_topology())
 
     async def get_topology(self) -> None:
         """
         Request topology.
         """
         self.logger.info("Starting to track topology")
-        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.start_background_task(self.get_object_mappings())
 
     async def get_object_mappings(self):
         """
@@ -64,7 +64,7 @@ class TopoService(BaseService):
         Called when topology is loaded and server is ready.
         """
         self.logger.info("Topology is ready.")
-        asyncio.get_running_loop().create_task(self.process_topology())
+        self.start_background_task(self.process_topology())
 
     async def process_topology(self) -> None:
         """

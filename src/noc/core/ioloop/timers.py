@@ -9,6 +9,7 @@
 import random
 import asyncio
 import math
+from typing import Any
 
 # Third-party modules
 from collections.abc import Coroutine
@@ -33,6 +34,7 @@ class PeriodicCallback:
         self._running = False
         self._timer: asyncio.TimerHandle | None = None
         self._start_time: float | None = None
+        self._tasks: set[asyncio.Future[Any]] = set()
 
     def start(self):
         self._running = True
@@ -54,7 +56,9 @@ class PeriodicCallback:
     def _run(self):
         self._timer = None
         try:
-            asyncio.ensure_future(self.cb())
+            task = asyncio.ensure_future(self.cb())
+            self._tasks.add(task)
+            task.add_done_callback(self._tasks.discard)
         finally:
             self._schedule_next()
 

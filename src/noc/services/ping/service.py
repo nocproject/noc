@@ -70,7 +70,7 @@ class PingService(BaseService):
         # Open ping sockets
         self.ping = Ping(tos=config.ping.tos)
         # Start tracking changes
-        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.start_background_task(self.get_object_mappings())
 
     def get_mon_data(self):
         r = super().get_mon_data()

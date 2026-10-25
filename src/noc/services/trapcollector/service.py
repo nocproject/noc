@@ -77,7 +77,7 @@ class TrapCollectorService(BaseService):
         self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
         # Start tracking changes
-        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.start_background_task(self.get_object_mappings())
         self.storm_protection = StormProtection(
             config.trapcollector.storm_round_duration,
             config.trapcollector.storm_threshold_reduction,

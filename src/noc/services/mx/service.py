@@ -31,7 +31,7 @@ class MXService(BaseService):
         # Postpone initialization process until config datastream is fully processed
         self.ready_event = asyncio.Event()
         self.router = Router()
-        asyncio.get_running_loop().create_task(self.get_mx_routes_config())
+        self.start_background_task(self.get_mx_routes_config())
         # Set by datastream.on_ready
         await self.ready_event.wait()
         # Process as usual

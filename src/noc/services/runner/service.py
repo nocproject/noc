@@ -44,11 +44,17 @@ class RunnerService(BaseService):
         self.total_slots = 0
         self.queue: asyncio.Queue[tuple[ObjectId | None, dict[str, Any]]] = asyncio.Queue()
         self.runner: Runner | None = None
+        self.sync_task_ref: asyncio.Task[None] | None = None
 
     async def on_activate(self) -> None:
         connect_async()
         self.runner = Runner(concurrency=config.runner.max_running, queue=self.queue)
-        asyncio.create_task(self.sync_task())
+        self.sync_task_ref = asyncio.create_task(self.sync_task())
+        self.sync_task_ref.add_done_callback(
+            lambda task: (
+                setattr(self, "sync_task_ref", None) if self.sync_task_ref is task else None
+            )
+        )
         await self.subscribe_stream(STREAM, self.slot_number, self.on_msg)
 
     async def on_msg(self, msg: Message):

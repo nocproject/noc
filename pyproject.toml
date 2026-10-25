@@ -175,7 +175,6 @@ ignore = [
   "PLC0206", # @todo: Manual work! Extracting value from dictionary without calling `.items()`
   "PLC0415", # @todo: Not possible! `import` should be at the top-level of a file
   "RUF001", # @todo: Occured in reports! String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
-  "RUF006", # Store a reference to the return value of `asyncio.create_task`
   "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF100", # Unused blanket `noqa` directive
