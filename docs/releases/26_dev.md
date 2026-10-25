@@ -77,6 +77,30 @@ class Profile(BaseProfile):
     pattern_more = [(rb"^--More--", b" ")]
 ```
 
+### Device Profile Binary Attributes
+
+Custom device profiles must define the following attributes with `bytes` values:
+
+- `command_submit`
+- `pattern_username`
+- `pattern_password`
+- `pattern_super_password`
+- `pattern_prompt`
+- `pattern_unprivileged_prompt`
+- `pattern_syntax_error`
+- `pattern_operation_error`
+- `username_submit`
+- `password_submit`
+- `command_super`
+
+The optional attributes `pattern_super_password`, `pattern_unprivileged_prompt`, `pattern_syntax_error`, `pattern_operation_error`, `username_submit`, `password_submit`, and `command_super` may remain `None`. Check custom profiles and prefix string values with `b`, as shown here:
+
+```python
+command_submit = b"\n"
+```
+
+Text values are no longer converted automatically and are incompatible.
+
 ### Dynamic Dashboard Templates Movement
 
 Built-in dynamic dashboard templates have moved into the web application. If you have custom dynamic dashboard templates, move them from `<custom root>/templates/ddash` to

@@ -22,25 +22,10 @@ from noc.core.confdb.collator.typing import PortItem
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
-from noc.core.deprecations import RemovedInNOC2003Warning
 from noc.core.text import alnum_key
 
 
 class BaseProfileMetaclass(type):
-    BINARY_ATTRS = (
-        "command_submit",
-        "pattern_username",
-        "pattern_password",
-        "pattern_super_password",
-        "pattern_prompt",
-        "pattern_unprivileged_prompt",
-        "pattern_syntax_error",
-        "pattern_operation_error",
-        "username_submit",
-        "password_submit",
-        "command_super",
-    )
-
     def __new__(
         mcs: "type[BaseProfileMetaclass]",
         name: str,
@@ -59,15 +44,6 @@ class BaseProfileMetaclass(type):
                 f"{n.name}: scalar 'pattern_more' is no longer supported; "
                 "use 'pattern_more = [(pattern, command)]' instead"
             )
-        # Fix binary attributes
-        for attr in mcs.BINARY_ATTRS:
-            v = getattr(n, attr, None)
-            if v is not None and isinstance(v, str):
-                warnings.warn(
-                    f"{n.name}: '{attr}' must be of binary type. Support for text values will be removed in NOC 20.3",
-                    RemovedInNOC2003Warning,
-                )
-                setattr(n, attr, smart_bytes(v))
         # Build patterns
         n.patterns = n._get_patterns()
         # Build effective snmp_display_hints for subclasses
@@ -105,28 +81,28 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     Deprecated
     """
 
-    pattern_username = rb"([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
+    pattern_username: ClassVar[bytes] = rb"([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
     """
     List[str]: Regular expression to catch user name prompt. Usually during telnet sessions)
     """
 
-    pattern_password = rb"[Pp]ass[Ww]ord: ?"
+    pattern_password: ClassVar[bytes] = rb"[Pp]ass[Ww]ord: ?"
     """
     Optional[regexp]: Regulal expression to catch password prompt (Telnet/SSH sessions)
     """
 
-    pattern_super_password = None
+    pattern_super_password: ClassVar[bytes | None] = None
     """
     Optional[regexp]: Regular expression to catch implicit super password prompt
     (Telnet/SSH sessions)
     """
 
-    pattern_prompt = rb"^\S*[>#]"
+    pattern_prompt: ClassVar[bytes] = rb"^\S*[>#]"
     """
     Optional[regexp]: Regular expression to catch command prompt (CLI Sessions)
     """
 
-    pattern_unprivileged_prompt = None
+    pattern_unprivileged_prompt: ClassVar[bytes | None] = None
     """
     Optional[regexp]: Regular expression to catch unpriveleged mode command prompt
     (CLI Session)
@@ -139,13 +115,13 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     List of (pattern, command) pairs to handle pager prompts
     """
 
-    pattern_syntax_error = None
+    pattern_syntax_error: ClassVar[bytes | None] = None
     """
     Optional[regexp]: Regular expression (string or compiled) to catch the syntax errors in cli output.
     If CLI output matches pattern_syntax_error, then CLISyntaxError exception raised
     """
 
-    pattern_operation_error = None
+    pattern_operation_error: ClassVar[bytes | None] = None
     """
     Optional[regexp]: Regular expression (string or compiled) to catch the CLI commands errors in cli output.
     If CLI output matches pattern_syntax_error and not matches
@@ -189,17 +165,17 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     None by default
     """
 
-    command_submit = b"\n"
+    command_submit: ClassVar[bytes] = b"\n"
     """
     bytes: Sequence to be send at the end of all CLI commands
     """
 
-    username_submit = None
+    username_submit: ClassVar[bytes | None] = None
     """
     Sequence to submit username. Use "\n" if None
     """
 
-    password_submit = None
+    password_submit: ClassVar[bytes | None] = None
     """
     Sequence to submit password. Use "\n" if None
     """
@@ -255,7 +231,7 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     Sequence to gracefully close session
     """
 
-    command_super = None
+    command_super: ClassVar[bytes | None] = None
     """
     Sequence to enable priveleged mode
     """

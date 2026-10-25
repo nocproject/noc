@@ -14,10 +14,6 @@ On every new NOC release ensure:
 """
 
 
-class RemovedInNOC2003Warning(DeprecationWarning):
-    """Features to be removed in NOC 20.3."""
-
-
 class RemovedInNOC2102Warning(DeprecationWarning):
     """Features to be removed in NOC 21.2."""
 
