@@ -7,26 +7,26 @@
 
 # Python modules
 import datetime
-import logging
 import itertools
+import logging
+from collections.abc import Iterable
 from functools import partial
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import orjson
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.ioloop.util import run_sync
+from noc.config import config
 from noc.core.checkers.base import Check, CheckResult, MetricValue, register_checks
 from noc.core.checkers.registry import DiagnosticCheckRegister
+from noc.core.ioloop.util import run_sync
 from noc.core.models.inputsources import InputSource
-from noc.config import config
 from noc.models import is_document
-from .types import DiagnosticConfig, DiagnosticState, DiagnosticValue
-from .item import DiagnosticItem
 
+from .item import DiagnosticItem
+from .types import DiagnosticConfig, DiagnosticState, DiagnosticValue
 
 diagnostic_logger = logging.getLogger(__name__)
 
@@ -443,6 +443,7 @@ class DiagnosticHub:
         """
         Sync diagnostics state with object
         """
+        # Third-party modules
         from django.db import connection as pg_connection
 
         if self.dry_run or is_document(self.__object):
@@ -493,6 +494,7 @@ class DiagnosticHub:
             alarm_disable: Disable alarm by settings. Clear active alarm
             dry_run: Not send ensure event
         """
+        # NOC modules
         from noc.core.service.loader import get_service
 
         now = datetime.datetime.now()
@@ -605,8 +607,9 @@ class DiagnosticHub:
             reason:
             ts:
         """
-        from noc.core.service.loader import get_service
+        # NOC modules
         from noc.core.mx import MessageType
+        from noc.core.service.loader import get_service
 
         from_state = from_state or DiagnosticState.unknown
         if self.dry_run:
@@ -663,6 +666,7 @@ class DiagnosticHub:
           arg0
         :return:
         """
+        # NOC modules
         from noc.core.service.loader import get_service
         from noc.pm.models.metrictype import MetricType
 
@@ -707,6 +711,7 @@ class DiagnosticHub:
 
 def update_diagnostic_checks(results: dict[str, dict[str, Any]]):
     """Update changed Diagnostic statuses"""
+    # NOC modules
     from noc.models import get_model
 
     diagnostic_logger.info("Update diagnostic statuses: %s", len(results))

@@ -6,36 +6,39 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import asyncio
+import logging
 import random
-from collections.abc import AsyncIterable
 from collections import defaultdict
+from collections.abc import AsyncIterable
 
 # Third-party modules
-from aiokafka.producer.producer import AIOKafkaProducer
-from aiokafka.consumer.consumer import AIOKafkaConsumer, TopicPartition
-from aiokafka.structs import OffsetAndTimestamp
-from aiokafka.client import AIOKafkaClient
 from aiokafka.admin import AIOKafkaAdminClient, NewTopic
+from aiokafka.client import AIOKafkaClient
+from aiokafka.consumer.consumer import AIOKafkaConsumer, TopicPartition
 from aiokafka.errors import (
+    KafkaConnectionError,
     KafkaError,
     KafkaTimeoutError,
-    UnknownTopicOrPartitionError,
-    NodeNotReadyError,
-    KafkaConnectionError,
     MessageSizeTooLargeError,
+    NodeNotReadyError,
+    UnknownTopicOrPartitionError,
 )
+from aiokafka.producer.producer import AIOKafkaProducer
+from aiokafka.structs import OffsetAndTimestamp
+
+# NOC modules
+from noc.config import config
+from noc.core.ioloop.util import run_sync
 
 # NOC Modules
 from noc.core.perf import metrics
-from noc.config import config
-from noc.core.ioloop.util import run_sync
 from noc.core.timeout import retry_timeout
+
 from .config import get_stream
-from .metadata import Metadata, PartitionMetadata, Broker
-from .message import Message
 from .error import MsgStreamError
+from .message import Message
+from .metadata import Broker, Metadata, PartitionMetadata
 
 logger = logging.getLogger(__name__)
 

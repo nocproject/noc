@@ -9,30 +9,30 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.base import IntParameter
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.validators import is_int
-from noc.core.mib import mib
 from noc.core.lldp import (
-    LLDP_PORT_SUBTYPE_ALIAS,
-    LLDP_PORT_SUBTYPE_COMPONENT,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_OTHER,
     LLDP_CAP_REPEATER,
-    LLDP_CAP_BRIDGE,
-    LLDP_CAP_WLAN_ACCESS_POINT,
     LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE,
-    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_STATION_ONLY,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
     lldp_caps_to_bits,
 )
+from noc.core.mib import mib
+from noc.core.validators import is_int
+from noc.sa.interfaces.base import IntParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Third-party modules
 import pytest
 
 # NOC modules

@@ -10,9 +10,10 @@
 # NOC modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.inv.models.object import Object
+
 from ..controller.base import Endpoint
-from .base import BaseMapper
 from ..controller.otn_osc import OTNOSCController
+from .base import BaseMapper
 
 
 class OtnOscMapper(BaseMapper):

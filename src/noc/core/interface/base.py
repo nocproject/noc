@@ -9,9 +9,10 @@
 from typing import Any, cast
 
 # NOC modules
-from .error import InterfaceTypeError
-from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.checkers.base import CheckResult
+from noc.core.interface.parameter import BaseParameter as Parameter
+
+from .error import InterfaceTypeError
 
 RESERVED_NAMES = {"returns", "template", "form", "preview", "check"}
 

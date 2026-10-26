@@ -7,25 +7,28 @@
 
 # Python modules
 import operator
-from typing import Any
-from collections.abc import Iterable
-from collections import defaultdict
-from dataclasses import asdict
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from collections.abc import Iterable
+from dataclasses import asdict
+from typing import Any
+
+# Third-party modules
+import cachetools
 
 # Third-Party modules
 import networkx as nx
 import numpy as np
-import cachetools
-from gufo.loader import Loader
 from bson import ObjectId
+from gufo.loader import Loader
 
 # NOC modules
 from noc.core.text import alnum_key
+
 from .layout.ring import RingLayout
 from .layout.spring import SpringLayout
 from .layout.tree import TreeLayout
-from .types import TopologyNode, MapMeta, MapItem, PathItem
+from .types import MapItem, MapMeta, PathItem, TopologyNode
 
 
 class TopologyBase(ABC):

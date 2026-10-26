@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import IF_NAME, IP_ADDRESS, CHOICES
+from ...patterns import CHOICES, IF_NAME, IP_ADDRESS
 
 HINTS_SYSTEM_AAA = DEF(
     "aaa",

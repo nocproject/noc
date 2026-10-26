@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
-import datetime
 import argparse
+import datetime
+import re
 import time
 from html.entities import name2codepoint
 
@@ -16,19 +16,18 @@ from html.entities import name2codepoint
 import orjson
 
 # NOC modules
+from noc.core.etl.models.fmevent import FMEventObject
+from noc.core.fm.event import Event, EventSeverity, EventSource, MessageType, Target, Var
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.core.etl.models.fmevent import FMEventObject
-from noc.core.fm.event import Event, EventSeverity, MessageType, Var, EventSource, Target
 from noc.core.service.pub import publish
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
-from noc.main.models.remotesystem import RemoteSystem
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.eventclass import EventClass
-from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.eventconfig import EventConfig
-
+from noc.services.classifier.ruleset import RuleSet
 
 DEFAULT_CLEAN = datetime.timedelta(weeks=4)
 CLEAN_WINDOW = datetime.timedelta(weeks=1)

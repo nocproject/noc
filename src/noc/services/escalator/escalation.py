@@ -6,44 +6,45 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 import operator
 import threading
-from typing import Any, NoReturn
-from collections.abc import Iterable
-from collections import defaultdict
 from abc import ABC, abstractmethod
+from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any, NoReturn
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.fm.models.utils import get_alarm
-from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.alarmescalation import AlarmEscalation, EscalationItem as AEscalationItem
-from noc.sa.models.serviceprofile import ServiceProfile
-from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.maintenance.models.maintenance import Maintenance
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.core.perf import metrics
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.config import config
-from noc.core.scheduler.job import Job
-from noc.core.span import Span, PARENT_SAMPLE
-from noc.core.fm.enum import RCA_DOWNLINK_MERGE
 from noc.core.change.policy import change_tracker
-from noc.fm.models.escalation import Escalation, EscalationItem
-from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.defer import call_later
+from noc.core.fm.enum import RCA_DOWNLINK_MERGE
 from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
-from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
-from noc.core.defer import call_later
-from noc.core.tt.types import EscalationItem as ECtxItem, EscalationStatus
+from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.perf import metrics
+from noc.core.scheduler.job import Job
+from noc.core.span import PARENT_SAMPLE, Span
 from noc.core.tt.base import TTSystemCtx
-
+from noc.core.tt.types import EscalationItem as ECtxItem
+from noc.core.tt.types import EscalationStatus
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmescalation import EscalationItem as AEscalationItem
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.escalation import Escalation, EscalationItem
+from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.utils import get_alarm
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.sa.models.servicesummary import ObjectSummaryItem, SummaryItem
 
 logger = logging.getLogger(__name__)
 

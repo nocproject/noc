@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.mailsender.service import MailSenderService
-
 
 if __name__ == "__main__":
     MailSenderService().start()

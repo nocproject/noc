@@ -10,7 +10,8 @@ from collections.abc import Iterable
 
 # NOC modules
 from noc.core.techdomain.profile.otn_otu import BaseOTUProfileController
-from .base import ChannelMixin, SetValue, ADM_10, ADM_200
+
+from .base import ADM_10, ADM_200, ChannelMixin, SetValue
 
 
 class Controller(ChannelMixin, BaseOTUProfileController):

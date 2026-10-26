@@ -5,8 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-
 
 TELNET_SYNTAX = DEF("telnet", gen="make_protocols_telnet")

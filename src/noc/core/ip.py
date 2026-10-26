@@ -5,13 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
+# Python modules
 import socket
 import struct
-from collections.abc import Iterable, Callable
+from collections.abc import Callable, Iterable
 
+# NOC modules
 # NOC Modules
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
 

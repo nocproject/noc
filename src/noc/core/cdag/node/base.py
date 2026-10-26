@@ -5,14 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from typing import Any, cast
-from collections.abc import Iterable
-from enum import StrEnum
+
+# Python modules
 import inspect
-from dataclasses import dataclass
 import sys
+from collections.abc import Iterable
+from dataclasses import dataclass
+from enum import StrEnum
+from typing import Any, cast
 
 # Third-party modules
 from gufo.loader import Loader
@@ -20,8 +22,9 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.config import config
-from ..typing import ValueType
+
 from ..tx import Transaction
+from ..typing import ValueType
 
 # Input types
 IN_INVALID = 0

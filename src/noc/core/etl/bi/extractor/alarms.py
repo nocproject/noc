@@ -9,16 +9,17 @@
 import datetime
 
 # NOC modules
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.reboot import Reboot
-from noc.fm.models.alarmclass import AlarmClass
-from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarms import Alarms
-from noc.core.etl.bi.stream import Stream
 from noc.config import config
 from noc.core.dateutils import hits_in_range
-from noc.sa.models.serviceprofile import ServiceProfile
+from noc.core.etl.bi.stream import Stream
 from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.reboot import Reboot
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.serviceprofile import ServiceProfile
+
 from .archive import ArchivingExtractor
 
 

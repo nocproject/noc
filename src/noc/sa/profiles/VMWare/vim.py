@@ -12,9 +12,10 @@ from typing import Any
 from pyVmomi import vim
 
 # NOC modules
+from noc.core.error import ERR_HTTP_UNKNOWN, NOCError
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.script.base import BaseScript
-from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
+
 from .connection import connect, disconnect
 
 

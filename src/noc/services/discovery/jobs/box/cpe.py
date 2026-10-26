@@ -12,12 +12,12 @@ from typing import Any
 from mongoengine.queryset.visitor import Q as m_Q
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
 from noc.inv.models.cpe import CPE, ControllerItem
 from noc.inv.models.cpeprofile import CPEProfile
 from noc.main.models.label import Label
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class CPECheck(DiscoveryCheck):
@@ -122,6 +122,7 @@ class CPECheck(DiscoveryCheck):
         Create ManagedObject for CPE instance
         :return:
         """
+        # Third-party modules
         from django.db.models.query_utils import Q
 
         name = cpe.label or f"CPE-{cpe.type.upper()}-{cpe.global_id}"

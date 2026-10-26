@@ -10,18 +10,17 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.main.models.pool import Pool
-from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
+from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectProfile
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class ReportDiscoveryTopologyProblemApplication(SimpleReport):

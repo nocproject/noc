@@ -7,22 +7,21 @@
 
 
 # Python modules
-import re
-import logging
-import hashlib
-import datetime
 import codecs
+import datetime
+import hashlib
+import logging
+import re
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, FloatField, ListField, DateTimeField
+from mongoengine.fields import DateTimeField, FloatField, ListField, StringField
 
 # NOC modules
-from noc.core.geocoder.base import GeoCoderResult
-from noc.core.geocoder.errors import GeoCoderError
 from noc.config import config
-from noc.core.geocoder.base import geocoder_loader
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.geocoder.base import GeoCoderResult, geocoder_loader
+from noc.core.geocoder.errors import GeoCoderError
 
 logger = logging.getLogger(__name__)
 

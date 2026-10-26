@@ -6,23 +6,25 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-import os
-import re
 import itertools
 import operator
-from typing import Any, cast
-from collections.abc import Callable
+import os
+import re
+import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any, cast
 
 # Third-party modules
 import orjson
 
 # NOC modules
+from noc.config import config
+from noc.core.mib import mib
+from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.core.perf import metrics as noc_metrics
 from noc.core.script.base import BaseScript, BaseScriptMetaclass
-from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.core.script.oidrules.oid import OIDRule
 from noc.core.script.oidrules.bool import BooleanRule
 from noc.core.script.oidrules.capindex import CapabilityIndexRule
 from noc.core.script.oidrules.caplist import CapabilityListRule
@@ -30,13 +32,11 @@ from noc.core.script.oidrules.caps import CapabilityRule
 from noc.core.script.oidrules.counter import CounterRule
 from noc.core.script.oidrules.hires import HiresRule
 from noc.core.script.oidrules.ifindex import InterfaceRule
-from noc.core.script.oidrules.match import MatcherRule
-from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
-from noc.core.models.cfgmetrics import MetricCollectorConfig
-from noc.config import config
-from noc.core.perf import metrics as noc_metrics
-from noc.core.mib import mib
+from noc.core.script.oidrules.match import MatcherRule
+from noc.core.script.oidrules.oid import OIDRule
+from noc.core.script.oidrules.oids import OIDsRule
+from noc.sa.interfaces.igetmetrics import IGetMetrics
 
 NS = 1000_000_000.0
 SNMP_OVERLOAD_VALUE = 0xFFFFFFFFFFFFFFFF  # 18446744073709551615 for 64-bit counter

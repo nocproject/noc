@@ -5,57 +5,60 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import datetime
 import logging
 import operator
-import datetime
 from collections import defaultdict
+from collections.abc import Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import bson
-import orjson
 import cachetools
+import orjson
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    LongField,
-    ListField,
     DateTimeField,
     DictField,
-    EnumField,
     EmbeddedDocumentListField,
+    EnumField,
+    IntField,
+    ListField,
+    LongField,
+    StringField,
 )
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.core.wf.decorator import workflow
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.models.sensorprotos import SensorProtocol
-from noc.core.model.dynamicprofile import dynamic_profile
-from noc.core.service.loader import get_service
-from noc.core.watchers.types import ObjectEffect, WatchItem
-from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.loader import get_service
+from noc.core.watchers.decorator import WATCHER_JCLS, get_next_ts, watchers
+from noc.core.watchers.types import ObjectEffect, WatchItem
+from noc.core.wf.decorator import workflow
+from noc.inv.models.object import Object
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-from noc.inv.models.object import Object
+from noc.pm.models.agent import Agent
+from noc.pm.models.measurementunits import MeasurementUnits
+from noc.pm.models.metricrule import MetricRule
+from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectwatchersitem import WatchDocumentItem
-from noc.pm.models.measurementunits import MeasurementUnits
-from noc.pm.models.agent import Agent
-from noc.pm.models.metrictype import MetricType
-from noc.pm.models.metricrule import MetricRule
 from noc.wf.models.state import State
+
 from .sensorprofile import SensorProfile
-from noc.config import config
 
 SOURCES = {"objectmodel", "asset", "etl", "manual"}
 SCHEDULER = "scheduler"

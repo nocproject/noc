@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.comp import smart_text
 
-
 div_norm = {"село": "с", "поселок": "п", "город": "г", "поселок городского типа": "пгт"}
 
 rx_div_start = re.compile(

@@ -6,10 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import io
 import gzip
+import io
 
-# NOC modules
 from .base import BaseCompressor
 
 

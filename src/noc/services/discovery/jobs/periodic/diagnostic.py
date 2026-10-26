@@ -10,18 +10,18 @@ import datetime
 from typing import Literal
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.config import config
 from noc.core.checkers.base import Check, CheckResult, MetricValue
+from noc.core.checkers.loader import loader
+from noc.core.diagnostic.hub import DiagnosticHub
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.models.inputsources import InputSource
+from noc.core.script.scheme import CLICredential, SNMPCredential, SNMPv3Credential
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from noc.core.diagnostic.types import DiagnosticState
-from noc.core.diagnostic.hub import DiagnosticHub
-from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
-from noc.core.models.inputsources import InputSource
-from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
-from noc.core.checkers.loader import loader
-from noc.config import config
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class DiagnosticCheck(DiscoveryCheck):

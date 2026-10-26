@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import uuid
 import logging
+import uuid
 
 # NOC modules
-from noc.core.tt.base import BaseTTSystem
-from noc.core.tt.types import EscalationContext, DeescalationContext
-from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.span import Span
+from noc.core.tt.base import BaseTTSystem
+from noc.core.tt.error import TemporaryTTError, TTError
+from noc.core.tt.types import DeescalationContext, EscalationContext
 
 
 class StubTTSystem(BaseTTSystem):

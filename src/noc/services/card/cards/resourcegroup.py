@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.models import get_model
-from noc.core.comp import smart_text
+
 from .base import BaseCard
 
 

@@ -12,10 +12,10 @@ from collections import defaultdict
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.protocol import Protocol
-from noc.inv.models.modelinterface import ModelInterface
 from noc.core.translation import ugettext as _
+from noc.inv.models.modelinterface import ModelInterface
+from noc.inv.models.protocol import Protocol
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ProtocolApplication(ExtDocApplication):

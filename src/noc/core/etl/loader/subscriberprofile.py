@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile as SubscriberProfileModel
 from noc.wf.models.workflow import Workflow
+
+from ..models.subscriberprofile import SubscriberProfile
+from .base import BaseLoader
 
 DEFAULT_WORKFLOW_NAME = "Default Resource"
 

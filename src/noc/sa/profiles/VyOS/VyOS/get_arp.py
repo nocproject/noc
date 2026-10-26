@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_arp import Script as BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
 from noc.core.text import parse_table
+from noc.sa.interfaces.igetarp import IGetARP
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 
 
 class Script(BaseScript):

@@ -5,44 +5,46 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import itertools
-import operator
 import logging
+import operator
+from collections.abc import Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
-    EmbeddedDocumentListField,
-    ReferenceField,
-)
 from mongoengine.errors import ValidationError
+from mongoengine.fields import (
+    EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    ReferenceField,
+    StringField,
+)
 from mongoengine.queryset.visitor import Q
-import cachetools
 
 # NOC modules
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.wf.models.state import State
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
-from noc.core.topology.base import TopologyBase
-from noc.core.topology.base import loader
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.topology.base import TopologyBase, loader
 from noc.inv.models.resourcepool import ResourcePool
-from .vlanprofile import VLANProfile
-from .vlanfilter import VLANFilter
-from .vlantemplate import VLANTemplate
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.wf.models.state import State
+
 from .l2domainprofile import L2DomainProfile
+from .vlanfilter import VLANFilter
+from .vlanprofile import VLANProfile
+from .vlantemplate import VLANTemplate
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -189,6 +191,7 @@ class L2Domain(Document):
             raise ValidationError("Only l2domain VLAN Template type may be assign")
 
     def on_save(self):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         # Allocate vlans when necessary
@@ -269,9 +272,12 @@ class L2Domain(Document):
     @cachetools.cachedmethod(operator.attrgetter("_l2_domains_mo_cache"), lock=lambda _: id_lock)
     def get_l2_domain_object_ids(cls, l2_domain: str):
         """Get list of all managed object ids belonging to same L2 domain"""
-        from noc.sa.models.managedobject import ManagedObject
-        from noc.inv.models.networksegment import NetworkSegment
+        # Third-party modules
         from django.db.models.query_utils import Q as d_q
+
+        # NOC modules
+        from noc.inv.models.networksegment import NetworkSegment
+        from noc.sa.models.managedobject import ManagedObject
 
         q = d_q(l2_domain=l2_domain)
         ns = NetworkSegment.objects.filter(l2_domain=l2_domain)
@@ -281,9 +287,12 @@ class L2Domain(Document):
 
     @property
     def managed_objects(self):
-        from noc.sa.models.managedobject import ManagedObject
-        from noc.inv.models.networksegment import NetworkSegment
+        # Third-party modules
         from django.db.models.query_utils import Q as d_q
+
+        # NOC modules
+        from noc.inv.models.networksegment import NetworkSegment
+        from noc.sa.models.managedobject import ManagedObject
 
         q = d_q(l2_domain=self)
         ns = NetworkSegment.objects.filter(l2_domain=self)
@@ -314,6 +323,7 @@ class L2Domain(Document):
 
     @property
     def resource_usage(self) -> float | None:
+        # NOC modules
         from noc.vc.models.vlan import VLAN
 
         vlans = VLAN.objects.filter(l2_domain=self).count()
@@ -337,6 +347,7 @@ class L2Domain(Document):
 
     def get_domain_ctx(self) -> dict[str, Any]:
         """get_action_ctx"""
+        # NOC modules
         from noc.vc.models.vlan import VLAN
 
         r = {

@@ -11,7 +11,6 @@ import pytest
 # NOC modules
 from noc.core.mime import ContentType
 
-
 IMAGE_TYPES = {ContentType.JPEG.value, ContentType.GIF.value, ContentType.PNG.value}
 
 

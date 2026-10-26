@@ -11,6 +11,7 @@ from collections import defaultdict
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.wf.models.state import State
+
 from .base import BaseCollector
 
 

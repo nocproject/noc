@@ -6,20 +6,21 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+# NOC modules
 from noc.core.lldp import (
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_NAME,
-    LLDP_CAP_OTHER,
-    LLDP_CAP_REPEATER,
-    LLDP_CAP_BRIDGE,
-    LLDP_CAP_WLAN_ACCESS_POINT,
-    LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE,
     lldp_caps_to_bits,
 )
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

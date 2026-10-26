@@ -8,8 +8,10 @@
 
 
 # Python module
+# Python modules
 import re
 
+# NOC modules
 # NOC module
 from noc.core.profile.base import BaseProfile
 from noc.core.snmp.get import parse_get_response_strict

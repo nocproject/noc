@@ -10,8 +10,8 @@ from django.http import HttpRequest
 
 # NOC modules
 from noc.config import config
-from noc.services.web.base.extapplication import ExtApplication, api
 from noc.core.geocoder.base import geocoder_loader
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class GeoCoderApplication(ExtApplication):

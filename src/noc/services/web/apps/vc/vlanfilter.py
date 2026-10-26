@@ -9,11 +9,11 @@
 from collections import defaultdict
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
+from noc.sa.interfaces.base import IntParameter
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.vc.models.vlanfilter import VLANFilter
-from noc.sa.interfaces.base import IntParameter
-from noc.main.models.label import Label
-from noc.core.translation import ugettext as _
 
 
 class VLANFilterApplication(ExtDocApplication):

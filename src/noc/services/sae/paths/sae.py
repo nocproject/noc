@@ -9,26 +9,26 @@
 from fastapi import APIRouter
 
 # NOC modules
-from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api
-from noc.core.script.loader import loader
-from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
-from noc.sa.models.managedobject import (
-    ManagedObject,
-    CREDENTIAL_CACHE_VERSION,
-)  # noqa Do not delete
-from noc.sa.models.profile import Profile
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.capability import Capability
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.main.models.template import Template
-from noc.main.models.extstorage import ExtStorage
-from noc.wf.models.state import State
-from noc.core.wf.interaction import Interaction
+from noc.config import config
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
-from noc.config import config
 from noc.core.perf import metrics
+from noc.core.script.loader import loader
+from noc.core.script.scheme import BEEF, CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS
+from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api
+from noc.core.wf.interaction import Interaction
+from noc.inv.models.capability import Capability
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.main.models.extstorage import ExtStorage
+from noc.main.models.template import Template
+from noc.sa.models.managedobject import (
+    CREDENTIAL_CACHE_VERSION,
+    ManagedObject,
+)  # noqa Do not delete
+from noc.sa.models.profile import Profile
+from noc.wf.models.state import State
 
 # Increase whenever new field added or removed
 CREDENTIALS_CACHE_VERSION = 3

@@ -9,8 +9,8 @@
 import uuid
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
 
 ADM200 = uuid.UUID("1187f420-fa75-4701-9e7a-816f5923203b")
 

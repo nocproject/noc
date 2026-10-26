@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import logging
 import tracemalloc
-import asyncio
 from io import StringIO
 
 # Third-party modules
@@ -34,6 +34,7 @@ async def start_prof():
     Start code profiling
     :return:
     """
+    # Third-party modules
     import yappi
 
     if yappi.is_running():
@@ -53,6 +54,7 @@ async def stop_prof():
     Stop code profiling
     :return:
     """
+    # Third-party modules
     import yappi
 
     if not yappi.is_running():
@@ -72,6 +74,7 @@ async def get_prof_threads():
     Get running threads info
     :return:
     """
+    # Third-party modules
     import yappi
 
     i = yappi.get_thread_stats()
@@ -91,6 +94,7 @@ async def get_prof_funcs():
     Get profiler functions statistics
     :return:
     """
+    # Third-party modules
     import yappi
 
     i = yappi.get_func_stats()
@@ -116,6 +120,7 @@ async def open_manhole():
     Open manhole
     :return:
     """
+    # Third-party modules
     import manhole
 
     mh = manhole.install()
@@ -199,6 +204,7 @@ async def start_memtrace():
     Start code profiling
     :return:
     """
+    # NOC modules
     from noc.core.service.loader import get_service
 
     svc = get_service()

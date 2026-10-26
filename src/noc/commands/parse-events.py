@@ -7,25 +7,25 @@
 
 # Python modules
 import argparse
-import time
-import os
-from collections import defaultdict
+import csv
 import datetime
 import operator
-import csv
+import os
+import time
+from collections import defaultdict
 
 # NOC modules
+from noc.core.fileutils import iter_open
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.services.classifier.ruleset import RuleSet
+from noc.core.perf import metrics
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.text import format_table
+from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.activeevent import ActiveEvent
-from noc.core.fileutils import iter_open
-from noc.core.text import format_table
-from noc.core.perf import metrics
 from noc.sa.models.profile import Profile
+from noc.services.classifier.ruleset import RuleSet
 
 
 class Command(BaseCommand):

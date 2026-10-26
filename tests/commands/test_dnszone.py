@@ -8,7 +8,7 @@
 # Third-party modules
 import pytest
 
-# Python modules
+# NOC modules
 from noc.commands.dnszone import Command
 
 

@@ -6,15 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import operator
 import re
 import xml.parsers.expat
-import operator
 
 # Third-party modules
 from django.utils.html import escape
 
 # NOC modules
 from noc.core.comp import smart_text
+
 from .base import BaseMacro
 
 rx_link = re.compile(r"^(.*)\|(https?://.+)$")

@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.affinity import BaseController, AFF_AUTO, AFF_NONE
+from noc.core.affinity import AFF_AUTO, AFF_NONE, BaseController
 
 
 def affinity_controller(affinity: set[int]) -> type[BaseController]:

@@ -7,12 +7,13 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    DictListParameter,
-    StringParameter,
     BooleanParameter,
+    DictListParameter,
     IntParameter,
     LabelListParameter,
+    StringParameter,
 )
 
 

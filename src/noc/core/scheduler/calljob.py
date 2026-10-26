@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .job import Job
 from noc.core.handler import get_handler
+
+from .job import Job
 
 
 class CallJob(Job):

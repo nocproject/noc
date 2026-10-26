@@ -9,9 +9,9 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
-from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 from noc.core.text import parse_kv
+from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
+from noc.sa.profiles.Generic.get_mpls_vpn import Script as BaseScript
 
 
 class Script(BaseScript):

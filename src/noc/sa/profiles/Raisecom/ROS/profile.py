@@ -8,11 +8,13 @@
 
 # Python modules
 import re
-from dateutil.parser import parse, ParserError
+
+# Third-party modules
+from dateutil.parser import ParserError, parse
 
 # NOC modules
-from noc.core.profile.base import BaseProfile
 from noc.core.confdb.syntax.patterns import ANY
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

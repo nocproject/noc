@@ -9,9 +9,9 @@
 from django.db import models
 
 # NOC modules
+from noc.core.bi.decorator import bi_hash
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
-from noc.core.bi.decorator import bi_hash
 
 PG_CHUNK = 500
 

@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.inv.models.platform import Platform
+
 from .base import BaseCard
 
 

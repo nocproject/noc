@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable, Callable
+from collections.abc import Callable, Iterable
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaceproperties import IGetInterfaceProperties
-from noc.core.mib import mib
-from noc.core.validators import is_mac
 from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.validators import is_mac
+from noc.sa.interfaces.igetinterfaceproperties import IGetInterfaceProperties
 
 
 class Script(BaseScript):

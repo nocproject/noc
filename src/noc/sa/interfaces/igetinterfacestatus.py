@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import ListOfParameter, DictParameter, InterfaceNameParameter, BooleanParameter
+
+from .base import BooleanParameter, DictParameter, InterfaceNameParameter, ListOfParameter
 
 
 #

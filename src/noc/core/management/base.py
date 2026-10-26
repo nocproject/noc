@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
 import argparse
-from typing import Never, TextIO
-from collections.abc import Sequence, Iterable, Iterator
-from pathlib import Path
 import resource
+import sys
+from collections.abc import Iterable, Iterator, Sequence
+from pathlib import Path
+from typing import Never, TextIO
 
 # Third-party modules
 from gufo.loader import Loader
@@ -115,11 +115,13 @@ class BaseCommand:
         # Run
         if enable_profiling:
             # Start profiler
+            # Third-party modules
             import yappi
 
             yappi.start()
         try:
             if show_usage:
+                # Python modules
                 import resource
 
                 start_usage = resource.getrusage(resource.RUSAGE_SELF)
@@ -137,6 +139,7 @@ class BaseCommand:
                 self.print(f"Assertion error: {e}")
             return 4
         except Exception:
+            # NOC modules
             from noc.core.debug import error_report
 
             error_report()
@@ -158,6 +161,7 @@ class BaseCommand:
                     },
                 )
             if show_metrics:
+                # NOC modules
                 from noc.core.perf import apply_metrics
 
                 d = apply_metrics({})
@@ -258,6 +262,7 @@ class BaseCommand:
         if self.no_progressbar:
             yield from iterable
         else:
+            # Third-party modules
             import progressbar
 
             yield from progressbar.progressbar(iterable, max_value=max_value)

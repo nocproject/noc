@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from ..base import MODiscoveryJob
-from noc.peer.models.asn import AS
-from .prefix import PrefixCheck
 from noc.core.span import Span
+from noc.peer.models.asn import AS
+
+from ..base import MODiscoveryJob
+from .prefix import PrefixCheck
 
 
 class ASDiscoveryJob(MODiscoveryJob):

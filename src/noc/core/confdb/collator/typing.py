@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 from dataclasses import dataclass
 from typing import Any
 

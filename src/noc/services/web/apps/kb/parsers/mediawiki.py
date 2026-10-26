@@ -9,15 +9,16 @@
 import re
 
 try:
+    # Python modules
     import xml.etree.ElementTree as ET
 except Exception:
+    # Third-party modules
     from elementtree import ElementTree as ET
 # Third-party modules
 from mwlib import siteinfo
 from mwlib.uparser import parseString
 from mwlib.xhtmlwriter import MWXHTMLWriter, preprocess
 
-# NOC modules
 from .base import BaseParser
 
 

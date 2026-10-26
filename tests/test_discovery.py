@@ -6,30 +6,30 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import yaml
 from collections import defaultdict
 
 # Third-party modules
-import pytest
-import yaml
 import cachetools
+import pytest
 from gufo.blob.sync import open_blob
 
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.scheduler import Scheduler
-from noc.core.script.scheme import BEEF
-from noc.core.script.loader import loader
 from noc.core.script.beef import Beef
+from noc.core.script.loader import loader
+from noc.core.script.scheme import BEEF
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.main.models.pool import Pool
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
-from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.profile import Profile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.profile import Profile
 from noc.services.discovery.jobs.box.job import BoxDiscoveryJob
-from noc.inv.models.discoveryid import DiscoveryID
 
 _root_ad_cache = {}
 _root_segment_cache = {}

@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, EnumField
+from mongoengine.fields import BooleanField, EnumField, StringField
 
 # NOC modules
 from noc.config import config

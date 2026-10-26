@@ -10,11 +10,11 @@
 import asyncio
 
 # NOC modules
-from noc.core.service.base import BaseService
-from noc.core.mx import MX_STREAM
-from noc.core.router.base import Router
 from noc.core.msgstream.message import Message
+from noc.core.mx import MX_STREAM
 from noc.core.perf import metrics
+from noc.core.router.base import Router
+from noc.core.service.base import BaseService
 
 
 class MXService(BaseService):

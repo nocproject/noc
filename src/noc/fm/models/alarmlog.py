@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import DateTimeField, StringField, BooleanField
+from mongoengine.fields import BooleanField, DateTimeField, StringField
 
 
 class AlarmLog(EmbeddedDocument):

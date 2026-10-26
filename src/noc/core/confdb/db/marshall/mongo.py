@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..node import Node
 from .base import BaseMarshaller
 

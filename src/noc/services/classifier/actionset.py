@@ -7,26 +7,26 @@
 
 # Python modules
 import logging
-from dataclasses import dataclass
 from collections import defaultdict
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 from functools import partial
 from typing import Any
-from collections.abc import Callable, Iterable
 
 # Third-party modules
 from pydantic import ValidationError
 
 # NOC modules
-from noc.core.fm.event import Event
-from noc.core.fm.enum import EventAction, EventSeverity
 from noc.core.debug import error_report
-from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID
-from noc.core.matcher import build_matcher
+from noc.core.fm.enum import EventAction, EventSeverity
+from noc.core.fm.event import Event
 from noc.core.handler import get_handler
+from noc.core.matcher import build_matcher
+from noc.core.mx import MX_NOTIFICATION_GROUP_ID, MessageType, send_message
+from noc.models import get_model_id
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.classifier.eventconfig import EventConfig
 from noc.services.datastream.models.cfgevent import Rule
-from noc.models import get_model_id
 
 action_logger = logging.getLogger(__name__)
 

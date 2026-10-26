@@ -5,8 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 from collections.abc import Iterable
 
@@ -15,30 +17,31 @@ from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
+    BinaryField,
     DateTimeField,
-    ListField,
+    DictField,
+    EmbeddedDocumentListField,
     IntField,
+    ListField,
     LongField,
     ObjectIdField,
-    DictField,
-    BinaryField,
-    EmbeddedDocumentListField,
+    StringField,
 )
 
 # NOC modules
 from noc.config import config
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.sa.models.managedobject import ManagedObject
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.change.decorator import change
-from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
-from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE
-from .pathitem import _is_required_index, PathItem, HAS_FGALARMS
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.span import get_current_span
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ObjectSummaryItem, SummaryItem
+
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .alarmseverity import AlarmSeverity
+from .pathitem import HAS_FGALARMS, PathItem, _is_required_index
 
 
 @change(audit=False)
@@ -313,9 +316,10 @@ class ArchivedAlarm(Document):
                 r.append({"profile": p.name, "summary": k.summary})
             return sorted(r, key=lambda x: -x["summary"])
 
+        # NOC modules
+        from noc.crm.models.subscriberprofile import SubscriberProfile
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
         from noc.sa.models.serviceprofile import ServiceProfile
-        from noc.crm.models.subscriberprofile import SubscriberProfile
 
         return {
             "alarm": self,

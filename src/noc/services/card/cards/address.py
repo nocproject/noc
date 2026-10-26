@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.ip.models.address import Address
+
 from .base import BaseCard
 
 

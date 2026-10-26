@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+from django.contrib.postgres.fields import ArrayField
 from django.db.models import DateTimeField
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from django.contrib.postgres.fields import ArrayField
 
 
 class Migration(BaseMigration):

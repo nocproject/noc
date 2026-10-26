@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import BooleanField, StringField, UInt16Field
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, UInt16Field, BooleanField
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 

@@ -6,39 +6,38 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
-import logging
-import hashlib
 import codecs
-from dataclasses import dataclass
-from typing import Any, ClassVar
+import hashlib
+import logging
+import sys
 from collections.abc import Iterable
-from typing_extensions import TypedDict
-from typing import NotRequired
+from dataclasses import dataclass
+from typing import Any, ClassVar, NotRequired
 
 # Third-party modules
 import cachetools
+from typing_extensions import TypedDict
 
 # NOC modules
-from noc.core.perf import metrics
+from noc.core.cdag.factory.config import ConfigCDAGFactory
 from noc.core.cdag.graph import CDAG
+from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.node.base import BaseCDAGNode
-from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode
 from noc.core.cdag.node.metrics import MetricsNode
-from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.threshold import ThresholdNode
-from noc.core.cdag.factory.config import ConfigCDAGFactory
+from noc.core.perf import metrics
 from noc.pm.models.metrictype import MetricType
-from .target import (
-    MetricKey,
-    ManagedObjectTarget,
-    ComponentTarget,
-    SLAProbeTarget,
-    SensorComponentTarget,
-)
-from .rule import Rule
 
+from .rule import Rule
+from .target import (
+    ComponentTarget,
+    ManagedObjectTarget,
+    MetricKey,
+    SensorComponentTarget,
+    SLAProbeTarget,
+)
 
 logger = logging.getLogger(__name__)
 

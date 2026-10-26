@@ -6,17 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
-import json
-import os
-from typing import Any
-from collections.abc import Iterable
-from dataclasses import dataclass
 import enum
+import json
+import operator
+import os
 import re
 import shutil
-import operator
+import sys
 from collections import defaultdict
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Any
 
 
 def quote_file_name(s: str) -> str:

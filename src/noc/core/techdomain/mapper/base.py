@@ -7,24 +7,25 @@
 
 # Python modules
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-from noc.core.log import PrefixLoggerAdapter
-from noc.inv.models.channel import Channel
 from noc.core.facade.interaction import (
     Interaction,
     InteractionAction,
     InteractionEvent,
     InteractionItem,
 )
+from noc.core.log import PrefixLoggerAdapter
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.channel import Channel
+
 from ..controller.base import Endpoint
 
 

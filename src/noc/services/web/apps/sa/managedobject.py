@@ -6,72 +6,72 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
-from collections import defaultdict
 import zlib
+from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
-import orjson
 import cachetools
-from jinja2 import Template as Jinja2Template
-from django.http import HttpResponse, HttpRequest
+import orjson
 from django.db.models import Q as d_Q
+from django.http import HttpRequest, HttpResponse
+from jinja2 import Template as Jinja2Template
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.services.web.base.decorators.state import state_handler
-from noc.services.web.base.decorators.caps import capabilities_handler
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.interactionlog import InteractionLog
-from noc.sa.models.profile import Profile
-from noc.sa.models.cpestatus import CPEStatus
-from noc.inv.models.capability import Capability
-from noc.inv.models.link import Link
-from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.object import Object
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.services.web.base.modelinline import ModelInline
-from noc.services.web.base.repoinline import RepoInline
-from noc.project.models.project import Project
-from noc.sa.interfaces.base import (
-    ListOfParameter,
-    ModelParameter,
-    StringParameter,
-    BooleanParameter,
-    IntParameter,
-    DictListParameter,
-    DocumentParameter,
-    IPParameter,
-    NoneParameter,
-    ORParameter,
-)
-from noc.sa.models.action import Action
+from noc.config import config
+from noc.core.comp import smart_bytes, smart_text
+from noc.core.debug import error_report
+from noc.core.geocoder.base import geocoder_loader
+from noc.core.middleware.tls import get_user
+from noc.core.mongo.connection import get_db
+from noc.core.pm.utils import get_interface_metrics
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
-from noc.core.mongo.connection import get_db
-from noc.core.wf.interaction import Interaction
-from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text, smart_bytes
-from noc.core.geocoder.base import geocoder_loader
-from noc.core.validators import is_objectid
-from noc.core.debug import error_report
 from noc.core.text import alnum_key
-from noc.core.middleware.tls import get_user
-from noc.core.pm.utils import get_interface_metrics
-from noc.pm.models.scale import Scale
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_objectid
+from noc.core.wf.interaction import Interaction
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
-from noc.config import config
+from noc.inv.models.capability import Capability
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
+from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.subinterface import SubInterface
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.pm.models.scale import Scale
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DictListParameter,
+    DocumentParameter,
+    IntParameter,
+    IPParameter,
+    ListOfParameter,
+    ModelParameter,
+    NoneParameter,
+    ORParameter,
+    StringParameter,
+)
+from noc.sa.models.action import Action
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.cpestatus import CPEStatus
+from noc.sa.models.interactionlog import InteractionLog
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.profile import Profile
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.decorators.caps import capabilities_handler
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
+from noc.services.web.base.modelinline import ModelInline
+from noc.services.web.base.repoinline import RepoInline
 
 JP_CLAUSE_PATTERN = """jsonb_path_exists(caps, '$[*] ? (@.capability == "{}") ? (@.value {} {})')"""
 
@@ -538,6 +538,7 @@ class ManagedObjectApplication(ExtModelApplication):
 
     @api.get(r"^(?P<id>\d+)/discovery/$", access="read")
     def api_discovery(self, request: HttpRequest, id):
+        # NOC modules
         from noc.core.scheduler.job import Job
 
         o = self.get_object_or_404(ManagedObject, id=id)

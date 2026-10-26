@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import InstanceOfParameter, StringParameter, StringListParameter
+
+from .base import InstanceOfParameter, StringListParameter, StringParameter
 
 
 class IConfigValidator(BaseInterface):

@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import CHOICES, INTEGER, BOOL, IF_NAME
+from ...patterns import BOOL, CHOICES, IF_NAME, INTEGER
 
 PROTOCOLS_SPANNING_TREE_SYNTAX = DEF(
     "spanning-tree",

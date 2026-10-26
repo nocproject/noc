@@ -17,7 +17,8 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
-from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 GENERIC_PROFILE = Profile.get_by_name(GENERIC_PROFILE_NAME)
 

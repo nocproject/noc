@@ -10,10 +10,10 @@ import re
 from collections import defaultdict
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
 
 class Script(BaseScript):

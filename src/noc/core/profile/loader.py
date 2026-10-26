@@ -6,16 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
 import glob
-import os
-import threading
 import importlib
+import os
+import sys
+import threading
 from importlib.resources import files
 
 # NOC modules
-from noc.core.loader.base import BaseLoader
 from noc.config import config
+from noc.core.loader.base import BaseLoader
+
 from .base import BaseProfile
 
 GENERIC_PROFILE = "Generic.Host"

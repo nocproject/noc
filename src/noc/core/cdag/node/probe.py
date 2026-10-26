@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Callable, Iterable
-from threading import Lock
-import sys
 import inspect
 import logging
+import sys
+from collections.abc import Callable, Iterable
+from threading import Lock
 
 # Third-party modules
 from pydantic import BaseModel
@@ -19,7 +19,8 @@ from pydantic import BaseModel
 from noc.core.expr import get_fn
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.scale import Scale
-from .base import BaseCDAGNode, ValueType, Category
+
+from .base import BaseCDAGNode, Category, ValueType
 
 MAX31 = 0x7FFFFFFF
 MAX32 = 0xFFFFFFFF

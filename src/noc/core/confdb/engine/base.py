@@ -8,17 +8,18 @@
 # Python modules
 import ast
 import itertools
-import types
 import re
+import types
 from collections import defaultdict
 
 # NOC modules
-from noc.core.vlan import has_vlan, optimize_filter
 from noc.core.ip import IP
 from noc.core.text import ranges_to_list
+from noc.core.vlan import has_vlan, optimize_filter
+
+from ..db.base import ConfDB
 from .transformer import PredicateTransformer
 from .var import Var
-from ..db.base import ConfDB
 
 
 def visitor(args):
@@ -47,6 +48,7 @@ class Engine:
         Args:
             expr
         """
+        # Third-party modules
         import astor
 
         tree = ast.parse(expr, mode="eval")

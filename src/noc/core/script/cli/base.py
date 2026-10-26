@@ -8,11 +8,14 @@
 # Python modules
 from asyncio.exceptions import TimeoutError
 
+# NOC modules
+from noc.core.comp import smart_bytes
+from noc.core.ioloop.util import IOLoopContext
+
 # NOC module
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
-from noc.core.ioloop.util import IOLoopContext
-from noc.core.comp import smart_bytes
+
 from .error import CLIConnectionReset
 
 

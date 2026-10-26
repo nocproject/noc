@@ -7,8 +7,8 @@
 
 # Python modules
 import time
-from urllib.parse import urlencode
 from urllib.error import URLError
+from urllib.parse import urlencode
 from urllib.request import urlopen
 
 # Third-party modules

@@ -7,20 +7,20 @@
 
 # Python modules
 import datetime
-from time import perf_counter
 from collections import defaultdict
+from time import perf_counter
 
 # NOC modules
-from noc.core.scheduler.periodicjob import PeriodicJob
-from noc.core.mx import send_message, MessageType
+from noc.config import config
 from noc.core.etl.remotesystem.base import StepResult
-from noc.core.service.loader import get_service
 from noc.core.jsonutils import iter_chunks
 from noc.core.models.sensorprotos import SensorProtocol
-from noc.main.models.remotesystem import RemoteSystem
+from noc.core.mx import MessageType, send_message
+from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.service.loader import get_service
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
-from noc.config import config
+from noc.main.models.remotesystem import RemoteSystem
 
 NS = 1_000_000_000
 SEND_METRICS_CHUK_SIZE = 5_000

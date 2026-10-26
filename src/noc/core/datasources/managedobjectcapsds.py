@@ -6,16 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource, FieldType
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.capability import Capability
 from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_objectid
+from noc.inv.models.capability import Capability
+from noc.sa.models.managedobject import ManagedObject
 
+from .base import BaseDataSource, FieldInfo, FieldType
 
 caps_dtype_map = {
     "bool": FieldType.BOOL,

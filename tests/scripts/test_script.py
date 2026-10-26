@@ -12,9 +12,9 @@ import os
 import pytest
 
 # NOC modules
-from noc.core.script.loader import loader
 from noc.core.interface.base import BaseInterface
 from noc.core.script.base import BaseScript
+from noc.core.script.loader import loader
 
 IGNORED_VENDOR = ["VMWare"]
 

@@ -9,27 +9,27 @@
 import argparse
 import asyncio
 import socket
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import progressbar
 from gufo.ping import Ping
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import connect
-from noc.core.validators import is_ipv4
-from noc.core.ioloop.util import get_loop_factory
-from noc.core.perf import metrics
-from noc.core.ip import IP
 from noc.config import config
+from noc.core.checkers.base import TCP_CHECK, BaseChecker, Check, DataItem
 from noc.core.checkers.loader import loader
-from noc.core.checkers.base import Check, BaseChecker, DataItem, TCP_CHECK
-from noc.core.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
-from noc.core.purgatorium import ProtocolCheckResult, register
+from noc.core.checkers.snmp import SUGGEST_CHECK, SNMPProtocolChecker
+from noc.core.ioloop.util import get_loop_factory
+from noc.core.ip import IP
+from noc.core.management.base import BaseCommand
 from noc.core.mib import mib
+from noc.core.mongo.connection import connect
+from noc.core.perf import metrics
+from noc.core.purgatorium import ProtocolCheckResult, register
+from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential
+from noc.core.validators import is_ipv4
 
 checker_cache = {}
 HOSTNAME_OID = mib["SNMPv2-MIB::sysName", 0]
@@ -282,6 +282,7 @@ class Command(BaseCommand):
         if pool.isdigit():
             return int(pool)
 
+        # NOC modules
         from noc.main.models.pool import Pool
 
         connect()
@@ -346,6 +347,7 @@ class Command(BaseCommand):
     @classmethod
     def iter_address_rule(cls, rule: str) -> Iterable[IP]:
         """Iterate over addresses set on rules"""
+        # NOC modules
         from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 
         connect()
@@ -363,8 +365,8 @@ class Command(BaseCommand):
     @classmethod
     def iter_address_scan(cls) -> Iterable[IP]:
         """Iterate over addresses set by IP Scan IPAM flag"""
-        from noc.ip.models.prefix import Prefix
-        from noc.ip.models.prefix import PrefixProfile
+        # NOC modules
+        from noc.ip.models.prefix import Prefix, PrefixProfile
 
         connect()
         profiles = PrefixProfile.objects.filter(enable_ip_ping_discovery=True)

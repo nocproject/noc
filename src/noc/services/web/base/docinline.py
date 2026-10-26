@@ -9,21 +9,21 @@
 from functools import reduce
 
 # Third-party modules
-from mongoengine.fields import StringField, IntField, BooleanField, GeoPointField
-from mongoengine.queryset import Q
-from mongoengine.errors import NotUniqueError
 from bson import ObjectId
+from mongoengine.errors import NotUniqueError
+from mongoengine.fields import BooleanField, GeoPointField, IntField, StringField
+from mongoengine.queryset import Q
 
 # NOC modules
+from noc.core.comp import smart_text
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.validators import is_int
 from noc.sa.interfaces.base import (
     BooleanParameter,
-    IntParameter,
-    InterfaceTypeError,
     DocumentParameter,
+    InterfaceTypeError,
+    IntParameter,
 )
-from noc.core.validators import is_int
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.comp import smart_text
 
 
 class DocInline:
@@ -147,6 +147,7 @@ class DocInline:
         assert self.parent_rel
 
     def get_custom_fields(self):
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         return list(CustomField.table_fields(self.model._meta.db_table))

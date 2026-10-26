@@ -6,23 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 import os
+import re
 import shutil
 import subprocess
-import re
 from importlib.machinery import SourceFileLoader
-import datetime
 
 # Third-party modules
 from fastapi import APIRouter
 
 # NOC modules
 from noc.config import config
-from noc.core.fileutils import temporary_file, safe_rewrite
-from noc.fm.models.mib import MIB
-from noc.core.error import ERR_MIB_NOT_FOUND, ERR_MIB_MISSED, ERR_MIB_TOOL_MISSED
 from noc.core.comp import smart_text
+from noc.core.error import ERR_MIB_MISSED, ERR_MIB_NOT_FOUND, ERR_MIB_TOOL_MISSED
+from noc.core.fileutils import safe_rewrite, temporary_file
 from noc.core.service.jsonrpcapi import JSONRPCAPI, api
+from noc.fm.models.mib import MIB
 
 router = APIRouter()
 

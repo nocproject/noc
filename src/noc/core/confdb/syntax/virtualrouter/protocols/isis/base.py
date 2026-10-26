@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import CHOICES, UNIT_NAME, ISO_ADDRESS
+from ....patterns import CHOICES, ISO_ADDRESS, UNIT_NAME
 
 ISIS_SYNTAX = DEF(
     "isis",

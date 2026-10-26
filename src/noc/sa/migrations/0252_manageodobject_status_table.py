@@ -9,8 +9,7 @@
 from collections import defaultdict
 
 # Third-party modules
-from django.db import models
-from django.db import connection
+from django.db import connection, models
 from psycopg2.extras import execute_values
 
 # NOC modules

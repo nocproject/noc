@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import fileinput
 import os
+import socket
 import subprocess
 import sys
-import socket
-import fileinput
 
 TOWER_DB_PATH = "/opt/tower/var/tower/db/config.db"
 NATS_DEB_PATH = "/etc/nats/nats-server.conf"

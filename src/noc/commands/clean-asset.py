@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
 
 
 class Command(BaseCommand):

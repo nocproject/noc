@@ -6,21 +6,22 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-from typing import Any
 import datetime
+import logging
 import re
+from typing import Any
 
 # Third-party modules
 import jwt
-from jwt import ExpiredSignatureError, InvalidTokenError
 from fastapi.responses import Response
+from jwt import ExpiredSignatureError, InvalidTokenError
 
 # NOC modules
 from noc.aaa.models.user import User
 from noc.config import config
+from noc.core.error import ERR_AUTH_CRED_CHANGE, NOCError
 from noc.core.perf import metrics
-from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
+
 from .backends.base import auth_backend_loader
 
 logger = logging.getLogger(__name__)

@@ -5,34 +5,37 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import logging
 import operator
 import threading
-import logging
 
 # Third-party modules
 import bson
-from bson import ObjectId
 import cachetools
 import orjson
+from bson import ObjectId
 from django.db import connection as pg_connection
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentListField
 from mongoengine.errors import ValidationError
+from mongoengine.fields import EmbeddedDocumentListField, ListField, LongField, StringField
 from pymongo import UpdateMany
 
 # NOC modules
 from noc.config import config
-from noc.models import get_model, is_document
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_delete_check, on_save, tree
+from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.defer import defer
-from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check, on_save, tree
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.topology.types import TopologyNode, TopologyNodeType
-from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.models import get_model, is_document
+
 from .technology import Technology
 
 logger = logging.getLogger(__name__)
@@ -531,6 +534,7 @@ class ResourceGroup(Document):
         Raises ResourceGroup.DoesNotExists if resource group is not found
         :return:
         """
+        # NOC modules
         from noc.core.validators import is_int, is_objectid
 
         if isinstance(s, (int, str)):

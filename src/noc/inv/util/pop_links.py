@@ -9,11 +9,11 @@
 import logging
 
 # NOC modules
+from noc.gis.models.layer import Layer
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.inv.models.interface import Interface
-from noc.gis.models.layer import Layer
-from noc.inv.models.link import Link
 
 logger = logging.getLogger(__name__)
 

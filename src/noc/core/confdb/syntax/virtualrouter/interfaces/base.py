@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import ANY, INTEGER, CHOICES, IF_NAME, UNIT_NAME, IPv4_PREFIX, IPv6_PREFIX
+from ...patterns import ANY, CHOICES, IF_NAME, INTEGER, UNIT_NAME, IPv4_PREFIX, IPv6_PREFIX
 
 VR_INTERFACES_SYNTAX = DEF(
     "interfaces",

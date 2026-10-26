@@ -5,12 +5,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from ..vim import VIMScript
-
 # NOC modules
-from noc.core.error import NOCError, ERR_CLI_AUTH_FAILED
+from noc.core.error import ERR_CLI_AUTH_FAILED, NOCError
 from noc.sa.interfaces.igetversion import IGetVersion
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

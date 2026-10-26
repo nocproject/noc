@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import operator
 from collections import defaultdict
+from threading import Lock
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, IntField, EmbeddedDocumentListField
-from mongoengine.errors import ValidationError
-from mongoengine.queryset.visitor import Q
 import cachetools
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
+from mongoengine.fields import EmbeddedDocumentListField, IntField, StringField
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
-from noc.models import get_model
 from noc.aaa.models.group import Group
 from noc.core.mongo.fields import ForeignKeyListField
+from noc.models import get_model
 
 MFAL_NONE = -1
 MFAL_HIDDEN = 0

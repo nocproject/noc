@@ -9,10 +9,10 @@
 from xml.etree import ElementTree
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4, IPv6
+from noc.core.script.base import BaseScript
 from noc.core.script.http.base import HTTPError
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

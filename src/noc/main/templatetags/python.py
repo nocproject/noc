@@ -8,7 +8,6 @@
 # Third-party modules
 from django import template
 
-
 VARTYPES = ["internal", "hidden", "str", "mac", "bool", "int"]
 
 

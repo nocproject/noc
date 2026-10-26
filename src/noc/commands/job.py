@@ -8,25 +8,24 @@
 # Python modules
 import argparse
 import asyncio
-from datetime import datetime, timedelta
-from collections import defaultdict
-import math
 import csv
-import time
+import math
 import sys
+import time
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 # Third-party modules
-from pymongo import UpdateOne
 from django.db import connection as pg_conn
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.mongo.connection import connect
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.loader import get_dcs
-from noc.core.ioloop.util import get_loop_factory
 from noc.main.models.pool import Pool
-
 
 SHARDING_SCHEDULER = {"discovery", "correlator", "escalator"}
 
@@ -230,8 +229,11 @@ class Command(BaseCommand):
         return datetime.fromtimestamp(si)
 
     def handle_fix_timepattern(self, *args, **options):
-        from noc.sa.models.managedobject import ManagedObject
+        # Python modules
         import random
+
+        # NOC modules
+        from noc.sa.models.managedobject import ManagedObject
 
         procc_mos = defaultdict(set)
         time_pattern = {}
@@ -297,6 +299,7 @@ class Command(BaseCommand):
         Calculate discovery tasks
         :return:
         """
+        # Third-party modules
         from django.db import connection
 
         cursor = connection.cursor()
@@ -404,6 +407,7 @@ class Command(BaseCommand):
         slots: list[int] | None = None,
         **options,
     ):
+        # NOC modules
         from noc.sa.models.profile import Profile
 
         if isinstance(slots, str):
@@ -469,6 +473,7 @@ class Command(BaseCommand):
             )
             if detail:
                 for o in bucket["objects"]:
+                    # NOC modules
                     from noc.sa.models.managedobject import ManagedObject
 
                     o = ManagedObject.objects.get(id=o)
@@ -507,6 +512,7 @@ class Command(BaseCommand):
             )
             if detail:
                 for o in bucket["objects"]:
+                    # NOC modules
                     from noc.sa.models.managedobject import ManagedObject
 
                     o = ManagedObject.objects.get(id=o)

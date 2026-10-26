@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.gis.models.division import Division
 from noc.core.translation import ugettext as _
+from noc.gis.models.division import Division
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class DivisionApplication(ExtDocApplication):

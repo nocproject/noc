@@ -7,18 +7,18 @@
 
 # Python modules
 import argparse
-from pathlib import Path
 import time
-from typing import Any
 from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.fm.event import Event, MessageType, Target
 from noc.core.fm.enum import EventSource
+from noc.core.fm.event import Event, MessageType, Target
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.sa.models.profile import Profile

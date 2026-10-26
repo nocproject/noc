@@ -9,13 +9,13 @@
 import asyncio
 import logging
 from collections import defaultdict
-from time import perf_counter
 from collections.abc import Iterable
+from time import perf_counter
 
 # NOC modules
-from noc.services.metricscollector.sourceconfig import RemoteSystemConfig
 from noc.core.etl.models.fmevent import FMEventObject
 from noc.core.fm.event import Event
+from noc.services.metricscollector.sourceconfig import RemoteSystemConfig
 
 
 class RemoteSystemChannel:

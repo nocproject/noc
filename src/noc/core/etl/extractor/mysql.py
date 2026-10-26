@@ -31,6 +31,7 @@ class MySQLExtractor(SQLExtractor):
         self.connect = None
 
     def get_cursor(self):
+        # Third-party modules
         import pymysql
 
         if not self.connect:

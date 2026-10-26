@@ -6,20 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import argparse
+import datetime
 import operator
 import os
-import datetime
-import argparse
-import stat
 import re
+import stat
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

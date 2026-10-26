@@ -5,18 +5,20 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
 from pathlib import Path
+from threading import Lock
 
 # Third-party modules
 import cachetools
-from gufo.blob.sync import BlobBase, open_blob, BlobError
+from bson import ObjectId
+from gufo.blob.sync import BlobBase, BlobError, open_blob
 from mongoengine.document import Document
 from mongoengine.fields import StringField
-from bson import ObjectId
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check

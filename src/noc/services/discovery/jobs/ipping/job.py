@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.ip.models.prefixprofile import PrefixProfile
 from noc.core.span import Span
+from noc.ip.models.prefixprofile import PrefixProfile
+
 from ..base import MODiscoveryJob
 from .address import AddressCheck
 

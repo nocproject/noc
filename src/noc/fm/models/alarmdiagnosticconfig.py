@@ -6,28 +6,28 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import operator
-from threading import Lock
-from collections import defaultdict
 import logging
+import operator
+from collections import defaultdict
+from threading import Lock
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
+from mongoengine.document import Document
+from mongoengine.fields import BooleanField, IntField, ReferenceField, StringField
 
 # NOC modules
-from noc.sa.models.action import Action
+from noc.core.debug import error_report
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
-from noc.core.debug import error_report
+from noc.core.scheduler.job import Job
 from noc.core.wf.interaction import Interaction
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.action import Action
+
 from .alarmclass import AlarmClass
 from .alarmdiagnostic import AlarmDiagnostic
 from .utils import get_alarm
-from noc.core.scheduler.job import Job
-
 
 ac_lock = Lock()
 logger = logging.getLogger(__name__)

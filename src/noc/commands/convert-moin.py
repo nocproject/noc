@@ -9,21 +9,21 @@
 
 # Python modules
 import argparse
+import datetime
+import gc
 import os
 import re
 import stat
-import datetime
 import sys
-import gc
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.core.comp import smart_text
 from noc.core.management.base import BaseCommand
-from noc.main.models.language import Language
-from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
-from noc.core.comp import smart_text
+from noc.main.models.databasestorage import database_storage
+from noc.main.models.language import Language
 
 rx_hexseq = re.compile(r"\(((?:[0-9a-f][0-9a-f])+)\)")
 

@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.migration.base import BaseMigration
+from noc.core.script.scheme import SCHEME_CHOICES
 
 
 class Migration(BaseMigration):

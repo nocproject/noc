@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from pathlib import Path
 import os
 import stat
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 
 # Third-party modules
 import minify_html

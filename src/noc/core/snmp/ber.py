@@ -6,16 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import codecs
 import math
 import struct
-import codecs
+from typing import Any
 
 # Third-party modules
-from typing import Any
+from gufo.noc.speedup import encode_int, encode_oid, parse_p_oid, parse_tlv_header
 
 # NOC modules
 from noc.core.comp import smart_bytes, smart_text
-from gufo.noc.speedup import parse_tlv_header, parse_p_oid, encode_int, encode_oid
 from noc.core.mib import mib
 
 

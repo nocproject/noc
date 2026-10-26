@@ -7,31 +7,31 @@
 
 
 # Python modules
+import csv
 import datetime
 import time
-import csv
 from io import BytesIO, TextIOWrapper
-from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
 import xlsxwriter
 from django.http import HttpResponse
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.datasources.base import data_source_loader
+from noc.core.translation import ugettext as _
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.interfaces.base import BooleanParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 from noc.services.web.base.reportdatasources.base import report_data_source_loader
 from noc.services.web.base.reportdatasources.report_container import ReportContainerData
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.translation import ugettext as _
-from noc.core.datasources.base import data_source_loader
 
 
 def get_column_width(name):

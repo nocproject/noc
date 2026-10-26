@@ -9,9 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.yaml import YAMLCDAGFactory
-
+from noc.core.cdag.graph import CDAG
 
 CONFIG1 = """
 nodes:

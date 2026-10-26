@@ -12,8 +12,9 @@ import inspect
 import pytest
 
 # NOC modules
+from noc.models import DB_MODEL_TYPE, is_document
+
 from .util import get_all_models
-from noc.models import is_document, DB_MODEL_TYPE
 
 
 def int_or_oid(x) -> str:

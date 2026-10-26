@@ -10,16 +10,19 @@ import re
 from collections import defaultdict
 
 # NOC modules
+from noc.core.mib import mib
+from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.core.script.metrics import scale
+from noc.core.text import parse_kv
 from noc.sa.profiles.Generic.get_metrics import (
-    Script as GetMetricsScript,
     ProfileMetricConfig,
 )
-from noc.core.models.cfgmetrics import MetricCollectorConfig
-from noc.core.text import parse_kv
-from noc.core.mib import mib
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+)
+
 from .oidrules.gpon_ports import GponPortsRule
 from .oidrules.hw_slots import HWSlots
-from noc.core.script.metrics import scale
 
 SNMP_UNKNOWN_VALUE = 2147483647
 

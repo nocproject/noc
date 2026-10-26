@@ -8,14 +8,13 @@
 # Python modules
 import datetime
 import time
-from typing import Any
 from collections.abc import AsyncIterable, Iterable
+from typing import Any
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
 from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.datasources.base import data_source_loader
@@ -23,6 +22,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 INTERFACES_QUERY = f"""
   SELECT

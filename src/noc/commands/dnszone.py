@@ -6,24 +6,26 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import dns
 import argparse
 import re
 from itertools import zip_longest
 
+# Third-party modules
+import dns
+
 # NOC modules
+from noc.core.comp import smart_text
+from noc.core.dns.rr import RR
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
-from noc.dns.models.dnszone import DNSZone
-from noc.dns.models.dnszonerecord import DNSZoneRecord
-from noc.dns.models.dnszoneprofile import DNSZoneProfile
-from noc.ip.models.vrf import VRF
-from noc.ip.models.addressprofile import AddressProfile
-from noc.ip.models.address import Address
-from noc.core.validators import is_int, is_ipv4, is_ipv6
-from noc.core.dns.rr import RR
 from noc.core.text import split_alnum
-from noc.core.comp import smart_text
+from noc.core.validators import is_int, is_ipv4, is_ipv6
+from noc.dns.models.dnszone import DNSZone
+from noc.dns.models.dnszoneprofile import DNSZoneProfile
+from noc.dns.models.dnszonerecord import DNSZoneRecord
+from noc.ip.models.address import Address
+from noc.ip.models.addressprofile import AddressProfile
+from noc.ip.models.vrf import VRF
 
 
 class Command(BaseCommand):

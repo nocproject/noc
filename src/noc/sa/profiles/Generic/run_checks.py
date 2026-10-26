@@ -10,9 +10,9 @@ from typing import Any
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.iping import IPing
-from noc.sa.interfaces.idiagnosticheck import IDiagnosticCheck
 from noc.core.validators import is_ipv4
+from noc.sa.interfaces.idiagnosticheck import IDiagnosticCheck
+from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):

@@ -9,6 +9,7 @@
 Test in FlexGain ACE24 DSLAM
 """
 
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

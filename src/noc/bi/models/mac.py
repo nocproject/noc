@@ -12,20 +12,20 @@ from typing import Any
 
 # NOC modules
 from noc.config import config
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
     DateField,
     DateTimeField,
-    UInt64Field,
-    UInt16Field,
-    UInt8Field,
-    StringField,
     ReferenceField,
+    StringField,
+    UInt8Field,
+    UInt16Field,
+    UInt64Field,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
-from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

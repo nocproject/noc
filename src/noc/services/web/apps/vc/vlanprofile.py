@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.vc.models.vlanprofile import VLANProfile
-from noc.core.translation import ugettext as _
 
 
 class VLANProfileApplication(ExtDocApplication):

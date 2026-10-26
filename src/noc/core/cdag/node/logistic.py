@@ -11,8 +11,7 @@ from math import exp
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class LogisticConfig(BaseModel):

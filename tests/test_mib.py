@@ -12,11 +12,10 @@ import importlib
 import pytest
 
 # NOC modules
+from noc.config import config
 from noc.core.mib import mib
 from noc.core.snmp.render import render_mac
 from noc.fm.models.mib import MIB
-from noc.config import config
-
 
 CMIBS = config.noc_base / "cmibs"
 

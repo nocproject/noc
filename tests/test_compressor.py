@@ -5,13 +5,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import pytest
+# Python modules
 import io
 
+# Third-party modules
+import pytest
+
 # NOC modules
-from noc.core.compressor.base import compressor_loader
-from noc.core.compressor.base import BaseCompressor
+from noc.core.compressor.base import BaseCompressor, compressor_loader
 from noc.core.fileutils import temporary_file
 
 SAMPLE = ["Lorem ", "ipsum\n", "dolor ", "sit ", "amet"]

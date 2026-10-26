@@ -5,15 +5,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from collections import defaultdict
-from threading import Lock
-from functools import partial
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from functools import partial
+from threading import Lock
 from typing import Any
-from collections.abc import Iterable, Callable
 
 # Third-party modules
 import cachetools
@@ -24,59 +26,61 @@ from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, RootModel, field_validator, model_validator
 
 # NOC modules
-from noc.core.translation import ugettext as _
-from noc.core.model.base import NOCModel
-from noc.core.model.fields import DocumentReferenceField, PydanticField
-from noc.core.model.decorator import on_save, on_init, on_delete_check
-from noc.core.cache.base import cache
-from noc.main.models.style import Style
-from noc.main.models.pool import Pool
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.handler import Handler
-from noc.main.models.label import Label
-from noc.core.scheduler.job import Job
+from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
+from noc.core.cache.base import cache
+from noc.core.change.decorator import change
+from noc.core.change.model import ChangeField
+from noc.core.checkers.base import NODATA, Check
 from noc.core.defer import call_later, defer
-from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
-from noc.core.script.scheme import SSH, SNMPCredential, Protocol as CredProtocol
-from noc.core.wf.interaction import Interaction
-from noc.core.checkers.base import Check, NODATA
-from noc.core.diagnostic.types import DiagnosticState, DiagnosticConfig, CtxItem
 from noc.core.diagnostic.hub import (
-    PROFILE_DIAG,
-    SNMP_DIAG,
     CLI_DIAG,
+    FIRST_AVAIL,
     HTTP_DIAG,
+    PROFILE_DIAG,
+    RESOLVER_DIAG,
+    SNMP_DIAG,
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
-    FIRST_AVAIL,
-    RESOLVER_DIAG,
     DiagnosticHub,
 )
+from noc.core.diagnostic.types import CtxItem, DiagnosticConfig, DiagnosticState
 from noc.core.matcher import build_matcher
-from noc.core.change.model import ChangeField
-from noc.sa.interfaces.base import (
-    DictListParameter,
-    ObjectIdParameter,
-    BooleanParameter,
-    IntParameter,
-)
-from noc.ip.models.prefixprofile import PrefixProfile
-from noc.ip.models.addressprofile import AddressProfile
-from noc.peer.models.peer import PeerProfile
-from noc.main.models.extstorage import ExtStorage
-from noc.main.models.template import Template
-from noc.core.change.decorator import change
-from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init, on_save
+from noc.core.model.fields import DocumentReferenceField, PydanticField
+from noc.core.scheduler.job import Job
+from noc.core.script.scheme import SSH, SNMPCredential
+from noc.core.script.scheme import Protocol as CredProtocol
+from noc.core.topology.types import ShapeOverlayForm, ShapeOverlayPosition
+from noc.core.translation import ugettext as _
+from noc.core.wf.interaction import Interaction
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.ip.models.addressprofile import AddressProfile
+from noc.ip.models.prefixprofile import PrefixProfile
+from noc.main.models.extstorage import ExtStorage
 from noc.main.models.glyph import Glyph
+from noc.main.models.handler import Handler
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.style import Style
+from noc.main.models.template import Template
+from noc.peer.models.peer import PeerProfile
 from noc.pm.models.metrictype import MetricType
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DictListParameter,
+    IntParameter,
+    ObjectIdParameter,
+)
 from noc.vc.models.vlanfilter import VLANFilter
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.workflow import Workflow
+
 from .capsprofile import CapsProfile
-from noc.config import config
 
 metrics_lock = Lock()
 
@@ -786,6 +790,7 @@ class ManagedObjectProfile(NOCModel):
         return ManagedObjectProfile.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         changed_fields = set(changed_fields or [])
@@ -1233,6 +1238,7 @@ def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
         profile_id:
         box_alarm:
     """
+    # NOC modules
     from noc.sa.models.managedobject import ManagedObject
 
     # Move to Refresh Alarm

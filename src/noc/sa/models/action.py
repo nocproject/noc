@@ -5,43 +5,45 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
 import re
+import threading
 from collections import defaultdict
-from typing import Any
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Any
 
 # Third-party modules
-import jinja2
 import cachetools
+import jinja2
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    UUIDField,
-    IntField,
     BooleanField,
-    EnumField,
     EmbeddedDocumentListField,
+    EnumField,
+    IntField,
     ListField,
     ReferenceField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
+from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete_check
+from noc.core.models.cfgactioncommands import ActionCommandConfig, ScopeConfig
+from noc.core.models.valuetype import ARRAY_ANNEX, ValueType
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
-from noc.core.handler import get_handler
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.models.valuetype import ValueType, ARRAY_ANNEX
-from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
+from noc.core.runner.models.jobreq import InputMapping, JobRequest, KVInputMapping
 from noc.core.topology.base import TopologyBase
 from noc.main.models.handler import Handler
-from noc.core.models.cfgactioncommands import ScopeConfig, ActionCommandConfig
 
 id_lock = threading.Lock()
 rx_empty_string = re.compile(r"\n{2,}")

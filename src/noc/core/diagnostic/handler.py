@@ -9,9 +9,10 @@
 from collections.abc import Iterable
 
 # NOC modules
-from noc.core.models.inputsources import InputSource
 from noc.core.checkers.base import Check, CheckResult, DataItem
-from .types import DiagnosticConfig, CheckStatus, DiagnosticState
+from noc.core.models.inputsources import InputSource
+
+from .types import CheckStatus, DiagnosticConfig, DiagnosticState
 
 
 class DiagnosticHandler:

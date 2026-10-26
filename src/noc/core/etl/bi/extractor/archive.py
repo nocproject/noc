@@ -6,18 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import bisect
 from collections import defaultdict
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
-import bisect
 import pymongo
-from pymongo.errors import BulkWriteError
 from jinja2 import Template
+from pymongo.errors import BulkWriteError
 
 # NOC modules
-from noc.core.mongo.connection import get_db, connect
+from noc.core.mongo.connection import connect, get_db
+
 from .base import BaseExtractor
 
 

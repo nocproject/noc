@@ -16,9 +16,10 @@ from fastapi.responses import JSONResponse
 # NOC modules
 from noc.aaa.models.user import User
 from noc.config import config
+
+from ..auth import authenticate, register_last_login, set_jwt_cookie
 from ..models.login import LoginRequest
 from ..models.status import StatusResponse
-from ..auth import authenticate, register_last_login, set_jwt_cookie
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

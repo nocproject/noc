@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.validators import is_vlan
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):

@@ -8,7 +8,6 @@
 # Third-party modules
 import pytest
 
-# NOC modules
 from .util import NodeCDAG
 
 
@@ -509,6 +508,7 @@ def test_probe(unit: str, data) -> None:
 
 
 def setup_module(_module):
+    # NOC modules
     from noc.core.cdag.node.probe import ProbeNode
 
     ProbeNode.set_convert(
@@ -560,6 +560,7 @@ def setup_module(_module):
 
 
 def teardown_module(_module):
+    # NOC modules
     from noc.core.cdag.node.probe import ProbeNode
 
     ProbeNode.reset_convert()

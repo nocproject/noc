@@ -6,22 +6,22 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
 from collections import namedtuple
+from collections.abc import Iterable
+from typing import Any
 
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.diagnostic.hub import SNMPTRAP_DIAG
 from noc.core.ip import IP
+from noc.main.models.label import Label
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
 from noc.main.models.timepattern import TimePattern
-from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.service import Service
+from noc.wf.models.state import State
 
 
 class Target(
@@ -379,6 +379,7 @@ class CfgTrapDataStream(DataStream):
         Iterate over ManagedObject available addresses
         :return:
         """
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 

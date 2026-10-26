@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.group import Group
+from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
+
 from .administrativedomain import AdministrativeDomain
 
 

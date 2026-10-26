@@ -9,8 +9,9 @@
 import errno
 
 # NOC modules
-from .loader import get_service
 from noc.config import config
+
+from .loader import get_service
 
 # Connection time
 CONNECT_TIMEOUT = config.rpc.sync_connect_timeout

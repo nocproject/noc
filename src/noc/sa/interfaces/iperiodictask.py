@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import IntParameter, BooleanParameter
+
+from .base import BooleanParameter, IntParameter
 
 
 class IPeriodicTask(BaseInterface):

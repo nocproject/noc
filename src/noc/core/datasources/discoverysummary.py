@@ -6,20 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
 from collections import defaultdict
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
-from django.db.models.aggregates import Count
 from django.contrib.postgres.aggregates.general import ArrayAgg
+from django.db.models.aggregates import Count
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
+from .base import BaseDataSource, FieldInfo, FieldType
 
 MOS_METRICS_PIPELINE = [
     {"$match": {"type": "physical"}},

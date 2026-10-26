@@ -9,27 +9,27 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.validators import is_ipv4, is_ipv6, is_mac
-from noc.core.text import parse_table
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_OTHER,
     LLDP_CAP_REPEATER,
-    LLDP_CAP_BRIDGE,
-    LLDP_CAP_WLAN_ACCESS_POINT,
     LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE,
-    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_STATION_ONLY,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     lldp_caps_to_bits,
 )
+from noc.core.text import parse_table
+from noc.core.validators import is_ipv4, is_ipv6, is_mac
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

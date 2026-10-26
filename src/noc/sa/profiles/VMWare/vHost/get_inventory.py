@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from ..vim import VIMScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

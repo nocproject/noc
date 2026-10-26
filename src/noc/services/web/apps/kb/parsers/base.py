@@ -14,7 +14,6 @@ from gufo.loader import Loader
 from noc.config import config
 from noc.core.validators import is_int
 
-
 BASE_PATH = "/api/card/view/kb"
 
 

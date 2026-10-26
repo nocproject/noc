@@ -10,7 +10,6 @@
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
 from .utils import RemoteSystemItem
 
 

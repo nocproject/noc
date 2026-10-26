@@ -6,17 +6,17 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.text import parse_kv
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
     LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_LOCAL,
 )
+from noc.core.script.base import BaseScript
+from noc.core.text import parse_kv
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

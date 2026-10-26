@@ -8,6 +8,7 @@
 # Third-party modules
 from django.db import models
 
+# NOC modules
 # NOC models
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check

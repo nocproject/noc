@@ -10,6 +10,7 @@ from django import forms
 
 # NOC modules
 from noc.core.convert.dbm import dbm2mw, mw2dbm
+
 from .base import BaseCalculator
 
 

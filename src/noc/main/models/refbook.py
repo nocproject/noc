@@ -15,6 +15,7 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.main.refbooks.downloaders.loader import loader
+
 from .language import Language
 
 

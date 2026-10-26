@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
 from .interfaces.hints import VIRTUAL_ROUTER_INTERFACES_HINTS_SYNTAX
 

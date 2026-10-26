@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import datetime
 import logging
 import re
-import datetime
 
 # Third-party modules
-from pymongo.errors import BulkWriteError
 from pymongo import InsertOne
+from pymongo.errors import BulkWriteError
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

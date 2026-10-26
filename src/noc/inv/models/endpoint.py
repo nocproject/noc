@@ -9,20 +9,21 @@
 from typing import Any
 
 # Third-party modules
+from mongoengine import signals
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    IntField,
     EmbeddedDocumentListField,
+    IntField,
     ListField,
+    StringField,
 )
-from mongoengine import signals
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.resource import from_resource, resource_label, resource_path
+
 from .channel import Channel
 
 
@@ -110,6 +111,7 @@ class Endpoint(Document):
 
     def on_delete(self):
         """Clean up endpoint."""
+        # NOC modules
         from noc.core.techdomain.profile.channel import ProfileChannelController
 
         if not self.channel.controller or not self.resource.startswith("o:"):

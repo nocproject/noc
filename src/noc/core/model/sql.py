@@ -9,10 +9,9 @@
 import logging
 
 # Third-party modules
-from django.db.models.query_utils import Q
-from django.db.models.lookups import Lookup
 from django.db.models.fields import Field
-
+from django.db.models.lookups import Lookup
+from django.db.models.query_utils import Q
 
 logger = logging.getLogger(__name__)
 

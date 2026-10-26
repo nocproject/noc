@@ -7,14 +7,14 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Any
 from collections.abc import Iterable
 from threading import Lock
+from typing import Any
 
 # Third-party modules
 import orjson
 
-# Python modules
+# NOC modules
 from noc.config import config
 
 

@@ -9,8 +9,8 @@
 from typing import Union
 
 # Third-party modules
-from bson import ObjectId
 import orjson
+from bson import ObjectId
 
 # NOC modules
 from noc.core.clickhouse.connect import connection
@@ -87,7 +87,6 @@ def get_severity(alarms):
     return severity
 
 
-# NOC modules
-from .activeevent import ActiveEvent
 from .activealarm import ActiveAlarm
+from .activeevent import ActiveEvent
 from .archivedalarm import ArchivedAlarm

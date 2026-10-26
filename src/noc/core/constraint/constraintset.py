@@ -9,7 +9,6 @@
 from collections import defaultdict
 from collections.abc import Iterable
 
-# NOC modules
 from .base import BaseConstraint
 
 

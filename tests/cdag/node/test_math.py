@@ -11,7 +11,6 @@ from math import pi
 # Third-party modules
 import pytest
 
-# NOC modules
 from .util import NodeCDAG
 
 

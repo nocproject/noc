@@ -6,10 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import socket
 import asyncio
 import errno
-
+import socket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 

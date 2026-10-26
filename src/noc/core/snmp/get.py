@@ -11,10 +11,11 @@ from collections import namedtuple
 from collections.abc import Callable
 
 # NOC modules
-from .ber import parse_p_oid, BERDecoder, encoder
-from .consts import PDU_GET_REQUEST, PDU_GETNEXT_REQUEST, PDU_RESPONSE, PDU_GETBULK_REQUEST
-from .version import SNMP_v1, SNMP_v2c
 from noc.core.perf import metrics
+
+from .ber import BERDecoder, encoder, parse_p_oid
+from .consts import PDU_GET_REQUEST, PDU_GETBULK_REQUEST, PDU_GETNEXT_REQUEST, PDU_RESPONSE
+from .version import SNMP_v1, SNMP_v2c
 
 
 def _build_pdu(community: str, pdu_type: int, oids, request_id, version: int = SNMP_v2c) -> bytes:

@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictParameter, ListOfParameter, IPParameter, StringParameter, StringListParameter
+
+from .base import DictParameter, IPParameter, ListOfParameter, StringListParameter, StringParameter
 
 
 class IGetResolverConfig(BaseInterface):

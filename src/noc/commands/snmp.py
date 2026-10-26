@@ -8,18 +8,19 @@
 # Python modules
 import argparse
 import asyncio
-from time import perf_counter
 from collections.abc import Iterable
+from time import perf_counter
 
 # Third-party modules
-from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError, SnmpAuthError
-from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
+from gufo.snmp import SnmpAuthError, SnmpSession, SnmpVersion
+from gufo.snmp import SnmpError as GSNMPError
+from gufo.snmp.user import Aes128Key, DesKey, KeyType, Md5Key, Sha1Key, User
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.validators import is_ipv4
 from noc.core.ioloop.util import get_loop_factory
+from noc.core.management.base import BaseCommand
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
+from noc.core.validators import is_ipv4
 from noc.sa.interfaces.base import MACAddressParameter
 
 AUTH_PROTO_MAP = {

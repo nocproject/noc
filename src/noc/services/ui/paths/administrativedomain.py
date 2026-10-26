@@ -9,16 +9,17 @@
 from fastapi import APIRouter
 
 # NOC modules
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.label import Label
-from ..models.utils import LabelItem
+from noc.sa.models.administrativedomain import AdministrativeDomain
+
 from ..models.administrativedomain import (
     DefaultAdministrativeDomainItem,
     FormAdministrativeDomainItem,
 )
+from ..models.utils import LabelItem
 from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.model import ModelResourceAPI
-from ..utils.rest.op import FilterExact, RefFilter, FuncFilter, FilterIn
+from ..utils.rest.op import FilterExact, FilterIn, FuncFilter, RefFilter
 
 router = APIRouter()
 

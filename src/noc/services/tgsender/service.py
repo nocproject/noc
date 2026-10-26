@@ -7,21 +7,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import orjson
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 from urllib.parse import urlencode
 
 # Third-party modules
+import orjson
 from gufo.http import DEFLATE, GZIP, Proxy
 
 # NOC modules
-from noc.core.service.base import BaseService
-from noc.core.msgstream.message import Message
-from noc.core.mx import MX_TO, MX_WH_API_URL, MX_NOTIFICATION_METHOD
-from noc.core.perf import metrics
 from noc.config import config
-from noc.core.http.sync import HttpClient, ERR_TIMEOUT
+from noc.core.http.sync import ERR_TIMEOUT, HttpClient
+from noc.core.msgstream.message import Message
+from noc.core.mx import MX_NOTIFICATION_METHOD, MX_TO, MX_WH_API_URL
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 from noc.core.text import split_text
 
 TG_API = "https://api.telegram.org/bot"

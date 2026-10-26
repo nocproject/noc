@@ -10,8 +10,8 @@
 import re
 
 # NOC modules
-from noc.core.profile.base import BaseProfile
 from noc.core.lldp import LLDP_PORT_SUBTYPE_COMPONENT, LLDP_PORT_SUBTYPE_NAME
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

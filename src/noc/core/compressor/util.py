@@ -18,10 +18,12 @@ def _dummy(x: bytes) -> bytes:
 
 def get_compressor(name: str) -> TCompressor:
     if name == "zlib":
+        # Python modules
         from zlib import compress
 
         return compress
     if name == "lzma":
+        # Python modules
         from lzma import compress
 
         return compress
@@ -30,10 +32,12 @@ def get_compressor(name: str) -> TCompressor:
 
 def get_decompressor(name: str) -> TDecompressor:
     if name == "zlib":
+        # Python modules
         from zlib import decompress
 
         return decompress
     if name == "lzma":
+        # Python modules
         from lzma import decompress
 
         return decompress

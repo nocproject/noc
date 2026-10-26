@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.ui.service import UIService
-
 
 if __name__ == "__main__":
     UIService().start()

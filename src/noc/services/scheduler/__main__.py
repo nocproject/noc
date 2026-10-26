@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.scheduler.service import SchedulerService
-
 
 if __name__ == "__main__":
     SchedulerService().start()

@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.core.matcher import match
+
 from .loader import load_rule
 
 

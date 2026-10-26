@@ -6,32 +6,33 @@
 # ----------------------------------------------------------------------
 
 # Third-party packages
+# Third-party modules
 import pytest
 
 # NOC modules
 from noc.core.validators import (
-    is_int,
-    is_float,
-    is_asn,
-    is_ipv4,
-    is_ipv6,
-    is_ipv4_prefix,
-    is_ipv6_prefix,
-    is_prefix,
+    ValidationError,
+    generic_validator,
     is_as_set,
-    is_fqdn,
-    is_re,
-    is_vlan,
-    is_mac,
-    is_rd,
-    is_oid,
-    is_extension,
+    is_asn,
     is_email,
-    is_uuid,
+    is_extension,
+    is_float,
+    is_fqdn,
+    is_int,
+    is_ipv4,
+    is_ipv4_prefix,
+    is_ipv6,
+    is_ipv6_prefix,
+    is_mac,
     is_mimetype,
     is_objectid,
-    generic_validator,
-    ValidationError,
+    is_oid,
+    is_prefix,
+    is_rd,
+    is_re,
+    is_uuid,
+    is_vlan,
 )
 
 

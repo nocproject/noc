@@ -5,10 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
 from ...patterns import IF_NAME
-
 
 PROTOCOLS_CDP_SYNTAX = DEF(
     "cdp",

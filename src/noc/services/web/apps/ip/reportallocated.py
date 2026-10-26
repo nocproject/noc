@@ -6,17 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Third-party Modules
+# Third-party modules
 from django import forms
 from django.db.models import Q
 
+# NOC modules
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
+from noc.core.validators import ValidationError, check_ipv4_prefix, check_ipv6_prefix
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+from noc.main.models.customfield import CustomField
+
 # NOC Modules
 from noc.services.web.base.simplereport import SimpleReport, TableColumn
-from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.main.models.customfield import CustomField
-from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
 from noc.vc.models.vlan import VLAN
 
 

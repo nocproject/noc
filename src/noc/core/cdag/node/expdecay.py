@@ -11,10 +11,8 @@ from math import exp
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from .window import WindowNode, WindowConfig
-
-from .base import ValueType, Category
+from .base import Category, ValueType
+from .window import WindowConfig, WindowNode
 
 NS = 1_000_000_000
 

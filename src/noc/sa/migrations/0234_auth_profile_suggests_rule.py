@@ -7,8 +7,8 @@
 
 # Third-party modules
 import bson
-from pymongo import InsertOne
 from django.db import models
+from pymongo import InsertOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

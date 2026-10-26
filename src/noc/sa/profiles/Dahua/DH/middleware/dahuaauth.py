@@ -6,14 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import orjson
-import hashlib
 import codecs
+import hashlib
+
+# Third-party modules
+import orjson
 
 # NOC modules
-from noc.core.script.http.middleware.base import BaseMiddleware
-from noc.core.http.sync import HttpClient
 from noc.core.comp import smart_bytes
+from noc.core.http.sync import HttpClient
+from noc.core.script.http.middleware.base import BaseMiddleware
 
 
 class DahuaAuthMiddeware(BaseMiddleware):

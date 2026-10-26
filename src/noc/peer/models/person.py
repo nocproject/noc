@@ -9,10 +9,11 @@
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.gridvcs.manager import GridVCSField
-from noc.core.rpsl import rpsl_format, rpsl_multiple
+from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_save
+from noc.core.rpsl import rpsl_format, rpsl_multiple
+
 from .rir import RIR
 
 

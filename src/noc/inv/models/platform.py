@@ -5,33 +5,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
-import operator
-import uuid
+
+# Python modules
 import datetime
+import operator
+import threading
+import uuid
 from pathlib import Path
 
 # Third-party modules
-from bson import ObjectId
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, UUIDField, ListField
-from mongoengine.queryset import Q
-from mongoengine import signals
-from pymongo.collection import ReturnDocument
 import cachetools
+from bson import ObjectId
 from bson.int64 import Int64
+from mongoengine import signals
+from mongoengine.document import Document
+from mongoengine.fields import ListField, LongField, StringField, UUIDField
+from mongoengine.queryset import Q
+from pymongo.collection import ReturnDocument
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, DateField
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync, new_bi_id
-from noc.core.prettyjson import to_json
 from noc.core.change.decorator import change
-from noc.models import get_model
-from noc.main.models.label import Label
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import DateField, PlainReferenceField
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.label import Label
+from noc.models import get_model
+
 from .vendor import Vendor
 
 id_lock = threading.Lock()

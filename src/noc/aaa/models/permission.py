@@ -5,19 +5,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
-from django.db.models import CharField, ManyToManyField
 import cachetools
+from django.db.models import CharField, ManyToManyField
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
+from noc.aaa.models.user import User
+from noc.core.model.base import NOCModel
 
 perm_lock = Lock()
 id_lock = Lock()
@@ -156,6 +158,7 @@ class Permission(NOCModel):
 
     @classmethod
     def sync(cls):
+        # NOC modules
         from noc.services.web.base.site import site
 
         def normalize(app, perm):

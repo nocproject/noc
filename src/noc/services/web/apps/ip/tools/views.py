@@ -6,27 +6,30 @@
 # ---------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import csv
-import dns
-import orjson
 from io import StringIO
 
 # Third-party modules
+import dns
+import orjson
 from django import forms
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 
-# NOC Modules
-from noc.services.web.base.application import Application, HasPerm, api
+# NOC modules
+from noc.core.forms import NOCForm
 from noc.core.ip import IP, IPv4, IPv6
+from noc.core.translation import ugettext as _
 from noc.core.validators import is_ipv4, is_ipv6
 from noc.ip.models.address import Address
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.vrf import VRF
-from noc.core.forms import NOCForm
 
 # from noc.core.comp import smart_text
 from noc.ip.models.addressprofile import AddressProfile
-from noc.core.translation import ugettext as _
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+
+# NOC Modules
+from noc.services.web.base.application import Application, HasPerm, api
 
 
 #

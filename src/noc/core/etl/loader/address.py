@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.address import Address as AddressModel
 from noc.gis.models.address import Address
 from noc.gis.models.building import Building
 from noc.gis.models.street import Street
+
+from ..models.address import Address as AddressModel
+from .base import BaseLoader
 
 
 class AddressLoader(BaseLoader):

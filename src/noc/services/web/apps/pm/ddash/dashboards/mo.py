@@ -6,21 +6,24 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
+# Python modules
 import operator
-from django.db.models import Q
 from collections import defaultdict
+
+# Third-party modules
+from django.db.models import Q
 from mongoengine.queryset.visitor import Q as m_q
 
-
 # NOC modules
-from .jinja import JinjaDashboard
+from noc.core.text import alnum_key
 from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.object import Object
 from noc.inv.models.sensor import Sensor
-from noc.core.text import alnum_key
+from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
+
+from .jinja import JinjaDashboard
 
 TITLE_BAD_CHARS = '"\\\n\r'
 

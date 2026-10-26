@@ -7,11 +7,11 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.core.mib import mib
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.comp import smart_text
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.script.cli.error import CLIError
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):

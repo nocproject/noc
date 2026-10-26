@@ -143,8 +143,8 @@ exclude = [".git", "build", "dist", "var", "share", "collections", "node_modules
 line-length = 100
 # Assume Python 3.13
 target-version = "py313"
-# Always autofix, but never try to fix `F401` (unused imports).
-fix = false #fix = true
+# Always autofix, but never try to fix `unfixable`
+fix = true
 
 [tool.ruff.lint]
 ignore = [
@@ -186,7 +186,7 @@ select = [
   "F", # Pyflakes
   "W", # Pycodestyle Warning
   # "C90", # mccabe
-  # "I", # isort
+  "I", # isort
   # "D", # Pydocstyle
   "YTT", # flake8-2020
   # "ANN", # flake8-annotations
@@ -218,6 +218,16 @@ unfixable = [
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
+
+[tool.ruff.lint.isort]
+extra-standard-library = ["yaml"]
+known-first-party = ["src"]
+
+[tool.ruff.lint.isort.import-heading]
+first-party = "NOC modules"
+future = "Future imports"
+standard-library = "Python modules"
+third-party = "Third-party modules"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

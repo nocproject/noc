@@ -5,8 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from noc.core.migration.base import BaseMigration
+# Python modules
 import re
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

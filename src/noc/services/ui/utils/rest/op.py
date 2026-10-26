@@ -10,13 +10,13 @@ from collections.abc import Callable
 from http import HTTPStatus
 
 # Third-party modules
-from fastapi import HTTPException
 from django.db.models import Model
+from fastapi import HTTPException
 from mongoengine.document import Document
 
 # NOC modules
+from noc.core.validators import is_int, is_objectid
 from noc.models import is_document
-from noc.core.validators import is_objectid, is_int
 
 
 class ListOp:

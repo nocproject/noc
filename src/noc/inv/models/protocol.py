@@ -5,49 +5,51 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import re
-from pathlib import Path
+
+# Python modules
 import operator
+import re
+from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
-from mongoengine.queryset.base import NULLIFY
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    LongField,
-    EmbeddedDocumentListField,
-    UUIDField,
     DynamicField,
+    EmbeddedDocumentListField,
     IntField,
     ListField,
+    LongField,
     ReferenceField,
+    StringField,
+    UUIDField,
 )
-
-# from mongoengine.errors import ValidationError
+from mongoengine.queryset.base import NULLIFY
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.discriminator import (
+    LambdaDiscriminator,
+    OduDiscriminator,
+    VlanDiscriminator,
     discriminator,
     scopes,
-    LambdaDiscriminator,
-    VlanDiscriminator,
-    OduDiscriminator,
 )
-from noc.inv.models.technology import Technology
+from noc.core.model.decorator import on_delete_check
+
+# from mongoengine.errors import ValidationError
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.core.protodcsources.base import BaseDiscriminatorSource
+from noc.inv.models.technology import Technology
 
 id_lock = Lock()
 
@@ -318,6 +320,7 @@ class Protocol(Document):
     def get_discriminator_source(
         self, data: list[ProtocolAttr] | None = None
     ) -> BaseDiscriminatorSource | None:
+        # NOC modules
         from noc.core.protodcsources.base import discriminator_source_loader
 
         ds = discriminator_source_loader.get(self.discriminator_loader)

@@ -11,13 +11,13 @@
 import polars as pl
 
 # NOC modules
+from noc.core.datasources.base import data_source_loader
+from noc.core.reporter.band import Band, DataSet
+from noc.core.reporter.reportsource import ReportSource
+from noc.core.reporter.types import BandFormat, ColumnFormat
+from noc.core.translation import ugettext as _
 from noc.main.models.pool import Pool
 from noc.main.models.report import Report
-from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.band import Band, DataSet
-from noc.core.reporter.types import BandFormat, ColumnFormat
-from noc.core.datasources.base import data_source_loader
-from noc.core.translation import ugettext as _
 
 
 class ReportDiscoveryLinks(ReportSource):

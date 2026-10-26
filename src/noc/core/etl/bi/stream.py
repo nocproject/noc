@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import datetime
-import itertools
 import gzip
+import itertools
+import os
 
 # Third-party modules
 import orjson

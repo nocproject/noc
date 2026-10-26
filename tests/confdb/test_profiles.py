@@ -7,18 +7,17 @@
 
 # Python modules
 import os
+import re
+import yaml
 
 # Third-party modules
 import pytest
-import yaml
-import re
 
 # NOC modules
-from noc.core.ip import IP
-from noc.core.handler import get_handler
-from noc.core.profile.loader import loader as profile_loader
 from noc.core.confdb.tokenizer.base import tokenizer_loader
-
+from noc.core.handler import get_handler
+from noc.core.ip import IP
+from noc.core.profile.loader import loader as profile_loader
 
 PREFIX = ("tests", "confdb", "profiles")
 

@@ -11,9 +11,9 @@ import time
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
 from noc.core.validators import is_int
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

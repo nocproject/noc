@@ -9,10 +9,11 @@
 from typing import Any
 
 # NOC modules
-from .base import BaseLoader
-from ..models.maintenance import Maintenance
 from noc.maintenance.models.maintenance import Maintenance as MaintenanceModel
 from noc.maintenance.models.maintenancetype import MaintenanceType
+
+from ..models.maintenance import Maintenance
+from .base import BaseLoader
 
 
 class MaintenanceLoader(BaseLoader):

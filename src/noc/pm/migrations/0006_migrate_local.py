@@ -7,8 +7,8 @@
 
 # Third-party modules
 from bson.binary import Binary
-from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
+from pymongo.errors import BulkWriteError
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

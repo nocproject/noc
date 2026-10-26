@@ -8,22 +8,21 @@
 # Python modules
 import datetime
 from io import BytesIO
-from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 import polars as pl
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.interfaces.base import StringParameter, IntParameter, ObjectIdParameter
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.translation import ugettext as _
 from noc.core.comp import smart_bytes
-from noc.core.datasources.base import data_source_loader
-from noc.core.datasources.base import BaseDataSource
+from noc.core.datasources.base import BaseDataSource, data_source_loader
+from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import IntParameter, ObjectIdParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 def get_column_width(name):
@@ -248,6 +247,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             response["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
             return response
         if o_format == "xlsx":
+            # Third-party modules
             import xlsxwriter
 
             response = BytesIO()

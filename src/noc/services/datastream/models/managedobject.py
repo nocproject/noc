@@ -5,15 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 from typing import Any
 
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
 from .utils import RemoteSystemItem
 
 

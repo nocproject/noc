@@ -9,35 +9,33 @@
 import argparse
 import asyncio
 import datetime
-from io import BytesIO
 import logging
 import socket
+from io import BytesIO
 
 # Third-party modules
 import xlsxwriter
 from gufo.ping import Ping
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.validators import is_ipv4
+from noc.config import config
+from noc.core.comp import smart_text
+from noc.core.ioloop.snmp import SNMPError, snmp_get
 from noc.core.ioloop.util import get_loop_factory
 from noc.core.ip import IP
-from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.core.management.base import BaseCommand
 from noc.core.mib import mib
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectProfile
-from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.sa.models.managedobject import AdministrativeDomain
-from noc.inv.models.networksegment import NetworkSegment
-from noc.main.models.pool import Pool
-from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
-from noc.services.mailsender.service import MailSenderService
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.core.comp import smart_text
 from noc.core.mongo.connection import connect
-from noc.config import config
-
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.core.validators import is_ipv4
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.pool import Pool
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.sa.models.managedobject import AdministrativeDomain, ManagedObject, ManagedObjectProfile
+from noc.sa.models.profile import Profile
+from noc.services.mailsender.service import MailSenderService
 
 # example
 # ./noc network-scan 10.0.0.0/24

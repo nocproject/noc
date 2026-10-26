@@ -8,6 +8,7 @@
 # Python modules
 
 # Python Modules
+# NOC modules
 from noc.core.reporter.band import Band
 from noc.core.reporter.types import BandFormat
 

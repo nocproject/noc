@@ -6,18 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
-from noc.core.perf import metrics
 from noc.core.handler import get_handler
-from noc.core.validators import is_fqdn
 from noc.core.ip import IP, PrefixDB
-
+from noc.core.perf import metrics
+from noc.core.validators import is_fqdn
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 DiscoveredAddress = namedtuple(
     "DiscoveredAddress",

@@ -9,8 +9,8 @@
 import logging
 
 # NOC modules
-from noc.fm.models.utils import get_alarm
 from noc.core.perf import metrics
+from noc.fm.models.utils import get_alarm
 
 logger = logging.getLogger(__name__)
 

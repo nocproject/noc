@@ -10,7 +10,8 @@ from collections.abc import Iterable
 
 # NOC modules
 from noc.core.techdomain.profile.otn_osc import BaseOSCProfileController
-from .base import ChannelMixin, SetValue, OADM_4_V_4, OADM_16_V_16, OM_40_V_C, OM_40_V_H, OM_96_H
+
+from .base import OADM_4_V_4, OADM_16_V_16, OM_40_V_C, OM_40_V_H, OM_96_H, ChannelMixin, SetValue
 
 OSC_SET_STATE_MODELS = (OADM_4_V_4, OADM_16_V_16, OM_40_V_C, OM_40_V_H, OM_96_H)
 

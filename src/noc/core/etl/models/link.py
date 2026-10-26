@@ -5,10 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
 from .managedobject import ManagedObject
+from .typing import Reference
 
 
 class Link(BaseModel):

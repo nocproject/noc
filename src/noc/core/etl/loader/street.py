@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.street import Street as StreetModel
-from noc.gis.models.street import Street
 from noc.gis.models.division import Division
+from noc.gis.models.street import Street
+
+from ..models.street import Street as StreetModel
+from .base import BaseLoader
 
 
 class StreetLoader(BaseLoader):

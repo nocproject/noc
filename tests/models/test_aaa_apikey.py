@@ -9,7 +9,7 @@
 import datetime
 
 # NOC modules
-from noc.aaa.models.apikey import APIKey, APIAccess
+from noc.aaa.models.apikey import APIAccess, APIKey
 
 
 def test_apikey_access_active() -> None:

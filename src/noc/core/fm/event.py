@@ -5,21 +5,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 from typing import Any
 
 # Third-party modules
 import orjson
-from pydantic import BaseModel
 from bson import ObjectId
+from pydantic import BaseModel
 
 # NOC modules
-from noc.core.bi.decorator import bi_hash
 from noc.config import config
+from noc.core.bi.decorator import bi_hash
 from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.core.clickhouse.fields import DateField, DateTimeField
+
 from .enum import EventSeverity, EventSource
 
 MAX_DISPOSE_DELAY = datetime.timedelta(hours=12)
@@ -168,6 +171,7 @@ class Event(BaseModel):
         Try resolva ManagedObject for old format event
         :return:
         """
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         mo = ManagedObject.get_by_bi_id(bi_id)

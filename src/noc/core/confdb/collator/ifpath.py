@@ -6,11 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import logging
 import re
 from collections import defaultdict
-import logging
 
-# NOC modules
 from .base import BaseCollator
 
 IFTYPE_SPLITTER = " "

@@ -7,11 +7,11 @@
 
 # Python modules
 import argparse
-from noc.config import config
-from pathlib import Path
 from contextlib import suppress
+from pathlib import Path
 
 # NOC modules
+from noc.config import config
 from noc.core.management.base import BaseCommand
 
 
@@ -31,6 +31,7 @@ class Command(BaseCommand):
         getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def handle_dump(self, section: list[str] | None = None, *args, **options) -> None:
+        # Python modules
         import yaml
 
         data = {}
@@ -50,6 +51,7 @@ class Command(BaseCommand):
         self.print(yaml.dump(data, default_flow_style=False))
 
     def handle_compile_docs(self, *args, **options) -> None:
+        # Python modules
         import yaml
 
         r = [

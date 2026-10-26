@@ -6,16 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
+
+# NOC modules
+from noc.core.gridvcs.manager import GridVCSField
 
 # NOC module
 from noc.core.model.base import NOCModel
-from noc.project.models.project import Project
-from noc.main.models.label import Label
-from noc.core.rpsl import rpsl_format
-from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.decorator import on_save
+from noc.core.rpsl import rpsl_format
+from noc.main.models.label import Label
+from noc.project.models.project import Project
 
 
 @Label.model

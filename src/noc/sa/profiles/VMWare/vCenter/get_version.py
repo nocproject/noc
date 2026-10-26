@@ -5,9 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from ..vim import VIMScript
+# NOC modules
 from noc.sa.interfaces.igetversion import IGetVersion
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

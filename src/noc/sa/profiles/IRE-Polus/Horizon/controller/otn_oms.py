@@ -10,7 +10,8 @@ from collections.abc import Iterable
 
 # NOC modules
 from noc.core.techdomain.profile.otn_oms import BaseOMSProfileController
-from .base import ChannelMixin, SetValue, OM_40_V_C, OM_40_V_H, OM_96_H, OD_96_H, OD_40_C, OD_40_H
+
+from .base import OD_40_C, OD_40_H, OD_96_H, OM_40_V_C, OM_40_V_H, OM_96_H, ChannelMixin, SetValue
 
 DESTINATION_MODELS = (OM_40_V_C, OM_40_V_H, OD_40_C, OD_40_H, OM_96_H, OD_96_H)
 

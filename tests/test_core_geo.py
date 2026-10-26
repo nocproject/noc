@@ -10,7 +10,7 @@ import pytest
 from geopy.point import Point
 
 # NOC modules
-from noc.core.geo import _get_point, distance, bearing, bearing_sym
+from noc.core.geo import _get_point, bearing, bearing_sym, distance
 
 
 @pytest.mark.parametrize(

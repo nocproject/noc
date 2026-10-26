@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.text import parse_kv, parse_table
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
-from noc.core.text import parse_table, parse_kv
 
 
 class Script(BaseScript):

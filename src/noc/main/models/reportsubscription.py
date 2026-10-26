@@ -6,23 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-import time
 import datetime
+import logging
 import os
+import time
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, DateTimeField
+from mongoengine.fields import BooleanField, DateTimeField, StringField
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.core.mongo.fields import ForeignKeyField
-from noc.services.web.base.site import site
 from noc.core.debug import error_report
-from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_delete, on_save
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.scheduler.job import Job
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.services.web.base.site import site
 
 logger = logging.getLogger(__name__)
 

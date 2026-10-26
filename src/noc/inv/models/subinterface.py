@@ -5,31 +5,33 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from typing import Any
+
+# Python modules
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, ListField
+from mongoengine.fields import IntField, ListField, StringField
 
 # NOC modules
 from noc.config import config
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.model.decorator import on_delete
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.project.models.project import Project
 from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.main.models.label import Label
+from noc.project.models.project import Project
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.models.managedobject import ManagedObject
 from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
-from noc.main.models.label import Label
+
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
 from .interfaceprofile import InterfaceProfile
-
 
 SUBINTERFACE_AFI = (
     IGetInterfaces.returns.element.attrs["interfaces"]
@@ -128,6 +130,7 @@ class SubInterface(Document):
             yield "cfgtarget", self.managed_object.id
 
     def on_delete(self):
+        # NOC modules
         from noc.fm.models.activealarm import ActiveAlarm
 
         # Clear Alarm
@@ -174,6 +177,7 @@ class SubInterface(Document):
 
     @property
     def service(self):
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         si = ServiceInstance.objects.filter(resources=self.as_resource()).first()

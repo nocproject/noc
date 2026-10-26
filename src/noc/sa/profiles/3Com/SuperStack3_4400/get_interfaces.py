@@ -9,10 +9,10 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.script.base import BaseScript
 from noc.core.validators import is_int
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

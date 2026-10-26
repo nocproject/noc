@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from datetime import datetime
 import operator
+from datetime import datetime
 from typing import Any
 
 # Third-party modules
@@ -16,12 +16,13 @@ from pydantic import BaseModel, Field
 
 # NOC modules
 from noc.config import config
-from noc.sa.models.managedobject import ManagedObject
-from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import ClickhouseClient
 from noc.core.clickhouse.error import ClickhouseError
+from noc.pm.models.metrictype import MetricType
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
+
+from ..base import API_ACCESS_HEADER, FORBIDDEN_MESSAGE, NBIAPI
 
 S_INTERFACE = "interface"
 

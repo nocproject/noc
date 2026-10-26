@@ -13,24 +13,24 @@ import pytest
 
 # NOC modules
 from noc.core.text import (
-    parse_table,
-    strip_html_tags,
-    xml_to_table,
+    alnum_key,
+    ch_escape,
+    clean_number,
+    find_balanced,
+    find_indented,
+    format_table,
+    indent,
     list_to_ranges,
+    parse_table,
     ranges_to_list,
     replace_re_group,
-    indent,
-    split_alnum,
-    alnum_key,
-    find_indented,
-    to_seconds,
-    format_table,
-    clean_number,
     safe_shadow,
-    ch_escape,
+    split_alnum,
     split_text,
     str_distance,
-    find_balanced,
+    strip_html_tags,
+    to_seconds,
+    xml_to_table,
 )
 
 

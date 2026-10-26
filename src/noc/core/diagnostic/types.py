@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
+import enum
 from dataclasses import dataclass
 
 # Third-party modules

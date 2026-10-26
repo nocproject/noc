@@ -9,13 +9,13 @@
 import struct
 
 # Third-party modules
-from siphash24 import siphash24
 import bson
+from siphash24 import siphash24
 
 # NOC modules
 from noc.config import config
-from noc.models import is_document
 from noc.core.typing import SupportsStr
+from noc.models import is_document
 
 _ZEROx16 = b"\x00" * 16
 
@@ -26,6 +26,7 @@ def _get_siphash_seed():
         return _ZEROx16
     # Try to reach globally-unique space
     # Installation name is UUID, giving exact 16 bytes of seed
+    # Python modules
     import uuid
 
     return uuid.UUID(config.installation_id).bytes

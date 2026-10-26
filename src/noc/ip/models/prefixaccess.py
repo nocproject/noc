@@ -6,20 +6,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from functools import reduce
 from collections import defaultdict
+from functools import reduce
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
 from django.db.models import Q
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
+from noc.core.model.base import NOCModel
 from noc.core.model.fields import CIDRField
-from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
 from noc.core.model.sql import SQL
+from noc.core.translation import ugettext as _
+from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
+
 from .afi import AFI_CHOICES
 from .vrf import VRF
 

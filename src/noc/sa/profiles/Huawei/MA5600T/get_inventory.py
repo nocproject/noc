@@ -7,16 +7,17 @@
 
 # Python modules
 import re
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 
+# Third-party modules
 # Third party modules
 from dateutil.parser import parse
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.core.text import parse_kv
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.text import parse_kv
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):

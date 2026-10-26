@@ -9,8 +9,8 @@ import bson
 from pymongo import InsertOne, UpdateMany
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
 
 CHUNK = 500
 DEFAULT_L2_DOMAIN_ID = bson.ObjectId("61bee7425c42c21338453614")

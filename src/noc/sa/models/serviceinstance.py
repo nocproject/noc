@@ -5,52 +5,54 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import logging
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
-from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    BooleanField,
-    IntField,
-    DateTimeField,
-    FloatField,
-    ListField,
-    EnumField,
     BinaryField,
-    ObjectIdField,
+    BooleanField,
+    DateTimeField,
     EmbeddedDocumentListField,
+    EnumField,
+    FloatField,
+    IntField,
+    ListField,
+    ObjectIdField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q
+from pymongo import ReadPreference, UpdateOne
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.config import config
+from noc.core.change.decorator import change
+from noc.core.checkers.base import Check
 from noc.core.ip import IP
-from noc.core.resource import from_resource
+from noc.core.model.decorator import on_save
+from noc.core.models.inputsources import InputSource
 from noc.core.models.serviceinstanceconfig import (
     InstanceType,
     ServiceInstanceConfig,
     ServiceInstanceTypeConfig,
 )
-from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
-from noc.core.validators import is_ipv4, is_fqdn
-from noc.core.model.decorator import on_save
-from noc.core.checkers.base import Check
-from noc.core.change.decorator import change
-from noc.models import get_model_id
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.resource import from_resource
+from noc.core.validators import is_fqdn, is_ipv4
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.main.models.pool import Pool
+from noc.models import get_model_id
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
-from noc.main.models.pool import Pool
-from noc.config import config
 
 DISCOVERY_SOURCE = InputSource.DISCOVERY
 CLIENT_INSTANCE_NAME = "client"
@@ -328,6 +330,7 @@ class ServiceInstance(Document):
     @classmethod
     def iter_object_instances(cls, managed_object: ManagedObject) -> Iterable[ServiceInstance]:
         """Iterate over Object Instances"""
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         q = Q()
@@ -649,6 +652,7 @@ class ServiceInstance(Document):
     @classmethod
     def refresh_local_network_instances(cls, instances=None):
         """"""
+        # NOC modules
         from noc.inv.models.interface import Interface
 
         ref_mac_instance: dict[str, ServiceInstance] = {}

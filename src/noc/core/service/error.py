@@ -7,12 +7,12 @@
 
 # NOC modules
 from noc.core.error import (
-    NOCError,
-    ERR_RPC_UNKNOWN,
+    ERR_RPC_EXCEPTION,
     ERR_RPC_HTTP_ERROR,
     ERR_RPC_NO_SERVICE,
-    ERR_RPC_EXCEPTION,
     ERR_RPC_REMOTE_ERROR,
+    ERR_RPC_UNKNOWN,
+    NOCError,
 )
 
 

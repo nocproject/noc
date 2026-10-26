@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.main.models.label import Label
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
 from noc.sla.models.slaprofile import SLAProfile
-from noc.core.profile.loader import GENERIC_PROFILE
-from noc.main.models.label import Label
 
 
 class SLACheck(DiscoveryCheck):

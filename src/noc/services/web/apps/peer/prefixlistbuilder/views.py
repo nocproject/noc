@@ -9,11 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
+from noc.core.translation import ugettext as _
 from noc.peer.models.peeringpoint import PeeringPoint
 from noc.peer.models.whoiscache import WhoisCache
-from noc.sa.interfaces.base import UnicodeParameter, ModelParameter
-from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import ModelParameter, UnicodeParameter
+from noc.services.web.base.extapplication import ExtApplication, api
 
 # as_set_re = "^AS(?:\d+|-\S+)(:\S+)?(?:\s+AS(?:\d+|-\S+)(:\S+)?)*$"
 

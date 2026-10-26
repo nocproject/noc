@@ -7,8 +7,8 @@
 
 # Python modules
 import datetime
-from typing import Any
 from time import mktime
+from typing import Any
 
 # Third-party modules
 from fastapi import APIRouter
@@ -16,17 +16,17 @@ from fastapi.exceptions import HTTPException
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.inv.models.interface import Interface
+from noc.models import get_model
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.inv.models.interface import Interface
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmclass import AlarmClass
-from noc.models import get_model
-from ..models.jsonds import AnnotationSection
-from ..models.managedobject import VariablePayloadItem, QueryPayloadItem
-from ..jsonds import JsonDSAPI
 
+from ..jsonds import JsonDSAPI
+from ..models.jsonds import AnnotationSection
+from ..models.managedobject import QueryPayloadItem, VariablePayloadItem
 
 router = APIRouter()
 

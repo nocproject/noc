@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from logging import getLogger
 import itertools
+from logging import getLogger
 from threading import Condition
 
 # NOC modules
 from noc.core.perf import metrics
+
 from .base import BaseLock
 
 logger = getLogger(__name__)

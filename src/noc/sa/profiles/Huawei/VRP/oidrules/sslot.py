@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.oidrules.oid import OIDRule
 from noc.core.mib import mib
+from noc.core.script.oidrules.oid import OIDRule
 
 
 class SSlotRule(OIDRule):

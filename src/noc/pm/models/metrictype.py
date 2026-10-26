@@ -5,49 +5,52 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
+
+# Python modules
 import operator
+from collections.abc import Callable
+from pathlib import Path
 from threading import Lock
 from typing import Any
-from collections.abc import Callable
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    ReferenceField,
     StringField,
     UUIDField,
-    ObjectIdField,
-    LongField,
-    ListField,
-    BooleanField,
-    ReferenceField,
-    EmbeddedDocumentListField,
 )
 from mongoengine.queryset.base import NULLIFY
-from mongoengine.errors import ValidationError
-import cachetools
 
+# NOC modules
 # NOC Modules
 from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.cdag.node.composeprobe import ComposeProbeNodeConfig
+from noc.core.cdag.node.probe import ProbeNodeConfig
+from noc.core.change.decorator import change
+from noc.core.defer import call_later
+from noc.core.expr import get_vars
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
-from noc.core.defer import call_later
-from noc.core.model.decorator import on_save, on_delete_check
-from noc.core.bi.decorator import bi_sync
-from noc.core.change.decorator import change
-from noc.core.expr import get_vars
-from noc.core.cdag.node.probe import ProbeNodeConfig
-from noc.core.cdag.node.composeprobe import ComposeProbeNodeConfig
-from noc.main.models.doccategory import category
 from noc.inv.models.capability import Capability
-from .metricscope import MetricScope
-from .measurementunits import MeasurementUnits
-from .scale import Scale
+from noc.main.models.doccategory import category
 
+from .measurementunits import MeasurementUnits
+from .metricscope import MetricScope
+from .scale import Scale
 
 id_lock = Lock()
 

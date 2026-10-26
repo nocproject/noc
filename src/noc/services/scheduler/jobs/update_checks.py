@@ -13,6 +13,7 @@ from collections import defaultdict
 import orjson
 
 # NOC modules
+from noc.config import config
 from noc.core.checkers.base import CheckResult
 from noc.core.clickhouse.connect import connection
 from noc.core.clickhouse.error import ClickhouseError
@@ -21,8 +22,6 @@ from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service
-from noc.config import config
-
 
 WAIT_DEFAULT_INTERVAL_SEC = 180
 MIN_NEXT_SHIFT_SEC = 30

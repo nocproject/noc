@@ -29,12 +29,14 @@ class Command(BaseCommand):
         return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def handle_update_cache(self, *args, **options):
+        # NOC modules
         from noc.core.whois import WhoisCacheLoader
 
         loader = WhoisCacheLoader()
         loader.update()
 
     def handle_prefix_list(self, as_set, name=None, profile=None, *args, **options):
+        # NOC modules
         from noc.peer.models.whoiscache import WhoisCache
         from noc.sa.models.profile import Profile
 

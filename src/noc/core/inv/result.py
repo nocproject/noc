@@ -9,8 +9,8 @@
 from dataclasses import dataclass
 
 # Third-party modules
-from django.http import HttpResponse
 import orjson
+from django.http import HttpResponse
 
 
 @dataclass

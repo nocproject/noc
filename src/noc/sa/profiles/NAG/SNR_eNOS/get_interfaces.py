@@ -7,8 +7,8 @@
 
 # Python modules
 import re
-from typing import Any
 from collections import defaultdict
+from typing import Any
 
 # NOC modules
 from noc.core.script.base import BaseScript

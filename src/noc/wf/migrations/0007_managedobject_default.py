@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from bson import ObjectId, Int64
+from bson import Int64, ObjectId
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

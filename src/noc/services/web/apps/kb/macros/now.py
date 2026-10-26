@@ -11,7 +11,6 @@ import datetime
 # Third-party modules
 from django.utils.dateformat import DateFormat
 
-# NOC modules
 from .base import BaseMacro
 
 

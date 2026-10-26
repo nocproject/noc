@@ -9,14 +9,14 @@
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.crypto import md5crypt
-from noc.core.rpsl import rpsl_format
-from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
-from noc.core.model.decorator import on_delete_check
-from .rir import RIR
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.rpsl import rpsl_format
+
 from .person import Person
+from .rir import RIR
 
 
 @on_delete_check(check=[("peer.Organisation", "mnt_ref")])

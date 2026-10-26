@@ -7,16 +7,16 @@
 
 # Python modules
 import datetime
-import logging
 import enum
+import logging
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.clickhouse.connect import connection
 from noc.core.mac import MAC
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class UplinkMethod(enum.IntEnum):

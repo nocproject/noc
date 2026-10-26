@@ -13,7 +13,8 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
+
+from ..base import API_ACCESS_HEADER, FORBIDDEN_MESSAGE, NBIAPI
 
 router = APIRouter()
 

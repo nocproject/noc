@@ -6,18 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
 import glob
-import threading
+import importlib
 import os
 import re
-import importlib
+import sys
+import threading
 from importlib.resources import files
 
 # NOC modules
+from noc.config import config
 from noc.core.loader.base import BaseLoader
 from noc.core.profile.loader import GENERIC_PROFILE
-from noc.config import config
+
 from .base import BaseScript
 
 

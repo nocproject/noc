@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 import os
 import stat
-import datetime
 
 # Third-party modules
 from django.db import models

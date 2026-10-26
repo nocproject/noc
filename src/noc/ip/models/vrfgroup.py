@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
+from noc.core.translation import ugettext as _
 from noc.main.models.label import Label
 
 

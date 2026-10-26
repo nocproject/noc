@@ -9,15 +9,15 @@
 import re
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.site import site
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 from noc.aaa.models.permission import Permission
-from noc.sa.interfaces.base import StringParameter
-from noc.core.translation import ugettext as _
 from noc.aaa.models.user import User
+from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import StringParameter
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
+from noc.services.web.base.site import site
 
 
 class UsernameParameter(StringParameter):

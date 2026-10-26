@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.services.web.base.decorators.state import state_handler
-from noc.inv.models.sensor import Sensor
 from noc.core.translation import ugettext as _
+from noc.inv.models.sensor import Sensor
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 @state_handler

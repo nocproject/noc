@@ -6,17 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import argparse
 import asyncio
+import datetime
+
+# Third-party modules
 from dateutil.parser import parse
 
 # NOC modules
-from noc.core.management.base import BaseCommand
+from noc.core.debug import error_report
 from noc.core.ioloop.util import get_loop_factory
+from noc.core.management.base import BaseCommand
 from noc.core.msgstream.client import MessageStreamClient
 from noc.core.msgstream.metadata import Metadata, PartitionMetadata
-from noc.core.debug import error_report
 
 TS_NS = 1000_0000_00
 

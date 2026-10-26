@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import asyncio
+import logging
 import socket
 
 # NOC modules
-from noc.core.validators import is_fqdn
 from noc.core.comp import smart_bytes
 from noc.core.ioloop.util import run_sync
+from noc.core.validators import is_fqdn
 
 DEFAULT_WHOIS_SERVER = "whois.ripe.net"
 DEFAULT_WHOIS_PORT = 43

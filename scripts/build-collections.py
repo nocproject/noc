@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # USAGE: build <spec>
 
-import tarfile
-import json
-import sys
-import os
+# Python modules
 import glob
+import json
+import os
 import shutil
+import sys
+import tarfile
 
 
 def build(spath):

@@ -9,11 +9,12 @@
 
 # Third-party modules
 import ldap3
-from ldap3.utils.conv import escape_filter_chars
 from ldap3.core.exceptions import LDAPCommunicationError, LDAPServerPoolExhaustedError
+from ldap3.utils.conv import escape_filter_chars
 
 # NOC modules
 from noc.main.models.authldapdomain import AuthLDAPDomain
+
 from .base import BaseAuthBackend
 
 

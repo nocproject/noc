@@ -73,6 +73,7 @@ class SchedulerService(BaseService):
     @classmethod
     def ensure_watchers_job(cls):
         """Create watchers job"""
+        # NOC modules
         from noc.core.watchers.decorator import WATCHER_JCLS
 
         scheduler = Scheduler(cls.name)

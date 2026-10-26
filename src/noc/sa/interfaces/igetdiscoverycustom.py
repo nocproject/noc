@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import Parameter, DictParameter
+
+from .base import DictParameter, Parameter
 
 
 class IGetDiscoveryCustom(BaseInterface):

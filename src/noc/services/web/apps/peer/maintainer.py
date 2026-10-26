@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.peer.models.maintainer import Maintainer
-from noc.services.web.base.repoinline import RepoInline
 from noc.core.translation import ugettext as _
+from noc.peer.models.maintainer import Maintainer
+from noc.services.web.base.extmodelapplication import ExtModelApplication
+from noc.services.web.base.repoinline import RepoInline
 
 
 class MaintainerApplication(ExtModelApplication):

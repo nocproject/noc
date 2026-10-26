@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
-from typing import Any
 from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
-# Python modules
-from noc.inv.models.object import Object
-from noc.inv.models.channel import Channel
-from noc.fm.models.activealarm import ActiveAlarm, PathCode
+# NOC modules
 from noc.core.feature import Feature
-from noc.core.translation import ugettext as _
 from noc.core.glyph import Glyph
+from noc.core.translation import ugettext as _
+from noc.fm.models.activealarm import ActiveAlarm, PathCode
+from noc.inv.models.channel import Channel
+from noc.inv.models.object import Object
 
 
 @dataclass

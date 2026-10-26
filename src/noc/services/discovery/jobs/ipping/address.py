@@ -12,11 +12,13 @@ import datetime
 import orjson
 
 # NOC modules
-from ..box.address import AddressCheck as BaseAddressCheck, DiscoveredAddress, SRC_PING
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.addressprofile import AddressProfile
 from noc.core.clickhouse.connect import connection
 from noc.core.ip import IP, PrefixDB
+from noc.ip.models.addressprofile import AddressProfile
+from noc.ip.models.prefix import Prefix
+
+from ..box.address import SRC_PING, DiscoveredAddress
+from ..box.address import AddressCheck as BaseAddressCheck
 
 ADDRESS_QUERY = """
     SELECT IPv4NumToString(ip) as address, argMax(ts, pool) as pool,

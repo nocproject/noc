@@ -5,32 +5,35 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
-from typing import Any
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, UUIDField, EmbeddedDocumentListField
-import cachetools
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField, UUIDField
 
 # NOC modules
-from .error import ModelDataError
 from noc.core.copy import deep_copy
 from noc.core.escape import json_escape as q
+from noc.core.path import safe_json_path
 from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
-    StringParameter,
     BooleanParameter,
     FloatParameter,
     IntParameter,
     StringListParameter,
+    StringParameter,
 )
-from noc.core.path import safe_json_path
+
+from .error import ModelDataError
 
 id_lock = Lock()
 

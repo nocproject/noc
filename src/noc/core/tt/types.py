@@ -7,8 +7,8 @@
 
 # Python modules
 import enum
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 # Third-party modules
 from pydantic import BaseModel, PrivateAttr

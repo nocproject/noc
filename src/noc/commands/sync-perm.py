@@ -6,14 +6,15 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.aaa.models.permission import Permission
-from noc.core.service.loader import get_service
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.service.loader import get_service
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        # NOC modules
         from noc.services.web.base.site import site
 
         connect()

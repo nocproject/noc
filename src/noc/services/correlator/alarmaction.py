@@ -9,29 +9,33 @@
 import datetime
 import logging
 import uuid
-from typing import Any
 from logging import Logger
+from typing import Any
 
+# Third-party modules
 # Third Party modules
 import orjson
 
 # NOC modules
+from noc.aaa.models.user import User
+from noc.core.fm.enum import ActionStatus, AlarmAction
+from noc.core.fm.request import ActionConfig, AllowedAction, WhenCondition
+from noc.core.mx import MessageType, send_message
 from noc.core.perf import metrics
+from noc.core.tt.base import TTSystemCtx
 from noc.core.tt.types import (
     EscalationItem as ECtxItem,
+)
+from noc.core.tt.types import (
     EscalationStatus,
     TTAction,
     TTActionContext,
     TTUser,
 )
-from noc.core.tt.base import TTSystemCtx
-from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.fm.request import AllowedAction, ActionConfig, WhenCondition
-from noc.core.mx import MessageType, send_message
-from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmwatch import Effect
-from noc.aaa.models.user import User
+from noc.fm.models.ttsystem import TTSystem
+
 from .actionlog import ActionResult
 
 

@@ -7,23 +7,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-import orjson
 import datetime
 import smtplib
-from email.mime.text import MIMEText
+from email.header import Header
+from email.mime.application import MIMEApplication
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-from email.header import Header
+from email.mime.text import MIMEText
+from typing import Any
 
+# Third-party modules
+import orjson
 
 # NOC modules
-from noc.core.service.base import BaseService
+from noc.config import config
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
-from noc.config import config
+from noc.core.service.base import BaseService
 
 MAILSENDER_STREAM = "mailsender"
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import ReferenceField, StringField
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, ReferenceField
 from noc.inv.models.networksegment import NetworkSegment as NetworkSegmentModel
 
 

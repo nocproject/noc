@@ -8,15 +8,16 @@
 # Python modules
 
 # NOC modules
+from noc.core.comp import smart_bytes
+from noc.core.script.error import ScriptError
 from noc.core.snmp.consts import (
     PDU_GET_REQUEST,
-    PDU_GETNEXT_REQUEST,
     PDU_GETBULK_REQUEST,
+    PDU_GETNEXT_REQUEST,
     PDU_RESPONSE,
 )
-from noc.core.snmp.error import NO_ERROR, NO_SUCH_NAME, END_OID_TREE
-from noc.core.script.error import ScriptError
-from noc.core.comp import smart_bytes
+from noc.core.snmp.error import END_OID_TREE, NO_ERROR, NO_SUCH_NAME
+
 from .base import SNMP
 
 
@@ -43,6 +44,7 @@ class BeefSNMPSocket:
     async def send_and_receive(
         self, data: bytes, address: tuple[str, int]
     ) -> tuple[bytes, tuple[str, int]]:
+        # NOC modules
         from noc.core.snmp.ber import BERDecoder, BEREncoder
 
         pdu = BERDecoder().parse_sequence(data)[0]

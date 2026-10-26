@@ -6,31 +6,31 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import hashlib
+import importlib
 import logging
+import operator
+import pkgutil
+import re
 import types
 from collections import defaultdict
-import operator
-from urllib.parse import urlencode
+from dataclasses import dataclass
 from threading import Lock
-import pkgutil
-import importlib
+from urllib.parse import urlencode
 
 # Third-party modules
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
-from django.urls import path, re_path, include, reverse, URLPattern
+import cachetools
+import orjson
 from django.conf import settings
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.urls import URLPattern, include, path, re_path, reverse
 from django.utils.encoding import smart_str
 from django.views.i18n import JavaScriptCatalog
-import orjson
-import cachetools
-from dataclasses import dataclass
 
 # NOC modules
 from noc.config import config
-from noc.core.debug import error_report
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.debug import error_report
 from noc.core.jsonutils import orjson_defaults
 from noc.core.service.base import BaseService
 
@@ -248,6 +248,7 @@ class Site:
                 r = v(request, *args, **kwargs)
                 # Dump SQL statements
                 if self.log_sql_statements:
+                    # Third-party modules
                     from django.db import connections
 
                     tsc = 0
@@ -292,8 +293,10 @@ class Site:
             r["Expires"] = "0"
             return r
 
-        from .access import PermissionDenied
+        # NOC modules
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
+
+        from .access import PermissionDenied
 
         return inner
 
@@ -453,7 +456,9 @@ class Site:
         Auto Load Report
         :return:
         """
+        # NOC modules
         from noc.main.models.report import Report
+
         from .reportapplication import ReportByConfigApplication
 
         for report in Report.objects.filter():
@@ -596,6 +601,7 @@ class Site:
         """
         Get AppPermission for all installed apps.
         """
+        # NOC modules
         from noc.aaa.models.permission import Permission
 
         r = []

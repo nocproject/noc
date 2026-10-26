@@ -12,13 +12,13 @@ from io import StringIO
 # Third-party modules
 from django import forms
 from django.apps import apps as d_apps
-from django.http import HttpResponse, HttpRequest
-from noc.core.translation import ugettext as _
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.application import Application, view
-from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
+from noc.core.csvutils import IR_FAIL, IR_SKIP, IR_UPDATE, csv_export, csv_import, get_model_fields
+from noc.core.translation import ugettext as _
 from noc.models import get_model, get_model_id, load_models
+from noc.services.web.base.application import Application, view
 
 
 class CSVApplication(Application):

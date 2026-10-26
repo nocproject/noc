@@ -10,10 +10,11 @@ import datetime
 from collections import OrderedDict
 
 # NOC modules
-from .base import BaseCollector
 from noc.core.mongo.connection import get_db
-from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
+from noc.main.models.pool import Pool
+
+from .base import BaseCollector
 
 NOW_SHIFT_SECONDS = 5
 STALE_LAG_HOURS = 18

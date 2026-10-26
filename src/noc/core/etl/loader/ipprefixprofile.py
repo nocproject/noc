@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ipprefixprofile import IPPrefixProfile
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.wf.models.workflow import Workflow
+
+from ..models.ipprefixprofile import IPPrefixProfile
+from .base import BaseLoader
 
 DEFAULT_WORKFLOW_NAME = "Default Resource"
 

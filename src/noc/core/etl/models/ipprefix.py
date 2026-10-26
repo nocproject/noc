@@ -9,15 +9,14 @@
 import datetime
 
 # Third-party modules
-from pydantic.networks import IPvAnyNetwork
 from pydantic import field_validator
+from pydantic.networks import IPvAnyNetwork
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
+from .ipprefixprofile import IPPrefixProfile
 from .ipvrf import IPVRF
 from .project import Project
-from .ipprefixprofile import IPPrefixProfile
+from .typing import Reference
 
 
 class IPPrefix(BaseModel):

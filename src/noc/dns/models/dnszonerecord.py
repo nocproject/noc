@@ -5,19 +5,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
+from noc.core.change.decorator import change
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
-from noc.core.change.decorator import change
 from noc.core.translation import ugettext as _
 from noc.main.models.label import Label
+
 from .dnszone import DNSZone
 
 

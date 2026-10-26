@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.doccategory import DocCategory
-from noc.inv.models.facade import Facade
 from noc.core.translation import ugettext as _
+from noc.inv.models.facade import Facade
+from noc.main.models.doccategory import DocCategory
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class FacadeApplication(ExtDocApplication):

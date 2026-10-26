@@ -14,7 +14,6 @@ from fastapi.responses import JSONResponse
 # NOC modules
 from noc.core.service.loader import get_service
 
-
 API_ACCESS_HEADER = "X-NOC-API-Access"
 
 FORBIDDEN_MESSAGE = "<html><title>403: Forbidden</title><body>403: Forbidden</body></html>"

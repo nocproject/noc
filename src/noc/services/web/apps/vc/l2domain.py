@@ -12,12 +12,12 @@ from collections import defaultdict
 from django.db.models import Count
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.decorators.state import state_handler
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.vc.models.l2domain import L2Domain
-from noc.services.web.base.decorators.state import state_handler
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.networksegment import NetworkSegment
-from noc.core.translation import ugettext as _
 
 
 @state_handler

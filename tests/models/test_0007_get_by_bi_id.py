@@ -8,8 +8,7 @@
 # Third-party modules
 import pytest
 
-# NOC modules
-from .util import get_models, get_documents
+from .util import get_documents, get_models
 
 
 @pytest.mark.parametrize("model", [x for x in get_models() if hasattr(x, "get_by_bi_id")])

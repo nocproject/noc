@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # NOC modules
 from noc.config import config
-from noc.core.ioloop.whois import whois
-from noc.dns.models.dnszone import DNSZone, ZONE_FORWARD
-from noc.main.models.systemnotification import SystemNotification
 from noc.core.dateutils import humanize_timedelta
+from noc.core.ioloop.whois import whois
+from noc.dns.models.dnszone import ZONE_FORWARD, DNSZone
+from noc.main.models.systemnotification import SystemNotification
 
 logger = logging.getLogger(__name__)
 

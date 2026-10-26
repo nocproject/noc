@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import SubclassOfParameter, Parameter
+
+from .base import Parameter, SubclassOfParameter
 
 
 class IDBPostDelete(BaseInterface):

@@ -11,7 +11,6 @@ import logging
 # Third-party modules
 from pyVim.connect import Disconnect, SmartConnect
 
-
 DEFAULT_CONNECTION_NAME = "default"
 
 logger = logging.getLogger(__name__)

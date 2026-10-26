@@ -5,41 +5,42 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import datetime
+import operator
 from threading import Lock
 from typing import Any
 
 # Third-party modules
 import bson
-import orjson
 import cachetools
+import orjson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    EmbeddedDocumentListField,
-    ReferenceField,
     BooleanField,
     DateTimeField,
-    LongField,
+    EmbeddedDocumentListField,
     IntField,
+    LongField,
+    ReferenceField,
+    StringField,
 )
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check, on_save, on_delete
-from noc.core.handler import get_handler
-from noc.core.bi.decorator import bi_sync
-from noc.core.debug import error_report
-from noc.core.mx import send_message, MessageType, MessageMeta, get_subscription_id
-from noc.core.scheduler.scheduler import Scheduler
-from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
-from noc.core.etl.portmapper.base import portmapper_loader
-from noc.core.etl.portmapper.base import BasePortMapper
-from noc.core.change.decorator import change
 from noc.aaa.models.apikey import APIKey
 from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.debug import error_report
+from noc.core.etl.portmapper.base import BasePortMapper, portmapper_loader
+from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
+from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete, on_delete_check, on_save
+from noc.core.mx import MessageMeta, MessageType, get_subscription_id, send_message
+from noc.core.scheduler.scheduler import Scheduler
 
 id_lock = Lock()
 REFERENCE_CODE = "rs"
@@ -272,6 +273,7 @@ class RemoteSystem(Document):
         return self.managed_object_loader_policy == "D"
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         changed_fields = set(changed_fields or [])
@@ -553,6 +555,7 @@ class RemoteSystem(Document):
 
     def push_events(self, events: list[dict[str, Any]], deferred: list[str]):
         """Push events from Collector"""
+        # NOC modules
         from noc.core.service.loader import get_service
 
         svc = get_service()

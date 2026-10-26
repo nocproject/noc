@@ -9,15 +9,15 @@
 import os
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
-from django.template import Template, Context
+from django.template import Context, Template
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
-from noc.main.models.notificationgroup import NotificationGroup
+from noc.core.translation import ugettext as _
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.notificationgroup import NotificationGroup
 
 _tpl_cache = {}  # name -> template instance
 

@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import sys
 from enum import Enum
 from types import CodeType
-import sys
 
 # Third-party modules
 import cachetools

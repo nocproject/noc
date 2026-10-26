@@ -9,8 +9,8 @@
 import os
 
 # Third-party modules
-import pytest
 import orjson
+import pytest
 
 # NOC modules
 from noc.config import config

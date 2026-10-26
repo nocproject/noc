@@ -5,49 +5,54 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-from threading import Lock
 from collections import defaultdict
-from typing import Any
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
 import bson
-from mongoengine.document import Document
-from mongoengine.document import EmbeddedDocument
+import cachetools
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
+    BooleanField,
+    DictField,
+    EmbeddedDocumentListField,
+    EnumField,
+    FileField,
+    ListField,
+    MapField,
     StringField,
     UUIDField,
-    EmbeddedDocumentListField,
-    BooleanField,
-    ListField,
-    DictField,
-    FileField,
-    MapField,
-    EnumField,
 )
-import cachetools
 
 # NOC modules
+from noc.aaa.models.group import Group
+from noc.aaa.models.user import User
 from noc.core.datasources.base import data_source_loader
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.core.reporter.types import (
-    ReportConfig,
+    ROOT_BAND,
+    BandCondition,
+    BandOrientation,
     Parameter,
     ReportBand,
+    ReportConfig,
     ReportQuery,
-    Template as TemplateCfg,
-    BandCondition,
-    BandFormat as BandFormatCfg,
-    ROOT_BAND,
-    BandOrientation,
 )
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.aaa.models.user import User
-from noc.aaa.models.group import Group
+from noc.core.reporter.types import (
+    BandFormat as BandFormatCfg,
+)
+from noc.core.reporter.types import (
+    Template as TemplateCfg,
+)
 
 id_lock = Lock()
 perm_lock = Lock()
@@ -288,6 +293,7 @@ class Report(Document):
         return Report.objects.filter(code=code).first()
 
     def get_localization(self, field: str, lang: str | None = None):
+        # NOC modules
         from noc.config import config
 
         lang = lang or config.language

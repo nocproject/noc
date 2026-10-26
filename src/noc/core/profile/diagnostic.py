@@ -11,14 +11,14 @@ from collections import defaultdict
 from collections.abc import Iterable
 
 # NOC modules
-from noc.core.mib import mib
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
-from noc.core.diagnostic.hub import HTTP_DIAG, HTTPS_DIAG
-from noc.core.models.inputsources import InputSource
-from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
-from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus, DiagnosticState
 from noc.core.checkers.base import Check, CheckResult, DataItem
+from noc.core.diagnostic.hub import HTTP_DIAG, HTTPS_DIAG
+from noc.core.diagnostic.types import CheckStatus, DiagnosticConfig, DiagnosticState
+from noc.core.mib import mib
+from noc.core.models.inputsources import InputSource
+from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.validators import is_oid
+from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
 
 
 class ProfileDiagnostic:

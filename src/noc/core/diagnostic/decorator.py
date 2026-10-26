@@ -6,16 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
 import datetime
+from collections.abc import Iterable
 
 # NOC modules
+from noc.core.watchers.types import ObjectEffect
 from noc.models import is_document
 from noc.sa.models.diagnosticitem import DiagnosticItem as DiagnosticItemDoc
-from noc.core.watchers.types import ObjectEffect
-from .types import DiagnosticState, DiagnosticValue
+
 from .hub import DiagnosticHub
 from .item import DiagnosticItem
+from .types import DiagnosticState, DiagnosticValue
 
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
@@ -131,6 +132,7 @@ def change_state(diagnostic: str, state: str, oid: str, model_id: str = "sa.Mana
         oid: Instance ID
         model_id: Instance Model
     """
+    # NOC modules
     from noc.models import get_model
 
     model = get_model(model_id)

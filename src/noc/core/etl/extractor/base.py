@@ -6,24 +6,25 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
-import os
-import csv
-import itertools
-import io
 import contextlib
+import csv
 import dataclasses
+import io
+import itertools
+import logging
 import operator
+import os
 import re
+from collections.abc import Iterable
 from time import perf_counter
 from typing import Any
-from collections.abc import Iterable
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
+from noc.core.log import PrefixLoggerAdapter
+
 from ..models.base import BaseModel
 from ..remotesystem.base import BaseRemoteSystem
 

@@ -6,12 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
+# Python modules
 from collections import defaultdict
 
 # NOC modules
-from .mo import MODashboard
 from noc.inv.models.interface import Interface
 from noc.pm.models.metrictype import MetricType
+
+from .mo import MODashboard
 
 TITLE_BAD_CHARS = '"\\\n\r'
 

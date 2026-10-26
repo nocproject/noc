@@ -8,7 +8,6 @@
 # Third-party modules
 import numpy as np
 
-# NOC modules
 from .mean import MeanNode
 
 

@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import importlib
+import logging
 from collections.abc import Iterable
 
 # Third-party modules
+from bson import ObjectId
 from django.db.models import Model as DjangoModel
 from mongoengine.document import Document
-from bson import ObjectId
 
 logger = logging.getLogger(__name__)
 

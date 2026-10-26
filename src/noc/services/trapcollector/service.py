@@ -7,39 +7,39 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import asyncio
+import base64
+import datetime
 from collections import defaultdict
 from dataclasses import asdict
 from typing import Any
-import base64
 
 # Third-party modules
 import orjson
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
+from noc.core.checkers.base import register_checks
+from noc.core.comp import smart_bytes
 from noc.core.error import NOCError
-from noc.core.service.base import BaseService
+from noc.core.escape import fm_escape
 from noc.core.fm.enum import EventSource
+from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.mx import (
-    MX_STREAM,
-    get_mx_partitions,
-    MessageType,
+    MX_H_VALUE_SPLITTER,
+    MX_LABELS,
     MX_MESSAGE_TYPE,
     MX_SHARDING_KEY,
-    MX_LABELS,
-    MX_H_VALUE_SPLITTER,
+    MX_STREAM,
+    MessageType,
+    get_mx_partitions,
 )
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 from noc.core.service.stormprotection import StormProtection
-from noc.core.escape import fm_escape
-from noc.core.checkers.base import register_checks
-from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
-from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.comp import smart_bytes
+from noc.services.trapcollector.sourceconfig import ManagedObjectData, SourceConfig
+from noc.services.trapcollector.trapserver import TrapServer
 
 TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"

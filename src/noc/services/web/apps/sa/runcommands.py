@@ -9,14 +9,14 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication
-from noc.services.web.base.application import api
-from noc.core.translation import ugettext as _
 from noc.core.models.valuetype import ValueType
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.commandsnippet import CommandSnippet
+from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import DictParameter, ListOfParameter, ModelParameter
 from noc.sa.models.action import Action
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter, DictParameter
+from noc.sa.models.commandsnippet import CommandSnippet
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.application import api
+from noc.services.web.base.extapplication import ExtApplication
 
 
 class RunCommandsApplication(ExtApplication):

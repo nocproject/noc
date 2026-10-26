@@ -8,22 +8,23 @@
 # Python modules
 import asyncio
 import logging
-from typing import Any
 from http import HTTPStatus
+from typing import Any
 
 # Third-party modules
 import snappy
 import zstd
-from google.protobuf.message import DecodeError
-from fastapi import APIRouter, Header, HTTPException, Body, Request
+from fastapi import APIRouter, Body, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
+from google.protobuf.message import DecodeError
 
 # NOC modules
-from noc.core.service.loader import get_service
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.perf import metrics
-from ..models.vmagent import WriteRequest
+from noc.core.service.loader import get_service
+
 from ..models.channel import RemoteSystemChannel
+from ..models.vmagent import WriteRequest
 
 VMAGENT_COLLECTOR = "vmagent"
 METRIC_LABEL_NAME = "__name__"

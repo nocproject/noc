@@ -10,8 +10,8 @@ from dataclasses import dataclass
 from typing import Any
 
 # NOC modules
-from noc.core.models.valuetype import ValueType
 from noc.core.models.inputsources import InputSource
+from noc.core.models.valuetype import ValueType
 
 
 @dataclass(frozen=True)

@@ -6,24 +6,24 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.core.validators import is_ipv4, is_int
-from noc.core.purgatorium import register, NEIGHBOR_SOURCE
-from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
 from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_ALIAS,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_UNSPECIFIED,
 )
+from noc.core.purgatorium import NEIGHBOR_SOURCE, register
+from noc.core.validators import is_int, is_ipv4
+from noc.inv.models.interface import Interface
 from noc.inv.models.macblacklist import MACBlacklist
+from noc.inv.models.subinterface import SubInterface
+from noc.sa.interfaces.base import InterfaceTypeError, MACAddressParameter
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class LLDPCheck(TopologyDiscoveryCheck):

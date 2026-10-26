@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictListParameter, StringParameter, IntParameter, BooleanParameter, IPParameter
+
+from .base import BooleanParameter, DictListParameter, IntParameter, IPParameter, StringParameter
 
 
 class IGetNTPStatus(BaseInterface):

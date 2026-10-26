@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import itertools
 from enum import StrEnum
 
-# NOC modules
-from .base import ValueType, Category
-from .window import WindowNode, WindowConfig
-import itertools
+from .base import Category, ValueType
+from .window import WindowConfig, WindowNode
 
 
 class StepDirection(StrEnum):

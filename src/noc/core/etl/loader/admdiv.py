@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.admdiv import AdmDiv
 from noc.gis.models.division import Division
+
+from ..models.admdiv import AdmDiv
+from .base import BaseLoader
 
 
 class AdmDivLoader(BaseLoader):

@@ -6,10 +6,13 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import re
+
+# NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.core.mib import mib
-import re
 
 
 class Script(BaseScript):

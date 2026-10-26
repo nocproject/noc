@@ -8,7 +8,6 @@
 # Python modules
 from typing import Literal
 
-# NOC modules
 from .base import BaseModel
 
 

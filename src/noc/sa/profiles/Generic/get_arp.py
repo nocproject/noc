@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
-from noc.core.mib import mib
 from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):

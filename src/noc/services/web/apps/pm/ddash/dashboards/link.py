@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from .jinja import JinjaDashboard
 from noc.inv.models.link import Link
+
+from .jinja import JinjaDashboard
 
 
 class LinkDashboard(JinjaDashboard):

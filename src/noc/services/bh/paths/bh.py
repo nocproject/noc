@@ -16,6 +16,7 @@ from gufo.traceroute import Traceroute
 
 # NOC modules
 from noc.config import config
+
 from ..models.bulk_ping import PingRequest, PingResponse
 from ..models.bulk_snmp import SNMPRequest, SNMPResponse
 from ..models.traceroute import TracerouteRequest, TracerouteResponse

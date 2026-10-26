@@ -5,42 +5,45 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
+
+# Python modules
 import re
-from typing import Any
 from collections.abc import Iterable
+from pathlib import Path
+from typing import Any
 
 # Third-party modules
+from bson import ObjectId
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    ListField,
+    BooleanField,
     DictField,
-    ObjectIdField,
-    UUIDField,
     EmbeddedDocumentListField,
     EnumField,
+    IntField,
+    ListField,
+    ObjectIdField,
     ReferenceField,
-    BooleanField,
+    StringField,
+    UUIDField,
 )
-from mongoengine.document import EmbeddedDocument, Document
-from bson import ObjectId
 
 # NOC modules
-from .eventclass import EventClass
-from noc.fm.models.mib import MIB
-from noc.fm.models.enumeration import Enumeration
-from noc.sa.models.profile import GENERIC_PROFILE, Profile
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.fm.event import Event, MessageType, EventSource, Target
-from noc.core.mongo.fields import PlainReferenceField
+from noc.config import config
 from noc.core.change.decorator import change
 from noc.core.escape import fm_unescape
+from noc.core.fm.event import Event, EventSource, MessageType, Target
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
-from noc.config import config
+from noc.core.profile.loader import loader as profile_loader
+from noc.fm.models.enumeration import Enumeration
+from noc.fm.models.mib import MIB
+from noc.sa.models.profile import GENERIC_PROFILE, Profile
+
+from .eventclass import EventClass
 
 
 class EventClassificationRuleVar(EmbeddedDocument):

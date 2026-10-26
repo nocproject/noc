@@ -15,6 +15,7 @@ from django.http import HttpRequest
 from noc.inv.models.object import Object
 from noc.inv.models.objectfile import ObjectFile
 from noc.main.models.mimetype import MIMEType
+
 from .base import InvPlugin
 
 

@@ -7,14 +7,14 @@
 
 # Python modules
 import os
-import sys
 import subprocess
-from pathlib import Path
+import sys
 from functools import cached_property
+from pathlib import Path
 
 # NOC modules
-from noc.config import config
 from noc import __version__
+from noc.config import config
 
 CHANGESET_LEN = 8
 WHICH = "which"

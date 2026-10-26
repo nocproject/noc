@@ -7,16 +7,16 @@
 
 # Python modules
 import datetime
+from collections import defaultdict
 
 # Third-party modules
 import orjson
-from collections import defaultdict
 
 # NOC modules
-from noc.fm.models.outage import Outage
-from noc.core.service.pub import publish
-from noc.sa.models.managedobject import ManagedObject
 from noc.config import config
+from noc.core.service.pub import publish
+from noc.fm.models.outage import Outage
+from noc.sa.models.managedobject import ManagedObject
 
 CHUNK = 500
 

@@ -5,26 +5,29 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import datetime
+import itertools
+import operator
+from collections import defaultdict
+
 # Third-party modules
 from mongoengine.errors import DoesNotExist
 
 # NOC modules
-import datetime
-import operator
-import itertools
-from collections import defaultdict
-from .base import BaseCard
-from noc.inv.models.object import Object
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.uptime import Uptime
-from noc.fm.models.outage import Outage
+from noc.core.clickhouse.connect import connection
 from noc.core.perf import metrics
 from noc.core.pm.utils import is_nan
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.outage import Outage
+from noc.fm.models.uptime import Uptime
+from noc.inv.models.object import Object
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.core.clickhouse.connect import connection
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
+from .base import BaseCard
 
 
 class ObjectCard(BaseCard):

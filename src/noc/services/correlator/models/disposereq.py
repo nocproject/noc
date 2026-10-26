@@ -7,14 +7,13 @@
 
 # Python modules
 
-# NOC modules
-from .clearreq import ClearRequest
 from .clearidreq import ClearIdRequest
+from .clearreq import ClearRequest
+from .dispositionreq import DispositionRequest
+from .ensuregroupreq import EnsureGroupRequest
 from .eventreq import EventRequest
 from .raisereq import RaiseRequest
-from .ensuregroupreq import EnsureGroupRequest
 from .setstatusreq import SetStatusRequest
-from .dispositionreq import DispositionRequest
 
 DisposeRequest = (
     ClearRequest

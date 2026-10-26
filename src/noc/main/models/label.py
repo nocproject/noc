@@ -5,47 +5,49 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import logging
 import operator
 import re
-from typing import Any
-from collections.abc import Iterable, Callable
-from threading import Lock
 from collections import defaultdict
-from itertools import accumulate
+from collections.abc import Callable, Iterable
 from functools import partial
+from itertools import accumulate
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
 import bson
-from pymongo import UpdateMany
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.queryset.visitor import Q as m_Q
-from mongoengine.fields import (
-    StringField,
-    IntField,
-    UUIDField,
-    BooleanField,
-    ListField,
-    EmbeddedDocumentListField,
-)
-from django.db import connection as pg_connection
 import cachetools
 import orjson
+from django.db import connection as pg_connection
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    StringField,
+    UUIDField,
+)
+from mongoengine.queryset.visitor import Q as m_Q
+from pymongo import UpdateMany
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete, on_delete_check
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
-from noc.main.models.handler import Handler
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
-from noc.models import get_model, is_document, get_model_id, LABEL_MODELS
-from noc.vc.models.vlanfilter import VLANFilter
-from noc.core.prettyjson import to_json
+from noc.core.model.decorator import on_delete, on_delete_check, on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.handler import Handler
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
+from noc.main.models.remotesystem import RemoteSystem
+from noc.models import LABEL_MODELS, get_model, get_model_id, is_document
+from noc.vc.models.vlanfilter import VLANFilter
 
 MATCH_OPS = {"=", "<", ">", "&"}
 
@@ -385,6 +387,7 @@ class Label(Document):
     #     raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, item))
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         ds_changed = []
@@ -907,12 +910,14 @@ class Label(Document):
 
         # Install handlers
         if is_document(m_cls):
+            # Third-party modules
             from mongoengine import signals as mongo_signals
 
             mongo_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
             if m_cls._has_lazy_labels:
                 mongo_signals.post_init.connect(on_post_init_set_name, sender=m_cls, weak=False)
         else:
+            # Third-party modules
             from django.db.models import signals as django_signals
 
             django_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
@@ -982,10 +987,12 @@ class Label(Document):
         def inner(m_cls):
             # Install handlers
             if is_document(m_cls):
+                # Third-party modules
                 from mongoengine import signals as mongo_signals
 
                 mongo_signals.post_save.connect(on_post_save, sender=m_cls, weak=False)
             else:
+                # Third-party modules
                 from django.db.models import signals as django_signals
 
                 django_signals.post_save.connect(on_post_save, sender=m_cls, weak=False)
@@ -1290,6 +1297,7 @@ class Label(Document):
         def inner(m_cls):
             # Install profile set handlers
             if is_document(m_cls):
+                # Third-party modules
                 from mongoengine import signals as mongo_signals
 
                 if sync_profile:
@@ -1302,6 +1310,7 @@ class Label(Document):
                         weak=False,
                     )
             else:
+                # Third-party modules
                 from django.db.models import signals as django_signals
 
                 if sync_profile:

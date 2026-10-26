@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
-
-# Third-party modules
-from noc.inv.models.link import Link
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from noc.inv.models.link import Link
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 class LinkedMethodStatDS(BaseDataSource):

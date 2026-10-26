@@ -9,15 +9,15 @@
 import datetime
 import logging
 from collections import defaultdict
-from time import perf_counter
 from dataclasses import dataclass
+from time import perf_counter
 from typing import Any
 
 # NOC modules
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.service.loader import get_service
 from noc.core.checkers.base import NODATA
-from noc.core.mx import MessageType, MX_JOB_HANDLER
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.mx import MX_JOB_HANDLER, MessageType
+from noc.core.service.loader import get_service
 
 logger = logging.getLogger(__name__)
 MAX_SEND_OBJECTS = 100

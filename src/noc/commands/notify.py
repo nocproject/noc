@@ -10,8 +10,8 @@ import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.main.models.template import Template
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
 
 
 class Command(BaseCommand):

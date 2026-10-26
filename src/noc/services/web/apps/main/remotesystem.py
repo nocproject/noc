@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.translation import ugettext as _
+from noc.main.models.remotesystem import RemoteSystem
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class RemoteSystemApplication(ExtDocApplication):

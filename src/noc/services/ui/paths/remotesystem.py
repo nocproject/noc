@@ -10,7 +10,8 @@ from fastapi import APIRouter
 
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
-from ..models.remotesystem import DefaultRemoteSystemItem, FormRemoteSystemItem, EnvItem
+
+from ..models.remotesystem import DefaultRemoteSystemItem, EnvItem, FormRemoteSystemItem
 from ..utils.rest.document import DocumentResourceAPI
 
 router = APIRouter()

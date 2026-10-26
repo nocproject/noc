@@ -5,31 +5,34 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
+
+# Python modules
 import re
+from pathlib import Path
 from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    UUIDField,
-    ListField,
     BooleanField,
     EmbeddedDocumentListField,
+    ListField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, PlainReferenceListField
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.core.model.decorator import on_delete_check
 from noc.cm.models.configurationparam import ConfigurationParam, ParamSchema
 from noc.cm.models.configurationscope import ConfigurationScope
-from .protocol import Protocol
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField, PlainReferenceListField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+
 from .connectiontype import ConnectionType
+from .protocol import Protocol
 
 
 class ConnectionRule(EmbeddedDocument):

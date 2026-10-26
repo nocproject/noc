@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
-from noc.core.comp import smart_text
 
 
 class Script(BaseScript):

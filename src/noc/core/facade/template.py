@@ -10,9 +10,10 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
-from noc.inv.models.connectiontype import ConnectionType
 from noc.core.svg import SVG
+from noc.inv.models.connectiontype import ConnectionType
+from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
+
 from .utils import name_to_id, name_to_title, slot_to_id
 
 NS_SVG = "http://www.w3.org/2000/svg"

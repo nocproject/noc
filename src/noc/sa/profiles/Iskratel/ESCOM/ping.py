@@ -6,10 +6,13 @@
 # ---------------------------------------------------------------------
 
 
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.iping import IPing
-from noc.core.validators import is_ipv4, is_ipv6
+# Python modules
 import re
+
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.core.validators import is_ipv4, is_ipv6
+from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):

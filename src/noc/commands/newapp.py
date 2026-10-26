@@ -6,21 +6,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import importlib
 import argparse
-import os
 import datetime
+import importlib
+import os
 import re
 from pathlib import Path
 
 # Third-party modules
-from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
+from django.db.models.fields import NOT_PROVIDED
 from jinja2 import Template
 
 # NOC modules
-from noc.core.management.base import BaseCommand, CommandError
 from noc.core.comp import smart_text
+from noc.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):

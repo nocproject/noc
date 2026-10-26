@@ -8,11 +8,11 @@
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.diagnostic.hub import SNMPTRAP_DIAG
+from noc.main.models.label import Label
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
 
 
 class CfgTrapDataStream(DataStream):
@@ -138,6 +138,7 @@ class CfgTrapDataStream(DataStream):
 
     @classmethod
     def _get_loopback_addresses(cls, mo_id):
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 
@@ -165,6 +166,7 @@ class CfgTrapDataStream(DataStream):
 
     @classmethod
     def _get_all_addresses(cls, mo_id):
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         r = []

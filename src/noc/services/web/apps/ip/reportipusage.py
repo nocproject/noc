@@ -5,11 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from noc.core.translation import ugettext as _
-
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.core.ip import IP
+from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SectionRow, SimpleReport, TableColumn
 
 
 class ReportIPUsageApplication(SimpleReport):
@@ -22,6 +21,7 @@ class ReportIPUsageApplication(SimpleReport):
     GROUP BY 1, 2, 3, 4, 5 ORDER BY 1, 2, 3, 4"""
 
     def get_data(self, **kwargs):
+        # Third-party modules
         from django.db import connection
 
         data = []

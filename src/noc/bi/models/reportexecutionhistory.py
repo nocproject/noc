@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
+    BooleanField,
     DateField,
     DateTimeField,
     StringField,
     UInt32Field,
-    BooleanField,
 )
-from noc.core.clickhouse.engines import MergeTree
+from noc.core.clickhouse.model import Model
 
 
 class ReportExecutionHistory(Model):

@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.peer.models.rir import RIR
 from noc.core.translation import ugettext as _
+from noc.peer.models.rir import RIR
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class RIRApplication(ExtModelApplication):

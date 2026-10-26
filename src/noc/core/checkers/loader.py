@@ -11,6 +11,7 @@ from itertools import chain
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.sa.interfaces.iping import IPing
+
 from .base import BaseChecker
 
 

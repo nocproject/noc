@@ -9,11 +9,10 @@
 from typing import Any
 
 # NOC modules
-from noc.core.jsonutils import iter_chunks
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.pm.models.metrictype import MetricType
 from noc.config import config
-
+from noc.core.jsonutils import iter_chunks
+from noc.pm.models.metrictype import MetricType
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 MAX31 = 0x7FFFFFFF
 MAX32 = 0xFFFFFFFF

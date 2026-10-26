@@ -5,19 +5,22 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import contextlib
 import time
-from contextvars import ContextVar
-from collections import defaultdict
-from typing import Literal
 from abc import ABCMeta, abstractmethod
+from collections import defaultdict
+from contextvars import ContextVar
+from typing import Literal
 
 # NOC modules
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from .model import ChangeItem, ChangeField
+
+from .model import ChangeField, ChangeItem
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
@@ -65,6 +68,7 @@ class ChangeTracker:
         Return changes receiver
         :return:
         """
+        # NOC modules
         from noc.core.bi.dictionaries.loader import loader
 
         for dcls_name in loader:
@@ -85,6 +89,7 @@ class ChangeTracker:
 
     def get_user(self) -> str | None:
         """Getting user for changes"""
+        # NOC modules
         from noc.core.middleware.tls import get_user
 
         user = get_user() or c_user.get()

@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.ip.models.addressrange import AddressRange
-from noc.core.ip import IP
-from noc.core.validators import is_ipv4, is_ipv6, is_fqdn
 from noc.core.comp import smart_text
+from noc.core.ip import IP
 from noc.core.translation import ugettext as _
+from noc.core.validators import is_fqdn, is_ipv4, is_ipv6
+from noc.ip.models.addressrange import AddressRange
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class AddressRangeApplication(ExtModelApplication):

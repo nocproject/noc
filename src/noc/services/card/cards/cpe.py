@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseCard
 from noc.inv.models.cpe import CPE
+
+from .base import BaseCard
 
 
 class CPECard(BaseCard):

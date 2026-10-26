@@ -5,39 +5,40 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 from django.db.utils import IntegrityError
 
 # NOC modules
 from noc.config import config
-from noc.core.model.decorator import on_init
-from noc.core.model.base import NOCModel
-from noc.core.ip import IP
-from noc.project.models.project import Project
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.model.fields import INETField, MACField
-from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
-from noc.main.models.textindex import full_text_search
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.fields import DocumentReferenceField
-from noc.core.wf.decorator import workflow
-from noc.wf.models.state import State
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.ip import IP
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.model.fields import DocumentReferenceField, INETField, MACField
 from noc.core.translation import ugettext as _
+from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
+from noc.core.wf.decorator import workflow
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.textindex import full_text_search
+from noc.project.models.project import Project
+from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
+
+from .addressprofile import AddressProfile
 from .afi import AFI_CHOICES
 from .vrf import VRF
-from .addressprofile import AddressProfile
 
 FREE_ADDRESS_STATE = "Free"
 
@@ -165,6 +166,7 @@ class Address(NOCModel):
         if config.datastream.enable_address:
             yield "address", self.id
         if config.datastream.enable_dnszone:
+            # NOC modules
             from noc.dns.models.dnszone import DNSZone
 
             fqdn_changed, address_changed = (

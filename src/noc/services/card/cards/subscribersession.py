@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseCard
 from noc.inv.models.interface import Interface
 from noc.inv.models.macvendor import MACVendor
+
+from .base import BaseCard
 
 
 class SubscriberSessionCard(BaseCard):

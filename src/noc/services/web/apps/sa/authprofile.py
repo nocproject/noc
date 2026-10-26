@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.sa.models.authprofile import AuthProfile
 from noc.core.translation import ugettext as _
+from noc.sa.models.authprofile import AuthProfile
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class AuthProfileApplication(ExtModelApplication):

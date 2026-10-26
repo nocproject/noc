@@ -7,16 +7,18 @@
 
 # Python modules
 import enum
-from typing import Any
-from threading import Lock
 from dataclasses import dataclass
 from functools import partial
+from threading import Lock
+from typing import Any
+
+# NOC modules
+from noc.core.ioloop.util import run_sync
 
 # NOC services
 from noc.core.service.loader import get_service
-from noc.core.ioloop.util import run_sync
-from noc.models import get_model_id
 from noc.core.timepattern import TimePatternList
+from noc.models import get_model_id
 from noc.settings import LANGUAGE_CODE
 
 
@@ -269,6 +271,7 @@ def send_notification(
 
 def get_mx_partitions() -> int:
     """Get number of MX stream partitions"""
+    # NOC modules
     from noc.core.msgstream.config import get_stream
 
     cfg = get_stream(MX_STREAM)

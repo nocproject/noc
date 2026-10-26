@@ -5,38 +5,41 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import logging
-from typing import Any
-from threading import Lock
+import operator
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    ReferenceField,
-    LongField,
-    ListField,
     BooleanField,
-    IntField,
-    UUIDField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    LongField,
+    ReferenceField,
+    StringField,
+    UUIDField,
 )
-import cachetools
 
 # NOC modules
-from .workflow import Workflow
-from .state import State
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
+from noc.main.models.remotesystem import RemoteSystem
+
+from .state import State
+from .workflow import Workflow
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()

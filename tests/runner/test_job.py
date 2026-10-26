@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
 import asyncio
+from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import pytest
 
 # NOC modules
-from noc.sa.models.job import JobStatus
-from noc.core.runner.runner import Runner
 from noc.core.runner.job import Job
-from noc.core.runner.models.jobreq import JobRequest, InputMapping
+from noc.core.runner.models.jobreq import InputMapping, JobRequest
+from noc.core.runner.runner import Runner
+from noc.sa.models.job import JobStatus
 
 
 @pytest.mark.parametrize(

@@ -6,9 +6,12 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-import re
 
 rx_line = re.compile(
     r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+\s+\S+).*$"

@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import sys
 import argparse
+import sys
 
 # NOC modules
 from noc.core.management.base import BaseCommand

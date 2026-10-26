@@ -9,12 +9,14 @@
 import re
 
 # NOC modules
+from noc.core.text import parse_kv, parse_table
+from noc.sa.profiles.Generic.get_metrics import (
+    ProfileMetricConfig,
+    metrics,
+)
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
-    metrics,
-    ProfileMetricConfig,
 )
-from noc.core.text import parse_kv, parse_table
 
 
 class Script(GetMetricsScript):

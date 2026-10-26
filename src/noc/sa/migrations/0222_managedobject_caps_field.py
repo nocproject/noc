@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import orjson
-import bson
-from collections import defaultdict
 import operator
-from siphash24 import siphash24
+from collections import defaultdict
 
 # Third-party modules
+import bson
+import orjson
 from django.db import models
+from siphash24 import siphash24
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

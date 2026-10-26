@@ -14,14 +14,14 @@ import pytest
 # NOC modules
 from noc.core.palette import (
     ALL_PALETTES,
-    COLOR_PALETTES,
-    TONE_PALETTES,
-    BW,
-    FG,
     AVATAR_COLORS,
+    BW,
+    COLOR_PALETTES,
+    FG,
+    TONE_PALETTES,
     get_avatar_bg_color,
-    split_rgb,
     get_fg_color,
+    split_rgb,
 )
 
 ALL_COLORS: set[str] = set()

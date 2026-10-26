@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import InstanceOfParameter, StringParameter, BooleanParameter
+
+from .base import BooleanParameter, InstanceOfParameter, StringParameter
 
 
 class IDispositionCondition(BaseInterface):

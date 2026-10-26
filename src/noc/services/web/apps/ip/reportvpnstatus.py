@@ -5,14 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from noc.core.translation import ugettext as _
-
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow
-from noc.ip.models.vrf import VRF
+from noc.core.translation import ugettext as _
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
+from noc.ip.models.vrf import VRF
+from noc.services.web.base.simplereport import SectionRow, SimpleReport
 
 
 class ReportVPNStatusApplication(SimpleReport):

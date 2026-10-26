@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-
 MIME_TYPES = [
     (".pdf", "application/pdf"),
     (".sig", "application/pgp-signature"),

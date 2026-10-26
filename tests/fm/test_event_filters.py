@@ -5,17 +5,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import os
+
+# Third-party modules
 import pytest
 
 # NOC modules
 from noc.core.fm.event import Event
-from noc.services.classifier.eventconfig import EventConfig, VarItem, FilterConfig
 from noc.core.models.valuetype import ValueType
+from noc.services.classifier.eventconfig import EventConfig, FilterConfig, VarItem
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
-
 
 event_config = EventConfig(
     name="Network | MAC | MAC Learned",

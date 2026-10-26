@@ -8,7 +8,7 @@
 # Python modules
 import enum
 from dataclasses import dataclass, field
-from typing import Literal, Any
+from typing import Any, Literal
 
 TELNET = 1
 SSH = 2

@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import ANY, IP_ADDRESS, AS_NUM, CHOICES, BOOL
+from ....patterns import ANY, AS_NUM, BOOL, CHOICES, IP_ADDRESS
 
 BGP_SYNTAX = DEF(
     "bgp",

@@ -7,15 +7,15 @@
 
 # Python modules
 import logging
-from functools import partial
 from collections.abc import Callable
+from functools import partial
 
 # NOC modules
-from noc.models import get_model, get_model_id, is_document
-from noc.core.matcher import build_matcher
-from noc.core.defer import call_later
 from noc.core.change.policy import change_tracker
+from noc.core.defer import call_later
+from noc.core.matcher import build_matcher
 from noc.core.middleware.tls import get_user
+from noc.models import get_model, get_model_id, is_document
 
 logger = logging.getLogger()
 
@@ -130,6 +130,7 @@ def dynamic_profile(
         if not hasattr(m_cls, "get_matcher_ctx"):
             raise NotImplementedError("Method 'get_matcher_ctx' required")
         if is_document(m_cls):
+            # Third-party modules
             from mongoengine import signals as mongo_signals
 
             if sync_profile:
@@ -141,6 +142,7 @@ def dynamic_profile(
                     weak=False,
                 )
         else:
+            # Third-party modules
             from django.db.models import signals as django_signals
 
             if sync_profile:

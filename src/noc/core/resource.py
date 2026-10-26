@@ -8,8 +8,8 @@
 # Python modules
 
 # Third-party modules
-from mongoengine.document import Document
 from django.db.models import Model
+from mongoengine.document import Document
 
 # NOC modules
 from noc.models import RESOURCE_MODELS, get_model

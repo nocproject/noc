@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.kb.models.kbentry import KBEntry
 from noc.config import config
+from noc.kb.models.kbentry import KBEntry
+
 from .base import BaseCard
 
 

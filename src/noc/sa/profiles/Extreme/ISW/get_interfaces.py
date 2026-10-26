@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.text import parse_kv, parse_table, ranges_to_list
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.text import parse_table, parse_kv, ranges_to_list
 
 
 class Script(BaseScript):

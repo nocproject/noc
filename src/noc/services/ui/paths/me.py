@@ -9,11 +9,12 @@
 from fastapi import APIRouter, Depends
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
-from noc.core.service.deps.user import get_current_user
+from noc.config import config
 from noc.core.palette import get_avatar_bg_color, get_fg_color
-from ..models.me import MeResponse, GroupItem
+from noc.core.service.deps.user import get_current_user
+
+from ..models.me import GroupItem, MeResponse
 
 router = APIRouter()
 

@@ -9,40 +9,40 @@
 import itertools
 import threading
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 # Third-party modules
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from bson import ObjectId
 from django.http import HttpRequest
 from jinja2.environment import Environment
 from jinja2.exceptions import TemplateError
-from bson import ObjectId
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.interface import Interface
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.mapsettings import MapSettings
-from noc.inv.models.link import Link
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.core.cache.decorator import cachedmethod
+from noc.core.pm.utils import MetricProxy, get_interface_metrics
+from noc.core.text import alnum_key
+from noc.core.topology.base import loader
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_objectid
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.inv.models.cpe import CPE
-from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from noc.inv.models.mapsettings import MapSettings
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.interfaces.base import (
-    ListOfParameter,
-    IntParameter,
-    StringParameter,
     DictListParameter,
     DictParameter,
+    IntParameter,
+    ListOfParameter,
+    StringParameter,
 )
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.maintenance.models.maintenance import Maintenance
-from noc.core.text import alnum_key
-from noc.core.validators import is_objectid
-from noc.core.pm.utils import get_interface_metrics, MetricProxy
-from noc.core.translation import ugettext as _
-from noc.core.cache.decorator import cachedmethod
-from noc.core.topology.base import loader
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.extapplication import ExtApplication, api
 
 tags_lock = threading.RLock()
 

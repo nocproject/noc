@@ -6,16 +6,17 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
 from django.http import HttpRequest
 
 # NOC modules
-from .base import InvPlugin
-from noc.inv.models.object import Object
 from noc.core.text import alnum_key
+from noc.inv.models.object import Object
+
+from .base import InvPlugin
 
 
 class CrossingPlugin(InvPlugin):

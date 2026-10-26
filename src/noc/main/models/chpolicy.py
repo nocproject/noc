@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, IntField
+from mongoengine.fields import BooleanField, IntField, StringField
 
 
 class CHPolicy(Document):

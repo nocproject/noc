@@ -10,10 +10,10 @@ import re
 from itertools import compress
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
 class Script(BaseScript):

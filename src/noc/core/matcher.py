@@ -7,10 +7,11 @@
 
 # Python modules
 import re
+from collections.abc import Callable, Iterable
 from functools import partial
 from typing import Any
-from collections.abc import Callable, Iterable
 
+# NOC modules
 # NOC Modules
 from noc.core.text import alnum_key
 

@@ -5,8 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from noc.sa.profiles.Generic.get_metrics import OIDRule
+# NOC modules
 from noc.core.mib import mib
+from noc.sa.profiles.Generic.get_metrics import OIDRule
 
 
 class SlotRule(OIDRule):

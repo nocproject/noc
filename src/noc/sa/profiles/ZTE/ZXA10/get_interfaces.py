@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+import re
 
 # NOC modules
-import re
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import NoReturn
-from collections.abc import Iterable
-from pathlib import Path
 import re
 import sys
+from collections.abc import Iterable
+from pathlib import Path
+from typing import NoReturn
 
 # NOC modules
 from noc.core.confdb.syntax.base import SYNTAX

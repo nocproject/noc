@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python files
+# Python modules
 from collections import namedtuple
 
 H264Profile = namedtuple("H264Profile", ["name", "id", "constraint"])

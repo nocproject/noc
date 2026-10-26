@@ -6,51 +6,51 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-import datetime
 import csv
+import datetime
+import logging
 from io import BytesIO, TextIOWrapper
-from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
 import xlsxwriter
-from pymongo import ReadPreference
 from django.http import HttpResponse
+from pymongo import ReadPreference
 
 # NOC modules
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
+from noc.inv.models.capability import Capability
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.vendor import Vendor
 from noc.main.models.pool import Pool
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import BooleanParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
+from noc.sa.models.useraccess import UserAccess
 from noc.services.web.base.extapplication import ExtApplication, api
 from noc.services.web.base.reportdatasources.base import ReportModelFilter
-from noc.services.web.base.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
-from noc.services.web.base.reportdatasources.report_objectifacestypestat import (
-    ReportObjectIfacesTypeStat,
-)
 from noc.services.web.base.reportdatasources.report_container import (
     ReportContainer,
     ReportContainerData,
 )
 from noc.services.web.base.reportdatasources.report_discoveryresult import ReportDiscoveryResult
+from noc.services.web.base.reportdatasources.report_objectattributes import ReportObjectAttributes
+from noc.services.web.base.reportdatasources.report_objectconfig import ReportObjectConfig
 from noc.services.web.base.reportdatasources.report_objectifacesstatusstat import (
     ReportObjectIfacesStatusStat,
 )
-from noc.services.web.base.reportdatasources.report_objectconfig import ReportObjectConfig
-from noc.services.web.base.reportdatasources.report_objectattributes import ReportObjectAttributes
-from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.profile import Profile
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.capability import Capability
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.platform import Platform
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.project.models.project import Project
-from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
+from noc.services.web.base.reportdatasources.report_objectifacestypestat import (
+    ReportObjectIfacesTypeStat,
+)
+from noc.services.web.base.reportdatasources.report_objectlinkcount import ReportObjectLinkCount
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +84,7 @@ class ReportAdPath:
         self.out = self.load()
 
     def load(self):
+        # Third-party modules
         from django.db import connection
 
         cursor = connection.cursor()

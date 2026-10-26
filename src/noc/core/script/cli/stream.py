@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import asyncio
 import contextlib
+import socket
 
 # NOC modules
 from noc.config import config
+
 from .base import BaseCLI
 
 

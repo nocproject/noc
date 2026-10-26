@@ -17,9 +17,10 @@ and replaces the ending year with the current one.
 Only Added (A) and Modified (M) files are processed.
 """
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
+# Python modules
 import datetime
 import re
 import subprocess

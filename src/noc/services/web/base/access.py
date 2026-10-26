@@ -4,7 +4,10 @@
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+# Third-party modules
 from django.db.models import Q
+
+# NOC modules
 from noc.aaa.models.permission import Permission as DBPermission
 
 

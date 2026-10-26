@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.ecma48 import c, strip_control_sequences
 from noc.core.comp import smart_bytes
+from noc.core.ecma48 import c, strip_control_sequences
 
 
 def char_range(start, stop, prefix=b""):

@@ -7,6 +7,7 @@
 
 # Third-party modules
 from django.db.models import Q
+
 from .base import BaseMacro
 
 
@@ -29,6 +30,7 @@ class SearchMacro(BaseMacro):
 
     @classmethod
     def handle(cls, args, text):
+        # NOC modules
         from noc.kb.models.kbentry import KBEntry
 
         # Build search criteria

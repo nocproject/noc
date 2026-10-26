@@ -10,13 +10,13 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.sa.models.managedobject import ManagedObject
-from noc.main.models.pool import Pool
-from noc.core.translation import ugettext as _
 from noc.core.mac import MAC
+from noc.core.translation import ugettext as _
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.macblacklist import MACBlacklist
+from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.simplereport import SectionRow, SimpleReport
 
 
 class ReportForm(forms.Form):

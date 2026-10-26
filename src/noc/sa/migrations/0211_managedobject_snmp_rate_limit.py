@@ -6,9 +6,11 @@
 # ----------------------------------------------------------------------
 
 
+# Third-party modules
+from django.db import models
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from django.db import models
 
 
 class Migration(BaseMigration):

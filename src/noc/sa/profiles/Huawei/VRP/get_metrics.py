@@ -8,19 +8,22 @@
 # Python modules
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import (
-    Script as GetMetricsScript,
-    metrics,
-    ProfileMetricConfig,
-    MetricConfig,
-)
-from noc.core.models.cfgmetrics import MetricCollectorConfig
-from .oidrules.slot import SlotRule
-from .oidrules.sslot import SSlotRule
-from noc.core.mib import mib
 from noc.core.ip import IPv4, IPv6
+from noc.core.mib import mib
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.script.metrics import scale
 from noc.core.snmp.render import render_IPV6
+from noc.sa.profiles.Generic.get_metrics import (
+    MetricConfig,
+    ProfileMetricConfig,
+    metrics,
+)
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+)
+
+from .oidrules.slot import SlotRule
+from .oidrules.sslot import SSlotRule
 
 SLA_ICMP_METRIC_MAP = {
     "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaResultsLostPacketRatio",

@@ -7,10 +7,11 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import IntField, StringField
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+
 from .managedobject import ManagedObject
 
 

@@ -9,10 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.services.web.base.access import PermitLogged
 from noc.main.models.apitoken import APIToken
 from noc.sa.interfaces.base import StringParameter
+from noc.services.web.base.access import PermitLogged
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class APITokenApplication(ExtApplication):

@@ -9,12 +9,12 @@
 import argparse
 
 # NOC modules
+from noc.core.etl.portmapper.base import portmapper_loader
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.text import alnum_key, format_table
 from noc.inv.models.interface import Interface
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.etl.portmapper.base import portmapper_loader
-from noc.core.text import alnum_key, format_table
 
 
 class Command(BaseCommand):

@@ -8,7 +8,6 @@
 # Python modules
 from time import perf_counter_ns
 
-
 NS = 1_000_000_000.0
 
 

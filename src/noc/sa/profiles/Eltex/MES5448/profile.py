@@ -5,11 +5,12 @@
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+# Python modules
 import re
 
 # NOC modules
-from noc.core.profile.base import BaseProfile
 from noc.core.comp import smart_text
+from noc.core.profile.base import BaseProfile
 
 rx_cpu = re.compile(
     r"5\s+Secs\s+\((?:\s+|)(?P<cpu5sec>\S+)\%\)\s+60\s+\Secs\s+\((?:\s+|)(?P<cpu60sec>\S+)\%\)\s+300\s+\Secs\s+\((?:\s+|)(?P<cpu300sec>\S+)\%\)"

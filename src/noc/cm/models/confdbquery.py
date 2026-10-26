@@ -5,24 +5,26 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
+import threading
 from pathlib import Path
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, UUIDField, BooleanField, EmbeddedDocumentListField
-import cachetools
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField, UUIDField
 
 # NOC modules
 from noc.core.ip import IP
-from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
-from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.sa.interfaces.base import BooleanParameter, IntParameter, StringParameter
 
 
 class IPParameter:

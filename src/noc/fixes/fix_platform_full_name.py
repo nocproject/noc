@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Third-party modules
 from pymongo import UpdateOne
 
 # NOC modules
@@ -24,6 +24,7 @@ def fix():
 
 
 def fix_full_name():
+    # NOC modules
     from noc.inv.models.platform import Platform
 
     for p in Platform.objects.all():

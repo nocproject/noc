@@ -5,28 +5,30 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-from threading import Lock
-from dataclasses import dataclass
-from typing import Any
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, UUIDField, BooleanField, EmbeddedDocumentListField
-import cachetools
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField, UUIDField
 
+# NOC modules
 # NOC Modules
 from noc.config import config
-from noc.core.model.decorator import on_save
-from noc.core.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
-from noc.core.path import safe_json_path
 from noc.core.clickhouse.error import ClickhouseError
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.main.models.label import Label
 
 id_lock = Lock()
@@ -313,6 +315,7 @@ class MetricScope(Document):
         Ensure table is exists
         :return: True, if table has been changed
         """
+        # NOC modules
         from noc.core.clickhouse.connect import connection
 
         def ensure_column(table_name, column):

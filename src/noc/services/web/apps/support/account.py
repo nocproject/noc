@@ -9,10 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import REStringParameter, StringParameter
 from noc.services.web.base.extapplication import ExtApplication, api
 from noc.support.cp import CPClient
-from noc.sa.interfaces.base import StringParameter, REStringParameter
-from noc.core.translation import ugettext as _
 
 
 class AccountApplication(ExtApplication):

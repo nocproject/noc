@@ -7,9 +7,8 @@
 
 # Python modules
 import re
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterable, Iterator
 
-# NOC modules
 from .base import BaseTokenizer
 
 

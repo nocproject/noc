@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport
-from noc.fm.models.mib import MIBData
 from noc.core.translation import ugettext as _
+from noc.fm.models.mib import MIBData
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class ReportOverlappedOIDsApplication(SimpleReport):

@@ -9,8 +9,9 @@
 import datetime
 from collections.abc import Iterable
 
-# Python modules
-from noc.models import is_document, get_model_id
+# NOC modules
+from noc.models import get_model_id, is_document
+
 from .types import ObjectEffect, WatchItem
 
 WATCHER_JCLS = "noc.services.scheduler.jobs.run_watchers.RunWatchersJob"
@@ -205,6 +206,7 @@ def update_document_watchers(
     bulk=None,
 ):
     """"""
+    # NOC modules
     from noc.core.scheduler.scheduler import Scheduler
     from noc.sa.models.objectwatchersitem import WatchDocumentItem
 

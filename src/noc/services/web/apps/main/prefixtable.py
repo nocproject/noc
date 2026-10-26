@@ -12,12 +12,12 @@ from collections import defaultdict
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
+from noc.sa.interfaces.base import IPParameter, ListOfParameter, ModelParameter
 from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 from noc.services.web.base.modelinline import ModelInline
-from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
-from noc.main.models.label import Label
-from noc.sa.interfaces.base import IPParameter, ListOfParameter, ModelParameter
-from noc.core.translation import ugettext as _
 
 
 class PrefixTableApplication(ExtModelApplication):

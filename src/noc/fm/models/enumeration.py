@@ -10,9 +10,9 @@ from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DictField, UUIDField
+from mongoengine.fields import DictField, StringField, UUIDField
 
-# Python modules
+# NOC modules
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 

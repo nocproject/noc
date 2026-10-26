@@ -6,19 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
+import enum
+from collections.abc import Callable
 from functools import partial
 from typing import Any
-from collections.abc import Callable
+
+# NOC modules
+from noc.config import config
+from noc.core.defer import call_later
 
 # NOC Modules
 from noc.core.diagnostic.types import DiagnosticState
-from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.models.cfginteractions import Interaction
 from noc.models import get_model_id
-from noc.config import config
 
 MIN_DISCOVERY_DELAY_SEC = 60
 
@@ -209,6 +211,7 @@ class ActionType(enum.Enum):
         **kwargs,
     ):
         """Audit interaction"""
+        # NOC modules
         from noc.sa.models.interactionlog import InteractionLog
 
         interaction = Interaction(int(audit))

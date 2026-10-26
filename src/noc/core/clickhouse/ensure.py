@@ -10,10 +10,11 @@ import logging
 
 # NOC modules
 from noc.config import config
+
+from ..bi.dictionaries.loader import loader as bi_dictionary_loader
+from .connect import ClickhouseClient, connection
 from .info import TableInfo
 from .loader import loader
-from .connect import ClickhouseClient, connection
-from ..bi.dictionaries.loader import loader as bi_dictionary_loader
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ def ensure_dictionary_models(
 
 
 def ensure_pm_scopes(connect: ClickhouseClient | None = None, allow_type: bool = False) -> bool:
+    # NOC modules
     from noc.pm.models.metricscope import MetricScope
 
     logger.info("Ensuring PM scopes")
@@ -85,6 +87,7 @@ def ensure_all_pm_scopes() -> bool:
 def ensure_report_ds_scopes(
     connect: ClickhouseClient | None = None, allow_type: bool = False
 ) -> bool:
+    # NOC modules
     from noc.core.datasources.base import data_source_loader
 
     logger.info("Ensuring Report BI")
@@ -105,6 +108,7 @@ def ensure_report_ds_scopes(
 
 def sync_ch_policies() -> bool:
     """Create CHPolicy when necessary."""
+    # NOC modules
     from noc.main.models.chpolicy import CHPolicy
     from noc.pm.models.metricscope import MetricScope
 
@@ -129,6 +133,7 @@ DAY = 24 * 3600
 
 
 def ensure_ch_policies(connect: ClickhouseClient | None = None) -> bool:
+    # NOC modules
     from noc.main.models.chpolicy import CHPolicy
 
     changed = False

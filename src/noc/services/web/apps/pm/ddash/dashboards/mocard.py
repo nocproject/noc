@@ -6,13 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
+# Python modules
 import json
 
 # NOC modules
-from .mo import MODashboard
-from noc.inv.models.object import Object
 from noc.inv.models.interface import Interface
+from noc.inv.models.object import Object
 from noc.inv.models.subinterface import SubInterface
+
+from .mo import MODashboard
 
 TITLE_BAD_CHARS = '"\\\n\r'
 

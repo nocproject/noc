@@ -5,43 +5,45 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import operator
-from typing import Any
 from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
+    BooleanField,
+    EmbeddedDocumentListField,
+    EnumField,
     IntField,
     ReferenceField,
-    EmbeddedDocumentListField,
-    BooleanField,
-    EnumField,
+    StringField,
 )
-from bson import ObjectId
-import cachetools
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
-from noc.core.change.decorator import change
-from noc.core.mongo.fields import ForeignKeyField
-from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember
-from noc.core.fm.enum import AlarmAction, GroupType
-from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.template import Template
-from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.aaa.models.user import User
+from noc.core.change.decorator import change
+from noc.core.fm.enum import AlarmAction, GroupType
+from noc.core.fm.request import ActionConfig, ActionItem, AlarmActionRequest, AllowedAction
+from noc.core.model.decorator import on_delete_check
+from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.mongo.fields import ForeignKeyField
+from noc.core.tt.types import EscalationMember, TTSystemConfig
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmwatch import Effect
+from noc.fm.models.ttsystem import TTSystem
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
 
 id_lock = Lock()
 

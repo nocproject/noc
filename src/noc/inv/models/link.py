@@ -5,21 +5,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from collections import defaultdict
+
+# Python modules
 import datetime
+from collections import defaultdict
 
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
+from mongoengine.fields import DateTimeField, IntField, ListField, ObjectIdField, StringField
 
 # NOC modules
 from noc.config import config
-from noc.core.mongo.fields import PlainReferenceListField
-from noc.core.model.decorator import on_delete, on_save
 from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete, on_save
+from noc.core.mongo.fields import PlainReferenceListField
 from noc.main.models.label import Label
 
 
@@ -191,6 +193,7 @@ class Link(Document):
         return Link.objects.filter(linked_objects=object.id).count()
 
     def on_save(self):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
@@ -203,6 +206,7 @@ class Link(Document):
             ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         self.update_topology()
@@ -219,6 +223,7 @@ class Link(Document):
         """
         List of connected managed objects
         """
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         return list(ManagedObject.objects.filter(id__in=list(self.linked_objects)))
@@ -229,6 +234,7 @@ class Link(Document):
         List of segments connected by link
         :return:
         """
+        # NOC modules
         from noc.inv.models.networksegment import NetworkSegment
 
         return list(NetworkSegment.objects.filter(id__in=self.linked_segments))

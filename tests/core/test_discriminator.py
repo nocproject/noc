@@ -9,8 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.discriminator import LambdaDiscriminator
-from noc.core.discriminator import discriminator
+from noc.core.discriminator import LambdaDiscriminator, discriminator
 
 
 @pytest.mark.parametrize(

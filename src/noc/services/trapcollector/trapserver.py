@@ -6,17 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import codecs
 import logging
 import time
-import codecs
 import uuid
 
 # NOC modules
-from noc.core.ioloop.udpserver import UDPServer
-from noc.core.snmp.trap import decode_trap
 from noc.config import config
+from noc.core.ioloop.udpserver import UDPServer
 from noc.core.perf import metrics
-
+from noc.core.snmp.trap import decode_trap
 
 logger = logging.getLogger(__name__)
 

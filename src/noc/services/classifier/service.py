@@ -6,61 +6,62 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import time
-import os
+
+# Python modules
+import asyncio
+import datetime
 import enum
 import operator
+import os
 import re
 import socket
 import struct
-import asyncio
-import datetime
+import time
+from collections.abc import Callable
 from time import perf_counter
 from typing import Any
-from collections.abc import Callable
 
 # Third-party modules
+import bson
 import cachetools
 import orjson
-import bson
-
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import BaseService
-from noc.core.perf import metrics
-from noc.core.error import NOCError
-from noc.core.version import version
 from noc.core.debug import error_report
+from noc.core.error import NOCError
 from noc.core.escape import fm_unescape
+from noc.core.fm.event import Event, EventSeverity, EventSource, Target, Var
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.msgstream.message import Message
-from noc.core.fm.event import Event, EventSource, Target, Var, EventSeverity
 from noc.core.mx import MessageType
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.pool import Pool
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
+from noc.core.version import version
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
-from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
-from noc.services.classifier.ruleset import RuleSet
-from noc.services.classifier.patternset import PatternSet
-from noc.services.classifier.evfilter.dedup import DedupFilter
-from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
-from noc.services.classifier.sourcelookup import SourceLookup
+from noc.services.classifier.actionset import ActionSet, EventAction
 from noc.services.classifier.datastream import (
-    EventRuleDataStreamClient,
     EventConfigDataStreamClient,
+    EventRuleDataStreamClient,
     EventSourceStreamClient,
 )
-from noc.services.classifier.actionset import ActionSet, EventAction
 from noc.services.classifier.eventconfig import EventConfig
+from noc.services.classifier.evfilter.dedup import DedupFilter
+from noc.services.classifier.evfilter.suppress import SuppressFilter
+from noc.services.classifier.patternset import PatternSet
+from noc.services.classifier.ruleset import RuleSet
+from noc.services.classifier.sourcelookup import SourceLookup
 
 
 class EventMetrics(enum.Enum):
@@ -156,6 +157,7 @@ class ClassifierService(BaseService):
         """
         Get interface instance
         """
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 

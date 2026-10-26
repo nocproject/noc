@@ -7,13 +7,10 @@
 
 # Python modules
 import re
-
-# Third-party modules
 from typing import Any
 
 # NOC modules
 from noc.core.comp import smart_text
-
 
 rx_os_format = re.compile(
     r"(?P<repeat>[*]?)"

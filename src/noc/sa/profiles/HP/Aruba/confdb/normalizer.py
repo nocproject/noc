@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, deferable, match
 from noc.core.text import ranges_to_list
 
 rx_multi_split = re.compile(r"\d+([km])")

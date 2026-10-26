@@ -8,8 +8,7 @@
 # Python modules
 from collections.abc import AsyncIterable
 
-# NOC modules
-from .base import BaseChecker, CheckResult, Check, NODATA
+from .base import NODATA, BaseChecker, Check, CheckResult
 
 
 class NoDataChecker(BaseChecker):

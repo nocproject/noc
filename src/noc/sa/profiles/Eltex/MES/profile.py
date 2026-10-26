@@ -10,9 +10,9 @@ import re
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.validators import is_int
 from noc.core.snmp.render import render_mac
+from noc.core.validators import is_int
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Profile(BaseProfile):

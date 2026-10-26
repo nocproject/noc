@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class UDLDCheck(TopologyDiscoveryCheck):

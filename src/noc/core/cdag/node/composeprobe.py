@@ -14,9 +14,10 @@ from time import time_ns
 from pydantic import BaseModel
 
 # NOC modules
-from .probe import ProbeNode, ValueType, Category
-from .base import IN_REQUIRED
 from noc.core.expr import get_fn, get_vars
+
+from .base import IN_REQUIRED
+from .probe import Category, ProbeNode, ValueType
 
 
 class ComposeProbeNodeConfig(BaseModel):

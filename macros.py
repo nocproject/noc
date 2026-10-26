@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import json
 import logging
 import yaml
+from collections import defaultdict
 from pathlib import Path
-
 
 ROOT = Path.cwd()
 SRC = ROOT / "src" / "noc"

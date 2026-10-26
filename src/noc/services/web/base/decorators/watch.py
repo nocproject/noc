@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseAppDecorator
-from noc.sa.interfaces.base import BooleanParameter, DictListParameter, StringParameter
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.aaa.models.user import User
-from noc.crm.models.subscriber import Subscriber
 from noc.core.mx import get_subscriber_id
+from noc.crm.models.subscriber import Subscriber
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.sa.interfaces.base import BooleanParameter, DictListParameter, StringParameter
+
+from .base import BaseAppDecorator
 
 
 class WatchHandlerDecorator(BaseAppDecorator):

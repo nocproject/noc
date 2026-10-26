@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.script.http.base import HTTPError
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):

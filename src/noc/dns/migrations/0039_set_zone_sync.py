@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import uuid
 import datetime
+import uuid
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

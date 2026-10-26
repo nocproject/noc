@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
+from noc.main.models.pool import Pool
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class PoolApplication(ExtDocApplication):

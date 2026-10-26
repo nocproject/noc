@@ -6,19 +6,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
-from collections import defaultdict
 
+# Third-party modules
 # Third party modules
 from bson import ObjectId
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.hash import hash_int
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.core.hash import hash_int
+
 from .base import InvPlugin
 
 

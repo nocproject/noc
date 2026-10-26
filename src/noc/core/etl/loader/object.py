@@ -9,10 +9,11 @@
 from typing import Any
 
 # NOC modules
-from .base import BaseLoader
-from ..models.object import Object
 from noc.inv.models.object import Object as ObjectM
 from noc.inv.models.objectmodel import ObjectModel
+
+from ..models.object import Object
+from .base import BaseLoader
 
 LOST_AND_FOUND_UUID = "b0fae773-b214-4edf-be35-3468b53b03f2"
 

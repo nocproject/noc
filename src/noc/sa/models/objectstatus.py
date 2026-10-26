@@ -14,8 +14,8 @@ from threading import Lock
 # Third-party modules
 import cachetools
 from mongoengine.document import Document
-from mongoengine.fields import IntField, BooleanField, DateTimeField
-from pymongo import UpdateOne, ReadPreference
+from mongoengine.fields import BooleanField, DateTimeField, IntField
+from pymongo import ReadPreference, UpdateOne
 
 # NOC modules
 from noc.core.service.loader import get_service
@@ -144,6 +144,7 @@ class ObjectStatus(Document):
         Update statuses bulk
         :return:
         """
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         now = datetime.datetime.now()

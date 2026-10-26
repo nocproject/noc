@@ -5,15 +5,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import xml.etree.ElementTree as ET
-from typing import TextIO
 from collections.abc import Iterable
-from io import StringIO
 from copy import deepcopy
+from io import StringIO
 from itertools import zip_longest
 from pathlib import Path
+from typing import TextIO
 
 
 class SVG:

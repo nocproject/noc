@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.phone.models.phonerangeprofile import PhoneRangeProfile
 from noc.core.translation import ugettext as _
+from noc.phone.models.phonerangeprofile import PhoneRangeProfile
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class PhoneRangeProfileApplication(ExtDocApplication):

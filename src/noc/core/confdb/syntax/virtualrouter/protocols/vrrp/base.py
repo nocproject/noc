@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import ANY, INTEGER, IP_ADDRESS, UNIT_NAME, BOOL
+from ....patterns import ANY, BOOL, INTEGER, IP_ADDRESS, UNIT_NAME
 
 VRRP_SYNTAX = DEF(
     "vrrp",

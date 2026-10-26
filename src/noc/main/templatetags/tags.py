@@ -5,7 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
 from django import template
+
+# NOC modules
 from noc.core.html import tags_list
 
 register = template.Library()

@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
-import logging
 import datetime
-import os
 import hashlib
+import logging
+import os
 import pprint
+import sys
 import traceback
 import uuid
 from typing import Any
@@ -21,10 +21,10 @@ import orjson
 
 # NOC modules
 from noc.config import config
-from noc.core.version import version
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.version import version
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -50,6 +50,7 @@ if config.features.sentry:
         return event
 
     try:
+        # Third-party modules
         import sentry_sdk
 
         sentry_sdk.init(
@@ -276,6 +277,7 @@ def excepthook(t, v, tb):
     """
     Override default exception handler
     """
+    # Python modules
     import datetime  # Required for pytest
     import sys
 

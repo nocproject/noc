@@ -10,6 +10,7 @@ import csv
 
 # NOC modules
 from noc.core.comp import smart_text
+
 from .base import BaseParser
 
 

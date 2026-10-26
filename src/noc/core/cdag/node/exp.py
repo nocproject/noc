@@ -8,8 +8,7 @@
 # Python modules
 from math import exp
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class ExpNode(BaseCDAGNode):

@@ -10,6 +10,7 @@ from typing import Any
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+
 from .typing import PortItem
 
 

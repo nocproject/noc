@@ -7,8 +7,8 @@
 
 # Python modules
 import argparse
-import os
 import datetime
+import os
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -16,10 +16,9 @@ from collections.abc import Iterable
 import orjson
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.core.cdag.graph import CDAG
+from noc.core.management.base import BaseCommand
 from noc.core.service.loader import get_service
-
 
 SQL = """
      SELECT ts, labels, %s FROM %s
@@ -77,6 +76,7 @@ class Command(BaseCommand):
         Get source
         :return:
         """
+        # NOC modules
         from noc.core.mongo.connection import connect
         from noc.sa.models.managedobject import ManagedObject
 
@@ -92,6 +92,7 @@ class Command(BaseCommand):
         return source
 
     def input_from_device(self, source: str, metrics: list[str]):
+        # NOC modules
         from noc.core.clickhouse.connect import connection
         from noc.sla.models.slaprobe import SLAProbe
 
@@ -232,6 +233,7 @@ class Command(BaseCommand):
             f_output.close()
 
     def from_config_paths(self, paths: list[str]) -> CDAG:
+        # NOC modules
         from noc.core.mongo.connection import connect
 
         connect()
@@ -249,8 +251,9 @@ class Command(BaseCommand):
         return self.from_config_file(path)
 
     def from_metric_action(self, metric_action: str) -> CDAG:
-        from noc.core.mongo.connection import connect
+        # NOC modules
         from noc.core.cdag.factory.config import ConfigCDAGFactory
+        from noc.core.mongo.connection import connect
         from noc.pm.models.metricaction import MetricAction
 
         connect()
@@ -282,6 +285,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def from_config_file_json(cfg: str) -> CDAG:
+        # NOC modules
         from noc.core.cdag.factory.json import JSONCDAGFactory
 
         cdag = CDAG("test", {})
@@ -291,6 +295,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def from_config_file_yaml(cfg: str) -> CDAG:
+        # NOC modules
         from noc.core.cdag.factory.yaml import YAMLCDAGFactory
 
         cdag = CDAG("test", {})
@@ -299,8 +304,9 @@ class Command(BaseCommand):
         return cdag
 
     def from_metric_scope(self, scope_name: str) -> CDAG:
-        from noc.pm.models.metricscope import MetricScope
+        # NOC modules
         from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+        from noc.pm.models.metricscope import MetricScope
 
         ms = MetricScope.objects.filter(name=scope_name).first()
         if not ms:

@@ -6,23 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections.abc import Callable
 from http import HTTPStatus
+from typing import Any
 
 # Third-party modules
-from fastapi import HTTPException
-from django.db.models import Model, QuerySet, ForeignKey, Count
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models import Count, ForeignKey, Model, QuerySet
+from fastapi import HTTPException
 
 # NOC modules
-from noc.config import config
-from noc.models import get_model
 from noc.aaa.models.user import User
+from noc.config import config
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.typing import SupportsGetById
-from .base import BaseResourceAPI
+from noc.models import get_model
+
 from ...models.utils import SummaryItem
+from .base import BaseResourceAPI
 
 
 class ModelResourceAPI[T: Model](BaseResourceAPI[T]):

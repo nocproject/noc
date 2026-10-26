@@ -9,11 +9,13 @@
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import EnumField, StringField, BooleanField, DictField, DateTimeField
+from mongoengine.fields import BooleanField, DateTimeField, DictField, EnumField, StringField
+
+# NOC modules
+from noc.core.mongo.fields import PlainReferenceField
 
 # NOC Modules
 from noc.core.watchers.types import ObjectEffect, WatchItem
-from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 
 

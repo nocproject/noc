@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import glob
 import importlib
 import os
-import glob
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn, SectionRow
 from noc import settings
 from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SectionRow, SimpleReport, TableColumn
 
 
 class ReportLOC(SimpleReport):

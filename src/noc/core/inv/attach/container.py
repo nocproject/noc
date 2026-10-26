@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.inv.models.object import Object
+
 from ..result import Result
 
 

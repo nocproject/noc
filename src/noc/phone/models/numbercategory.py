@@ -5,21 +5,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 import re
 from threading import Lock
-import operator
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, IntField, EmbeddedDocumentListField
-import cachetools
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, IntField, StringField
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
+
 from .dialplan import DialPlan
 
 id_lock = Lock()

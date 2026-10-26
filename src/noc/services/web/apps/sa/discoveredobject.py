@@ -6,24 +6,24 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from mongoengine.queryset import Q
 from django.http import HttpRequest
+from mongoengine.queryset import Q
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.services.web.base.decorators.state import state_handler
+from noc.core.ip import IP
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_ipv4_prefix
 from noc.main.models.modeltemplate import ModelTemplate
-from noc.sa.models.discoveredobject import DiscoveredObject, CheckStatus, DataItem
 from noc.sa.interfaces.base import (
     ListOfParameter,
     StringListParameter,
     StringParameter,
 )
-from noc.wf.models.workflow import Workflow
+from noc.sa.models.discoveredobject import CheckStatus, DataItem, DiscoveredObject
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 from noc.wf.models.transition import Transition
-from noc.core.validators import is_ipv4_prefix
-from noc.core.ip import IP
-from noc.core.translation import ugettext as _
+from noc.wf.models.workflow import Workflow
 
 
 @state_handler

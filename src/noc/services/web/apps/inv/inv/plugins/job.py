@@ -9,9 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.feature import Feature
 from noc.inv.models.object import Object
 from noc.sa.models.job import Job
-from noc.core.feature import Feature
+
 from .base import InvPlugin
 
 

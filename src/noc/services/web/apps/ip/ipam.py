@@ -8,10 +8,12 @@
 # Python modules
 from operator import itemgetter
 
+# Third-party modules
 # Third-party modules modules
 import orjson
 from django.http import HttpRequest
 
+# NOC modules
 from noc.aaa.models.permission import Permission
 from noc.core.colors import get_colors
 from noc.core.ip import IP
@@ -21,8 +23,6 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.prefixbookmark import PrefixBookmark
 from noc.ip.models.vrf import VRF
 from noc.main.models.customfield import CustomField
-
-# NOC modules
 from noc.services.web.base.extapplication import ExtApplication, api
 
 

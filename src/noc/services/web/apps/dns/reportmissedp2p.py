@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.services.web.base.simplereport import SimpleReport
-from noc.ip.models.vrf import VRF
+# NOC modules
 from noc.core.translation import ugettext as _
+from noc.ip.models.vrf import VRF
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class Reportreportmissedp2p(SimpleReport):

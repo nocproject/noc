@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import enum
 import re
 from typing import Any
-import enum
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_int, is_ipv6, is_vlan
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class IfType(enum.Enum):

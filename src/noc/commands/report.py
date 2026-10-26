@@ -15,12 +15,12 @@ from typing import Any
 import orjson
 
 # NOC modules
+from noc.aaa.models.user import User
+from noc.core.datasources.base import data_source_loader
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.reporter.reportengine import ReportEngine
-from noc.core.reporter.types import RunParams, OutputType
-from noc.core.datasources.base import data_source_loader
-from noc.aaa.models.user import User
+from noc.core.reporter.types import OutputType, RunParams
 from noc.main.models.report import Report
 
 

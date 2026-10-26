@@ -12,8 +12,9 @@ The method is proposed by Kamil Krzyśków:
 https://github.com/ultrabug/mkdocs-static-i18n/issues/283#issuecomment-2213879576
 """
 
+# Third-party modules
 from mkdocs import plugins
-from mkdocs.structure.files import Files, File
+from mkdocs.structure.files import File, Files
 
 BLOG_FILES = None
 """

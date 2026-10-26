@@ -9,12 +9,13 @@
 import pytest
 
 # NOC modules
-from noc.core.fm.enum import AlarmAction, ActionStatus
+from noc.aaa.models.user import User
+from noc.core.fm.enum import ActionStatus, AlarmAction
 from noc.core.fm.request import ActionConfig
+from noc.services.correlator.actionlog import ActionLog
 from noc.services.correlator.alarmaction import AlarmActionRunner
 from noc.services.correlator.alarmjob import Item
-from noc.services.correlator.actionlog import ActionLog
-from noc.aaa.models.user import User
+
 from .utils import get_alarm_mock, get_tt_system_mock
 
 

@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.project.models.project import Project
 from noc.core.translation import ugettext as _
+from noc.project.models.project import Project
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class ProjectApplication(ExtModelApplication):

@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import random
-import datetime
 import asyncio
+import datetime
+import random
 
 # Third-party modules
 import pymongo

@@ -11,7 +11,6 @@ import pytest
 # NOC modules
 from noc.core.confdb.tokenizer.curly import CurlyTokenizer
 
-
 CFG1 = """# comment
 interfaces {
     ge-0/0/0 {

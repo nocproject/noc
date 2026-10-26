@@ -10,13 +10,14 @@ from functools import cached_property
 from pathlib import Path
 
 # Third-party modules
-from pyrad.packet import AccessAccept, AccessRequest
 from pyrad.client import Client, Timeout
 from pyrad.dictionary import Dictionary
+from pyrad.packet import AccessAccept, AccessRequest
 
 # NOC modules
 from noc.config import config
 from noc.core.comp import smart_bytes
+
 from .base import BaseAuthBackend
 
 

@@ -5,29 +5,32 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentListField
 from mongoengine.errors import ValidationError
-import cachetools
+from mongoengine.fields import EmbeddedDocumentListField, ListField, LongField, StringField
 
 # NOC modules
-from .vpnprofile import VPNProfile
-from noc.wf.models.state import State
-from noc.project.models.project import Project
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.wf.decorator import workflow
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.project.models.project import Project
+from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
+
+from .vpnprofile import VPNProfile
 
 id_lock = Lock()
 

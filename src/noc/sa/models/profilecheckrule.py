@@ -6,26 +6,26 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from pathlib import Path
-import re
 import operator
+import re
 from dataclasses import dataclass
+from pathlib import Path
 from threading import Lock
 from typing import Any, ClassVar, Literal
 
 # Third-party modules
 import cachetools
-from pymongo import ReadPreference
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField, IntField
 from mongoengine.errors import ValidationError
+from mongoengine.fields import IntField, ObjectIdField, StringField, UUIDField
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.sa.models.profile import Profile
-from noc.main.models.doccategory import category
-from noc.core.prettyjson import to_json
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.doccategory import category
+from noc.sa.models.profile import Profile
 
 rules_lock = Lock()
 

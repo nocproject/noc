@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import asyncio
+import datetime
 import uuid
 from collections import defaultdict
 from dataclasses import asdict
@@ -19,25 +19,25 @@ import orjson
 
 # NOC modules
 from noc.config import config
+from noc.core.checkers.base import register_checks
 from noc.core.error import NOCError
-from noc.core.service.base import BaseService
-from noc.core.perf import metrics
+from noc.core.fm.enum import EventSource, SyslogSeverity
+from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.mx import (
+    MX_H_VALUE_SPLITTER,
+    MX_LABELS,
+    MX_MESSAGE_TYPE,
+    MX_SHARDING_KEY,
     MX_STREAM,
     MessageType,
     get_mx_partitions,
-    MX_MESSAGE_TYPE,
-    MX_SHARDING_KEY,
-    MX_LABELS,
-    MX_H_VALUE_SPLITTER,
 )
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.fm.enum import EventSource, SyslogSeverity
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 from noc.core.service.stormprotection import StormProtection
-from noc.core.checkers.base import register_checks
-from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
-from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
+from noc.services.syslogcollector.sourceconfig import ManagedObjectData, SourceConfig
+from noc.services.syslogcollector.syslogserver import SyslogServer
 
 SYSLOGCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 

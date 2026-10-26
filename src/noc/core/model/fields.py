@@ -6,25 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from pickle import loads, dumps, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, dumps, loads
 
 # Third-party modules
 import psycopg2
-from pydantic import RootModel, ValidationError
-from psycopg2.extensions import adapt
-from django.db import models
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
-from django.db.models import CharField
-from django.contrib.postgres.fields import ArrayField
 from bson import ObjectId
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import models
+from django.db.models import CharField
+from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+from psycopg2.extensions import adapt
+from pydantic import RootModel, ValidationError
+
+# NOC modules
+from noc.core.comp import smart_text
 
 # NOC Modules
 from noc.core.ip import IP
-from noc.core.comp import smart_text
 from noc.core.validators import is_objectid
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.models import get_model
+from noc.sa.interfaces.base import MACAddressParameter
 
 
 class CIDRField(models.Field):

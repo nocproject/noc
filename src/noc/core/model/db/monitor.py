@@ -9,9 +9,9 @@
 import psycopg2.extensions
 
 # NOC modules
-from noc.core.span import Span
 from noc.core.hist.monitor import get_hist
 from noc.core.quantile.monitor import get_quantile
+from noc.core.span import Span
 
 
 class SpanCursor(psycopg2.extensions.cursor):

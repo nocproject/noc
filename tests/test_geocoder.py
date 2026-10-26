@@ -9,8 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.geocoder.base import BaseGeocoder
-from noc.core.geocoder.base import geocoder_loader
+from noc.core.geocoder.base import BaseGeocoder, geocoder_loader
 
 GEOCODERS = {"google", "yandex"}
 

@@ -5,29 +5,31 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 from typing import TYPE_CHECKING
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-import cachetools
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
-from noc.main.models.pool import Pool
-from noc.main.models.template import Template
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.core.model.fields import DocumentReferenceField
-from noc.core.model.decorator import on_delete_check, on_init, tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init, tree
+from noc.core.model.fields import DocumentReferenceField
+from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.template import Template
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -142,6 +144,7 @@ class AdministrativeDomain(NOCModel):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_nested_cache"), lock=lambda _: id_lock)
     def get_nested_ids(cls, administrative_domain):
+        # Third-party modules
         from django.db import connection
 
         if hasattr(administrative_domain, "id"):

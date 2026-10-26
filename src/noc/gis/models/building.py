@@ -5,34 +5,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from threading import Lock
 
 # Third-party modules
 import bson
+import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    IntField,
     BooleanField,
-    DictField,
     DateTimeField,
+    DictField,
+    EmbeddedDocumentListField,
+    IntField,
     LongField,
     ReferenceField,
-    EmbeddedDocumentListField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_save
-from noc.core.model.decorator import on_delete_check
-from .entrance import Entrance
-from .division import Division
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.remotesystem import RemoteSystem
+
+from .division import Division
+from .entrance import Entrance
 
 id_lock = Lock()
 

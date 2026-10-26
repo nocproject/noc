@@ -8,7 +8,6 @@
 # Third-party modules
 import pytest
 
-# NOC modules
 from .util import NodeCDAG
 
 # Sequence of zeroes

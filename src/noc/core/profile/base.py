@@ -6,23 +6,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import functools
+import re
 import warnings
-from itertools import product
-
-# Third-party modules
-from typing import Any, ClassVar, cast
 from collections.abc import Callable
+from itertools import product
+from typing import Any, ClassVar, cast
 
 # NOC modules
-from noc.core.ip import IPv4
-from noc.sa.interfaces.base import InterfaceTypeError
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.confdb.collator.typing import PortItem
 from noc.core.ecma48 import strip_control_sequences
 from noc.core.handler import get_handler
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.ip import IPv4
 from noc.core.text import alnum_key
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class BaseProfileMetaclass(type):

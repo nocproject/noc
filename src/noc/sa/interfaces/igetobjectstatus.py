@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import ListOfParameter, DictParameter, StringParameter, BooleanParameter
+
+from .base import BooleanParameter, DictParameter, ListOfParameter, StringParameter
 
 
 class IGetObjectStatus(BaseInterface):

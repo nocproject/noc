@@ -6,24 +6,25 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
+import asyncio
 import datetime
+import logging
 import random
 import threading
 import time
-import asyncio
 from time import perf_counter
 
 # Third-party modules
 import pymongo.errors
-from pymongo import DeleteOne, UpdateOne
 from gufo.loader import ImportPathResolver
+from pymongo import DeleteOne, UpdateOne
 
 # NOC modules
-from noc.core.mongo.connection import get_db
-from noc.core.threadpool import ThreadPoolExecutor
-from noc.core.perf import metrics
 from noc.config import config
+from noc.core.mongo.connection import get_db
+from noc.core.perf import metrics
+from noc.core.threadpool import ThreadPoolExecutor
+
 from .job import Job
 
 get_job_handler = ImportPathResolver[type[Job]]()
@@ -117,6 +118,7 @@ class Scheduler:
     def get_cache(self):
         with self.cache_lock:
             if not self.cache:
+                # NOC modules
                 from noc.core.cache.base import cache
 
                 self.cache = cache

@@ -6,17 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
+from noc.core.translation import ugettext as _
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.macblacklist import MACBlacklist
+from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.main.models.pool import Pool
-from noc.core.translation import ugettext as _
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 
 class DiscoveryIDCachePoisonDS(BaseDataSource):

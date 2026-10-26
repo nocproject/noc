@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Literal
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import Literal
 
 # Third-party modules
 import bson
 import orjson
-import uuid
 from pymongo import InsertOne
 
 # NOC modules

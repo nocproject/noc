@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ttsystem import TTSystem
 from noc.fm.models.ttsystem import TTSystem as TTSystemModel
+
+from ..models.ttsystem import TTSystem
+from .base import BaseLoader
 
 
 class TTMapLoader(BaseLoader):

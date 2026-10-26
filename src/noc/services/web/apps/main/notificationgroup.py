@@ -12,23 +12,23 @@ import datetime
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.services.web.base.extapplication import PermitLogged
-from noc.core.mx import NOTIFICATION_METHODS
-from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.template import Template
+from noc.aaa.models.user import User
+from noc.core.mx import NOTIFICATION_METHODS
+from noc.core.translation import ugettext as _
 from noc.main.models.messageroute import MessageRoute
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
 from noc.sa.interfaces.base import (
+    DateTimeParameter,
     ListOfParameter,
     ModelParameter,
-    UnicodeParameter,
-    DateTimeParameter,
     StringParameter,
+    UnicodeParameter,
 )
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extapplication import PermitLogged
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 
 
 class NotificationGroupApplication(ExtModelApplication):

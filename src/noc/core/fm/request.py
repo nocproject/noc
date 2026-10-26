@@ -15,9 +15,10 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 
 # NOC modules
-from .enum import AlarmAction
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.fm.models.alarmwatch import Effect
+
+from .enum import AlarmAction
 
 
 class WhenCondition(enum.Enum):

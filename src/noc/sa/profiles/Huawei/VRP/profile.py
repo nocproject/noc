@@ -7,9 +7,8 @@
 
 # Python modules
 import re
-from itertools import dropwhile
 from collections import defaultdict
-from itertools import zip_longest
+from itertools import dropwhile, zip_longest
 
 # Third-party modules
 import numpy as np

@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.core.migration.base import BaseMigration
+# Third-party modules
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import CharField
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

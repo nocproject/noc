@@ -6,11 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.db import connection
 import pytest
+from django.db import connection
 
-# NOC modules
-from .util import get_models, get_documents
+from .util import get_documents, get_models
 
 
 @pytest.mark.parametrize("model", get_models())

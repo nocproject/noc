@@ -8,21 +8,22 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    DictField,
     BooleanField,
-    ReferenceField,
+    DictField,
+    IntField,
     LongField,
+    ReferenceField,
+    StringField,
 )
 from mongoengine.signals import post_save
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from .street import Street
-from .building import Building
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.bi.decorator import bi_sync
+from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.remotesystem import RemoteSystem
+
+from .building import Building
+from .street import Street
 
 
 @bi_sync

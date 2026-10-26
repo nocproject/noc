@@ -11,23 +11,24 @@ from collections import defaultdict
 
 # Third-party modules
 import orjson
-from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
+from pymongo import ReadPreference
 
 # NOC modules
-from .base import BaseExtractor
-from noc.core.text import ch_escape
-from noc.core.etl.bi.stream import Stream
-from noc.core.clickhouse.connect import connection
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.servicesummary import ServiceSummary
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
+from noc.core.clickhouse.connect import connection
+from noc.core.etl.bi.stream import Stream
+from noc.core.text import ch_escape
+from noc.fm.models.outage import Outage
+from noc.fm.models.reboot import Reboot
+from noc.fm.models.uptime import Uptime
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.fm.models.uptime import Uptime
-from noc.fm.models.reboot import Reboot
-from noc.fm.models.outage import Outage
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
+
+from .base import BaseExtractor
 
 
 class ManagedObjectsExtractor(BaseExtractor):

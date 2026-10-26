@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from itertools import chain
+
 # Third-party modules
 from django.db import connection
 from psycopg2.extras import execute_values
-from itertools import chain
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

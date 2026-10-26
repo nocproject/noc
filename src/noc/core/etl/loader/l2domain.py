@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.l2domain import L2Domain
 from noc.vc.models.l2domain import L2Domain as L2DomainModel
+
+from ..models.l2domain import L2Domain
+from .base import BaseLoader
 
 
 class L2DomainLoader(BaseLoader):

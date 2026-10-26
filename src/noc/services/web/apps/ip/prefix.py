@@ -9,17 +9,17 @@
 from operator import attrgetter
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.ip.models.vrf import VRF
+from noc.core.ip import IP
+from noc.core.translation import ugettext as _
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.prefixaccess import PrefixAccess
-from noc.core.translation import ugettext as _
+from noc.ip.models.vrf import VRF
 from noc.sa.interfaces.base import ModelParameter, PrefixParameter
-from noc.core.ip import IP
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 
 
 @state_handler

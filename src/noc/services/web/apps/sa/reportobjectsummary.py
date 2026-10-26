@@ -10,13 +10,13 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
+from noc.core.translation import ugettext as _
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
-from noc.core.translation import ugettext as _
+from noc.inv.models.platform import Platform
+from noc.sa.models.profile import Profile
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.simplereport import PredefinedReport, SimpleReport, TableColumn
 
 report_types = [
     ("profile", _("By Profile")),

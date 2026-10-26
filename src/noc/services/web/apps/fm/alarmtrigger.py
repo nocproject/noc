@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmtrigger import AlarmTrigger
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class AlarmTriggerApplication(ExtModelApplication):

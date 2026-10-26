@@ -9,14 +9,13 @@
 import datetime
 
 # Third-party modules
-from pydantic.networks import IPvAnyAddress
 from pydantic import field_validator
+from pydantic.networks import IPvAnyAddress
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
-from .ipprefix import IPPrefix
 from .ipaddressprofile import IPAddressProfile
+from .ipprefix import IPPrefix
+from .typing import Reference
 
 
 class IPAddress(BaseModel):

@@ -12,13 +12,12 @@ import socket
 import pytest
 
 # NOC modules
+from noc.config import config
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
+from noc.core.script.snmp.base import SNMP
 from noc.core.snmp.version import SNMP_v2c
 from noc.sa.interfaces.igetdict import IGetDict
-from noc.core.script.snmp.base import SNMP
-from noc.core.mib import mib
-from noc.config import config
-
 
 SNMP_HOST = config.tests.snmpd_host
 SNMP_PORT = config.tests.snmpd_port

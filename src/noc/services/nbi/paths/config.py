@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from fastapi import APIRouter, Path, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException, Path
 from fastapi.responses import PlainTextResponse
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
+
+from ..base import API_ACCESS_HEADER, FORBIDDEN_MESSAGE, NBIAPI
 
 router = APIRouter()
 

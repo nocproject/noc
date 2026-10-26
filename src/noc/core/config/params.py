@@ -8,14 +8,14 @@
 # Python modules
 import itertools
 import logging
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
-from collections.abc import Iterable
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 # NOC modules
-from noc.core.validators import is_int, is_ipv4, is_uuid
 from noc.core.comp import smart_text
+from noc.core.validators import is_int, is_ipv4, is_uuid
 
 logger = logging.getLogger(__name__)
 
@@ -332,6 +332,7 @@ class ServiceParameter(BaseParameter[list[ServiceItem]]):
 
     def __get__(self, _instance, _owner) -> list[ServiceItem]:
         if not self.value:
+            # NOC modules
             from noc.core.ioloop.util import run_sync
 
             run_sync(self.resolve)
@@ -347,8 +348,9 @@ class ServiceParameter(BaseParameter[list[ServiceItem]]):
         self.services = [smart_text(value)]
 
     async def resolve(self) -> None:
-        from noc.core.dcs.util import resolve_async
+        # NOC modules
         from noc.core.dcs.error import ResolutionError
+        from noc.core.dcs.util import resolve_async
 
         if isinstance(self.services, list) and ":" in self.services[0]:
             self.value = [ServiceItem(*i.rsplit(":", 1)) for i in self.services]

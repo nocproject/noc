@@ -9,16 +9,15 @@
 # Python modules
 import re
 from collections import defaultdict
-from itertools import compress, chain
-
+from itertools import chain, compress
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.validators import is_vlan
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
 from noc.core.text import ranges_to_list
+from noc.core.validators import is_vlan
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class Script(BaseScript):

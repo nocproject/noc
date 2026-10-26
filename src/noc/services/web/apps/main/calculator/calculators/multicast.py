@@ -10,6 +10,7 @@ from django import forms
 
 # NOC modules
 from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
+
 from .base import BaseCalculator
 
 

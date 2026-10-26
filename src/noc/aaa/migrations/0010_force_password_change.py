@@ -9,8 +9,8 @@
 import datetime
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.config import config
+from noc.core.migration.base import BaseMigration
 from noc.core.password.hasher import check_password
 
 

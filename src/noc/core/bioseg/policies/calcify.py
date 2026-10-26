@@ -9,9 +9,10 @@
 from typing import Any
 
 # NOC modules
-from noc.inv.models.link import Link
-from noc.inv.models.interface import Interface
 from noc.core.text import alnum_key
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+
 from .base import BaseBioSegPolicy
 
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.yaml import YAMLCDAGFactory
+from noc.core.cdag.graph import CDAG
 
 CONFIG = """
 nodes:
@@ -228,6 +228,7 @@ def test_case() -> None:
 
 
 def setup_module(_module):
+    # NOC modules
     from noc.core.cdag.node.probe import ProbeNode
 
     ProbeNode.set_convert(
@@ -244,6 +245,7 @@ def setup_module(_module):
 
 
 def teardown_module(_module):
+    # NOC modules
     from noc.core.cdag.node.probe import ProbeNode
 
     ProbeNode.reset_convert()

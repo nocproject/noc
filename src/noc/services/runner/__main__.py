@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.runner.service import RunnerService
-
 
 if __name__ == "__main__":
     RunnerService().start()

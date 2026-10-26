@@ -5,34 +5,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
+import time
 from threading import Lock
 from typing import Any
-import time
 
 # Third-party modules
+from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
+    BinaryField,
     DateTimeField,
+    DictField,
+    EmbeddedDocumentListField,
     IntField,
     ListField,
-    DictField,
     ObjectIdField,
-    BinaryField,
-    EmbeddedDocumentListField,
+    StringField,
 )
-from bson import ObjectId
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.cache.decorator import cachedmethod
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, RawDictField
-from .eventlog import EventLog
+from noc.sa.models.managedobject import ManagedObject
+
 from .eventclass import EventClass
+from .eventlog import EventLog
 
 id_lock = Lock()
 
@@ -83,7 +86,10 @@ class ActiveEvent(Document):
         Move to new queue for reclassification
         @todo: Rename method to *reclassify*
         """
+        # Third-party modules
         import orjson
+
+        # NOC modules
         from noc.core.service.loader import get_service
 
         # if message is None:
@@ -283,5 +289,5 @@ class ActiveEvent(Document):
 
 
 # Avoid circular references
-from .failedevent import FailedEvent
 from .archivedevent import ArchivedEvent
+from .failedevent import FailedEvent

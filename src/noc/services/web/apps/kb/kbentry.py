@@ -6,18 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import mimetypes
 import re
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
-import mimetypes
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.kb.models.kbentry import KBEntry
-from noc.kb.models.kbentryhistory import KBEntryHistory
-from noc.kb.models.kbentryattachment import KBEntryAttachment
 from noc.core.translation import ugettext as _
+from noc.kb.models.kbentry import KBEntry
+from noc.kb.models.kbentryattachment import KBEntryAttachment
+from noc.kb.models.kbentryhistory import KBEntryHistory
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 
 
 class KBEntryApplication(ExtModelApplication):

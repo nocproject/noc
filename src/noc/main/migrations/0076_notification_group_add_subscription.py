@@ -11,12 +11,12 @@ from collections import defaultdict
 
 # Third-party modules
 import orjson
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
-from noc.core.model.fields import DocumentReferenceField
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration(BaseMigration):

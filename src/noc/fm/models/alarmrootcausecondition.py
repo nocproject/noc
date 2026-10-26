@@ -10,7 +10,7 @@ from typing import Any
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, IntField, DictField
+from mongoengine.fields import DictField, IntField, StringField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField

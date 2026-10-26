@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ipaddress import IPAddress
 from noc.ip.models.address import Address
+
+from ..models.ipaddress import IPAddress
+from .base import BaseLoader
 
 
 class IPAddressLoader(BaseLoader):

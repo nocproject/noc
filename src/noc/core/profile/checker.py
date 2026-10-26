@@ -10,23 +10,22 @@ import logging
 import operator
 import re
 from collections import defaultdict
-from threading import Lock
 from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
 import cachetools
 from pymongo import ReadPreference
 
-
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
 from noc.core.error import NOCError
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.models.profile import Profile
 from noc.sa.models.profilecheckrule import ProfileCheckRule
-from noc.core.mib import mib
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 
 rules_lock = Lock()
 

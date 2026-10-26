@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
-from noc.core.confdb.syntax.patterns import IP_ADDRESS, AS_NUM
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, deferable, match
+from noc.core.confdb.syntax.patterns import AS_NUM, IP_ADDRESS
 
 
 class JunOSNormalizer(BaseNormalizer):

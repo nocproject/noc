@@ -11,6 +11,7 @@ from collections.abc import Iterator
 
 # NOC modules
 from noc.core.validators import is_int
+
 from .line import LineTokenizer
 
 

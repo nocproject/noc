@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.matcher import match
+from noc.core.script.scheme import PROTOCOLS
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.script.scheme import PROTOCOLS
-from noc.core.matcher import match
+
 from .base import BaseApplicator
 
 

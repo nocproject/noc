@@ -5,8 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from threading import Lock
 
@@ -18,16 +20,15 @@ from django.db.models.query_utils import Q
 from pydantic import BaseModel, RootModel, field_validator
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.core.model.decorator import on_save
-from noc.core.cache.base import cache
-from noc.core.model.decorator import on_delete_check
-from noc.core.model.fields import DocumentReferenceField, PydanticField
 from noc.core.bi.decorator import bi_sync
-from noc.main.models.handler import Handler
+from noc.core.cache.base import cache
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.fields import DocumentReferenceField, PydanticField
 from noc.core.translation import ugettext as _
+from noc.main.models.handler import Handler
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 

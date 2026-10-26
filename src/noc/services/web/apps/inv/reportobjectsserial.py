@@ -6,20 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.http import HttpRequest
 from django import forms
+from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
+from noc.inv.models.firmware import Firmware
 from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.vendor import Vendor
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.services.web.base.reportdatasources.report_objectattributes import ReportObjectAttributes
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class ReportForm(forms.Form):

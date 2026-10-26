@@ -9,7 +9,7 @@
 import argparse
 
 # NOC modules
-from noc.core.inv.codec import decode, encode, InvData
+from noc.core.inv.codec import InvData, decode, encode
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.object import Object

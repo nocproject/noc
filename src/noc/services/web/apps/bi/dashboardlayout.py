@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
 from noc.bi.models.dashboardlayout import DashboardLayout
 from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class DashboardLayoutApplication(ExtDocApplication):

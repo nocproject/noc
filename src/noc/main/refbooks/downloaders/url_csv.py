@@ -12,8 +12,9 @@ import gzip
 from io import StringIO
 
 # NOC modules
-from noc.core.http.sync import HttpClient
 from noc.core.comp import smart_text
+from noc.core.http.sync import HttpClient
+
 from .base import BaseDownloader
 
 

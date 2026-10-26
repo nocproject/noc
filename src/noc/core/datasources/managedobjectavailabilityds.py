@@ -6,19 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import datetime
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 import orjson
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.mongo.connection import get_db
 from noc.fm.models.reboot import Reboot
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectStatus
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 OUTAGES_SQL = """
     SELECT managed_object, min(start) as min_start, max(stop) as max_stop,
@@ -103,6 +105,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
 
     @staticmethod
     def get_outages_ch(start_date, stop_date):
+        # NOC modules
         from noc.core.clickhouse.connect import connection
 
         ch = connection()

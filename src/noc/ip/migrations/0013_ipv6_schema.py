@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.model.fields import AutoCompleteTagsField, CIDRField, INETField, MACField
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import AutoCompleteTagsField, CIDRField, INETField, MACField
 
 
 class Migration(BaseMigration):

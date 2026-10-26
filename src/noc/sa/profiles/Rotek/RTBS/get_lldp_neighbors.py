@@ -9,8 +9,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

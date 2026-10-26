@@ -6,29 +6,29 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from mongoengine import Q
 from django.http import HttpRequest
+from mongoengine import Q
 
 # NOC modules
-from noc.services.web.base.decorators.state import state_handler
-from noc.services.web.base.decorators.caps import capabilities_handler
-from noc.services.web.base.extapplication import api
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.sa.interfaces.base import (
-    StringParameter,
-    ListOfParameter,
-    DocumentParameter,
-    ModelParameter,
-)
-from noc.project.models.project import Project
-from noc.core.text import alnum_key, list_to_ranges
-from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.text import alnum_key, list_to_ranges
+from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.subinterface import SubInterface
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import (
+    DocumentParameter,
+    ListOfParameter,
+    ModelParameter,
+    StringParameter,
+)
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.decorators.caps import capabilities_handler
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extapplication import api
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 @capabilities_handler

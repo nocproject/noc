@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule, CheckItem
 from noc.core.translation import ugettext as _
+from noc.sa.models.objectdiscoveryrule import CheckItem, ObjectDiscoveryRule
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class ObjectDiscoveryRuleApplication(ExtDocApplication):

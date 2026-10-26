@@ -6,31 +6,32 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
-import os
-import logging
-import re
 import csv
-import time
-import shutil
+import datetime
 import functools
+import logging
+import os
+import re
+import shutil
+import time
 from collections import defaultdict
+from collections.abc import Iterable
 from io import StringIO, TextIOWrapper
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from gufo.loader import Loader
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.fileutils import safe_rewrite
 from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.debug import error_report
 from noc.core.etl.compression import compressor
 from noc.core.etl.models.typing import MappingItem
-from noc.models import get_model_id, LABEL_MODELS
+from noc.core.fileutils import safe_rewrite
+from noc.core.log import PrefixLoggerAdapter
+from noc.models import LABEL_MODELS, get_model_id
+
 from ..models.base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -137,6 +138,7 @@ class BaseLoader:
         if not self.model:
             return
         if self.is_document:
+            # Third-party modules
             import mongoengine.errors
 
             unique_fields = [
@@ -191,6 +193,7 @@ class BaseLoader:
         self.logger.info("%d mappings restored", len(self.mappings))
 
     def load_wf_state_mappings(self):
+        # NOC modules
         from noc.wf.models.state import State
 
         self.logger.info("Loading Workflow states")
@@ -206,6 +209,7 @@ class BaseLoader:
             remote_system: Remote System name
             name: Loader name
         """
+        # NOC modules
         from noc.main.models.remotesystem import RemoteSystem
 
         rs = RemoteSystem.get_by_name(remote_system)
@@ -479,6 +483,7 @@ class BaseLoader:
             self.logger.warning("Integrity error: %s", e)
             assert self.unique_field or self.unique_index
             if not self.is_document:
+                # Third-party modules
                 from django.db import connection
 
                 connection._rollback()
@@ -534,6 +539,7 @@ class BaseLoader:
             self.logger.warning("Integrity error: %s", e)
             assert self.unique_field or self.unique_index
             if not self.is_document:
+                # Third-party modules
                 from django.db import connection
 
                 connection._rollback()
@@ -669,6 +675,7 @@ class BaseLoader:
             o.set_state(state, changed_date)
 
     def ensure_labels(self, labels: list[str] | None):
+        # NOC modules
         from noc.main.models.label import Label
 
         if not labels:
@@ -761,6 +768,7 @@ class BaseLoader:
 
     @classmethod
     def clean_object_mappings(cls, value: list[MappingItem]) -> dict[Any, str] | None:
+        # NOC modules
         from noc.main.models.remotesystem import RemoteSystem
 
         r = {}
@@ -888,8 +896,11 @@ class BaseLoader:
         self.mappings[str(rv)] = str(lv)
 
     def update_document_clean_map(self):
-        from mongoengine.fields import BooleanField, ReferenceField, EmbeddedDocumentListField
-        from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+        # Third-party modules
+        from mongoengine.fields import BooleanField, EmbeddedDocumentListField, ReferenceField
+
+        # NOC modules
+        from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 
         self.logger.debug("Update Document clean map")
         for fn, ft in self.model._fields.items():
@@ -927,7 +938,10 @@ class BaseLoader:
                     )
 
     def update_model_clean_map(self):
+        # Third-party modules
         from django.db.models import BooleanField, ForeignKey
+
+        # NOC modules
         from noc.core.model.fields import DocumentReferenceField
 
         self.logger.debug("Update Model clean map")

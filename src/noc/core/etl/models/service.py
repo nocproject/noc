@@ -12,12 +12,13 @@ from datetime import datetime
 from pydantic import ConfigDict
 
 # NOC modules
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
+
 from .base import BaseModel, _BaseModel
-from .typing import Reference, MappingItem, CapsItem
 from .resourcegroup import ResourceGroup
 from .serviceprofile import ServiceProfile
 from .subscriber import Subscriber
-from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
+from .typing import CapsItem, MappingItem, Reference
 
 
 class Instance(_BaseModel):

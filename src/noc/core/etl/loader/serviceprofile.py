@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.serviceprofile import ServiceProfile
 from noc.sa.models.serviceprofile import ServiceProfile as ServiceProfileModel
 from noc.wf.models.workflow import Workflow
+
+from ..models.serviceprofile import ServiceProfile
+from .base import BaseLoader
 
 DEFAULT_WORKFLOW_NAME = "Service Default"
 

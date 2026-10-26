@@ -7,9 +7,8 @@
 
 # Python modules
 
-# NOC modules
-from ..typing import FactoryCtx
 from ..graph import CDAG
+from ..typing import FactoryCtx
 
 
 class BaseCDAGFactory:

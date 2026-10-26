@@ -10,10 +10,11 @@ from django.db.models import Model
 from mongoengine.document import Document
 
 # NOC modules
-from noc.main.models.label import Label
 from noc.inv.models.resourcegroup import ResourceGroup
-from ..models.utils import Reference
+from noc.main.models.label import Label
+
 from ..models.label import LabelItem
+from ..models.utils import Reference
 
 
 def get_reference(item: Model | Document | None) -> Reference | None:

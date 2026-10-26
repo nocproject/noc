@@ -8,7 +8,6 @@
 # Python modules
 from collections.abc import Iterator
 
-
 # Third-party modules
 from gufo.loader import Loader
 

@@ -5,36 +5,38 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import datetime
 import logging
 import operator
 from threading import Lock
-import datetime
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    ReferenceField,
     BooleanField,
     EmbeddedDocumentListField,
+    IntField,
+    ReferenceField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
+from noc.config import config
+from noc.core.defer import call_later
+from noc.core.mongo.fields import ForeignKeyField
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.ttsystem import TTSystem
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.template import Template
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.mongo.fields import ForeignKeyField
-from noc.core.defer import call_later
-from noc.config import config
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
+from noc.sa.models.administrativedomain import AdministrativeDomain
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
@@ -172,6 +174,7 @@ class AlarmEscalation(Document):
                         prev_escalation=prev_escalation,
                     )
                 else:
+                    # NOC modules
                     from noc.services.escalator.escalation import escalate
 
                     escalate(

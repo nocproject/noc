@@ -6,15 +6,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.interface.base import BaseInterface
 from noc.core.bgp import BGPState
+from noc.core.interface.base import BaseInterface
+
 from .base import (
-    DictListParameter,
-    StringParameter,
-    IntParameter,
     BooleanParameter,
-    IPParameter,
+    DictListParameter,
     IntEnumParameter,
+    IntParameter,
+    IPParameter,
+    StringParameter,
 )
 
 

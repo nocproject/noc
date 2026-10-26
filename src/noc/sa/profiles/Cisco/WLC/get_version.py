@@ -5,10 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
+
+# NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.core.mib import mib
 
 rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 rx_inv = re.compile(r"^PID:\s+(?P<platform>\S+)\,", re.MULTILINE | re.DOTALL)

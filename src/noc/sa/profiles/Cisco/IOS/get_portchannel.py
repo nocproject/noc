@@ -5,12 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
-from noc.sa.interfaces.igetportchannel import IGetPortchannel
 from noc.core.text import parse_table
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 
 
 class Script(BaseScript):

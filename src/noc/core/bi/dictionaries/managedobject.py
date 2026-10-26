@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField, UInt64Field
-from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.text import ch_escape
+from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 
 
 class ManagedObject(DictionaryModel):

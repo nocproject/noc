@@ -7,12 +7,12 @@
 
 # NOC modules
 from noc.core.datastream.base import DataStream
-from noc.main.models.pool import Pool
+from noc.core.diagnostic.hub import SYSLOG_DIAG
 from noc.main.models.label import Label
+from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
-from noc.core.diagnostic.hub import SYSLOG_DIAG
 
 
 class CfgSyslogDataStream(DataStream):
@@ -147,6 +147,7 @@ class CfgSyslogDataStream(DataStream):
 
     @classmethod
     def _get_loopback_addresses(cls, mo_id):
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.inv.models.subinterface import SubInterface
 
@@ -174,6 +175,7 @@ class CfgSyslogDataStream(DataStream):
 
     @classmethod
     def _get_all_addresses(cls, mo_id):
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         r = []

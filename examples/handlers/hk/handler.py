@@ -2,9 +2,9 @@
 import re
 
 # NOC modules
-from noc.core.mx import send_message, MessageType
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.mx import MessageType, send_message
 from noc.inv.models.subinterface import SubInterface
+from noc.sa.models.managedobject import ManagedObject
 
 MGMT_VLAN_CAPS = "Management | VlanID"
 IPv4 = "IPv4"

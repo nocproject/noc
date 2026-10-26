@@ -8,6 +8,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
+
 from .profile import PolusParam
 
 

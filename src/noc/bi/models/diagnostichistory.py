@@ -6,16 +6,16 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.objectdiagnosticconfig import ObjectDiagnosticConfig
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
     DateField,
     DateTimeField,
     ReferenceField,
     StringField,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.objectdiagnosticconfig import ObjectDiagnosticConfig
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

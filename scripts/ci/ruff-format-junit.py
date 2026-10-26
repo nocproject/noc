@@ -8,10 +8,10 @@
 
 # Python modules
 import argparse
-import sys
-from dataclasses import dataclass
 import os
+import sys
 from collections.abc import Iterable
+from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
 

@@ -11,6 +11,7 @@ import sys
 
 
 def check_pg():
+    # Third-party modules
     import psycopg2
     from django.db import connection
 
@@ -22,8 +23,11 @@ def check_pg():
 
 
 def check_mongo():
-    from noc.core.mongo.connection import get_db
+    # Third-party modules
     import pymongo
+
+    # NOC modules
+    from noc.core.mongo.connection import get_db
 
     try:
         db = get_db()

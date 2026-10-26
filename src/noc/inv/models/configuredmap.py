@@ -5,38 +5,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
 import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    ListField,
-    IntField,
-    ObjectIdField,
-    ReferenceField,
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
 )
 
 # NOC modules
-from noc.core.topology.types import TopologyNode, Portal
-from noc.core.topology.base import loader as topo_loader
-from noc.core.topology.types import Layout
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.main.models.imagestore import ImageStore
-from noc.main.models.glyph import Glyph
+from noc.core.topology.base import loader as topo_loader
+from noc.core.topology.types import Layout, Portal, TopologyNode
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.cpe import CPE
+from noc.inv.models.link import Link
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
-from noc.inv.models.link import Link
-from noc.inv.models.cpe import CPE
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.glyph import Glyph
+from noc.main.models.imagestore import ImageStore
+from noc.sa.models.managedobject import ManagedObject
 
 
 class AlarmFilter(EmbeddedDocument):
@@ -174,6 +173,7 @@ class NodeItem(EmbeddedDocument):
         return r
 
     def clean(self):
+        # NOC modules
         from noc.inv.models.mapsettings import MapSettings
 
         if self.map_portal:

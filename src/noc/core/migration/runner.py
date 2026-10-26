@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 from collections.abc import Iterator
 
 # NOC modules
 from noc.core.mongo.connection import get_db
 from noc.settings import INSTALLED_APPS
+
 from .base import BaseMigration, migration_loaders
 
 
@@ -107,6 +108,7 @@ class MigrationRunner:
         Convert south_migrationhistory
         :return:
         """
+        # Third-party modules
         from django.db import connection
 
         cursor = connection.cursor()

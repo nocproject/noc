@@ -5,33 +5,35 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
+# Python modules
 import datetime
-from contextvars import ContextVar
-from contextlib import contextmanager
-import operator
-from threading import Lock
-from collections.abc import Iterator
 import logging
+import operator
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from threading import Lock
 
 # Third-party modules
 import cachetools
-from django.db import models
-from django.core import validators
 from django.contrib.postgres.fields import ArrayField
+from django.core import validators
+from django.db import models
 
 # NOC modules
 from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
-from noc.core.translation import ugettext as _
-from noc.settings import LANGUAGES, LANGUAGE_CODE
-from noc.main.models.avatar import Avatar
-from noc.core.password.hasher import UNUSABLE_PASSWORD, check_password, make_password, must_change
-from noc.core.password.check import check_password_policy
 from noc.core.mx import NotificationContact
+from noc.core.password.check import check_password_policy
+from noc.core.password.hasher import UNUSABLE_PASSWORD, check_password, make_password, must_change
+from noc.core.translation import ugettext as _
+from noc.main.models.avatar import Avatar
+from noc.settings import LANGUAGE_CODE, LANGUAGES
+
 from .group import Group
 
 id_lock = Lock()

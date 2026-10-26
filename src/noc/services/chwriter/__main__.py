@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.chwriter.service import CHWriterService
-
 
 if __name__ == "__main__":
     CHWriterService().start()

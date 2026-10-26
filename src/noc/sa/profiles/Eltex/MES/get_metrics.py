@@ -8,7 +8,9 @@
 # Python Modules
 
 # NOC Modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics, MetricConfig
+# NOC modules
+from noc.sa.profiles.Generic.get_metrics import MetricConfig, metrics
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
 
 class Script(GetMetricsScript):

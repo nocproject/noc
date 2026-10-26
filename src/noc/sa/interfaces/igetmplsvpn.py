@@ -7,15 +7,16 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+from noc.core.vpn import get_vpn_id
+
 from .base import (
-    ListOfParameter,
+    BooleanParameter,
     DictParameter,
     InterfaceNameParameter,
-    StringParameter,
-    BooleanParameter,
+    ListOfParameter,
     RDParameter,
+    StringParameter,
 )
-from noc.core.vpn import get_vpn_id
 
 
 class IGetMPLSVPN(BaseInterface):

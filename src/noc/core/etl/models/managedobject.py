@@ -12,19 +12,18 @@ from enum import StrEnum
 # Third-party modules
 from pydantic import ConfigDict, IPvAnyAddress, field_validator
 
-# NOC modules
-from .base import BaseModel
-from .typing import Reference, MappingItem, CapsItem, DomainName
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
-from .object import Object
+from .base import BaseModel
+from .ipvrf import IPVRF
+from .l2domain import L2Domain
 from .managedobjectprofile import ManagedObjectProfile
 from .networksegment import NetworkSegment
-from .resourcegroup import ResourceGroup
-from .l2domain import L2Domain
-from .ipvrf import IPVRF
-from .ttsystem import TTSystem
+from .object import Object
 from .project import Project
+from .resourcegroup import ResourceGroup
+from .ttsystem import TTSystem
+from .typing import CapsItem, DomainName, MappingItem, Reference
 
 
 class SourceType(StrEnum):

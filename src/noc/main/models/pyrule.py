@@ -10,8 +10,8 @@ import datetime
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField
 from mongoengine.errors import ValidationError
+from mongoengine.fields import DateTimeField, StringField
 
 
 class PyRule(Document):

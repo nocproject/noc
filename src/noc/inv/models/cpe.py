@@ -5,51 +5,53 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import datetime
 import logging
+import operator
+from collections.abc import Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import bson
 import cachetools
-from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
     BooleanField,
     DateTimeField,
     DictField,
     EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    StringField,
 )
-from mongoengine.errors import ValidationError
+from pymongo import ReadPreference, UpdateOne
 
 # NOC modules
-from noc.core.wf.decorator import workflow
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
-from noc.core.change.decorator import change
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
-from noc.core.validators import is_ipv4
-from noc.core.model.decorator import on_delete_check
-from noc.core.topology.types import ShapeOverlay, TopologyNode, TopologyNodeType
 from noc.core.caps.decorator import capabilities
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check
 from noc.core.model.dynamicprofile import dynamic_profile
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.topology.types import ShapeOverlay, TopologyNode, TopologyNodeType
+from noc.core.validators import is_ipv4
+from noc.core.wf.decorator import workflow
+from noc.inv.models.capsitem import CapsItem
+from noc.inv.models.cpeprofile import CPEProfile
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.igetcpe import IGetCPE
-from noc.wf.models.state import State
-from noc.inv.models.cpeprofile import CPEProfile
-from noc.inv.models.capsitem import CapsItem
 from noc.pm.models.metricrule import MetricRule
-from noc.config import config
+from noc.sa.interfaces.igetcpe import IGetCPE
+from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
 
 id_lock = Lock()
 CPE_TYPES = IGetCPE.returns.element.attrs["type"].choices

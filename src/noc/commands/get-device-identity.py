@@ -9,11 +9,11 @@
 import argparse
 
 # NOC modules
+from noc.core.error import NOCError
 from noc.core.management.base import BaseCommand
+from noc.core.mib import mib
 from noc.core.mongo.connection import connect
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.mib import mib
-from noc.core.error import NOCError
 
 
 class Command(BaseCommand):

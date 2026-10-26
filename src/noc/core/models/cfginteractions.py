@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import namedtuple
 import enum
+from collections import namedtuple
 
 # NOC modules
 from noc.config import config

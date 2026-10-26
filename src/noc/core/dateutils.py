@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import bisect
+import datetime
 
 # NOC modules
 from noc.core.translation import ugettext as _

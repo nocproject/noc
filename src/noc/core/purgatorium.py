@@ -10,17 +10,19 @@ import datetime
 import socket
 import struct
 from collections import defaultdict
-from typing import Literal, Any
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Any, Literal
 
 # Third-party modules
 import orjson
 from bson import ObjectId
 
+# NOC modules
+from noc.config import config
+
 # NOC services
 from noc.core.service.loader import get_service
-from noc.config import config
 
 
 @dataclass
@@ -237,9 +239,10 @@ def iter_discovered_object(
     tuple[int, str, list[str], list[PurgatoriumData], list[ProtocolCheckResult], datetime.datetime]
 ]:
     """Iter Discovered Data by query"""
+    # NOC modules
     from noc.core.clickhouse.connect import connection
-    from noc.main.models.remotesystem import RemoteSystem
     from noc.inv.models.resourcegroup import ResourceGroup
+    from noc.main.models.remotesystem import RemoteSystem
 
     ch = connection()
     if not from_ts:

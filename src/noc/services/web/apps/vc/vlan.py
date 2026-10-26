@@ -9,22 +9,22 @@
 from collections import defaultdict
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 from mongoengine import Q
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.services.web.base.decorators.state import state_handler
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.resourcepool import ResourcePool
-from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import DocumentParameter, IntParameter, StringParameter
-from noc.vc.models.vlan import VLAN
-from noc.vc.models.l2domain import L2Domain
+from noc.core.cache.decorator import cachedmethod
 from noc.core.ip import IP
 from noc.core.translation import ugettext as _
-from noc.core.cache.decorator import cachedmethod
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcepool import ResourcePool
+from noc.inv.models.subinterface import SubInterface
+from noc.sa.interfaces.base import DocumentParameter, IntParameter, StringParameter
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.vc.models.l2domain import L2Domain
+from noc.vc.models.vlan import VLAN
 
 
 @state_handler

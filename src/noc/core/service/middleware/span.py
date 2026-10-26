@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from starlette.types import Scope, Receive, Send
 from starlette.datastructures import Headers
+from starlette.types import Receive, Scope, Send
 
 # NOC modules
 from noc.core.span import Span

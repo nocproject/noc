@@ -9,9 +9,9 @@
 import re
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, match
 from noc.core.confdb.syntax.defs import DEF
-from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
+from noc.core.confdb.syntax.patterns import BOOL, IF_NAME
 from noc.core.validators import is_ipv4
 
 rx_vlan_if = re.compile(r"Vlan(?:if|If|)(\d+)")

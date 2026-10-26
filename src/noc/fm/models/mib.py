@@ -5,30 +5,33 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 import re
 import threading
-import operator
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
-import cachetools
+from mongoengine.fields import DateTimeField, DictField, IntField, ListField, StringField
 from pymongo import InsertOne
 
 # NOC modules
-from noc.core.validators import is_oid
-from noc.core.escape import fm_unescape, fm_escape
-from noc.core.snmp.util import render_tc
-from noc.core.model.decorator import on_delete_check
 from noc.core.comp import smart_text
+from noc.core.escape import fm_escape, fm_unescape
+from noc.core.model.decorator import on_delete_check
+from noc.core.snmp.util import render_tc
+from noc.core.validators import is_oid
+
 from .error import MIBNotFoundException, OIDCollision
-from .mibpreference import MIBPreference
 from .mibalias import MIBAlias
-from .syntaxalias import SyntaxAlias
+from .mibpreference import MIBPreference
 from .oidalias import OIDAlias
+from .syntaxalias import SyntaxAlias
 
 id_lock = threading.Lock()
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import ReferenceField, StringField, UInt64Field
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, ReferenceField, UInt64Field
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainModel
 
 

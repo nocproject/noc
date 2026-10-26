@@ -11,6 +11,7 @@ import os
 
 # NOC modules
 from noc.core.loader.base import BaseLoader
+
 from .base import BaseDashboard
 
 logger = logging.getLogger(__name__)

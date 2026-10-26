@@ -9,12 +9,10 @@
 import argparse
 from threading import Condition
 
-# Third-party modules
-from noc.core.threadpool import ThreadPoolExecutor
-
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.threadpool import ThreadPoolExecutor
 from noc.inv.models.resourcegroup import ResourceGroup
 
 

@@ -10,8 +10,8 @@
 import re
 
 # NOC modules
-from noc.core.profile.base import BaseProfile
 from noc.core.ip import IPv6
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

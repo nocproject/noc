@@ -6,19 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
+import importlib
 import logging
 import os
 import socket
 import sys
-import datetime
 import time
-from functools import partial, cached_property
-from urllib.parse import quote as urllib_quote
-from pathlib import Path
 from collections.abc import Iterable
-from types import ModuleType
+from functools import cached_property, partial
 from importlib.resources import files
-import importlib
+from pathlib import Path
+from types import ModuleType
+from urllib.parse import quote as urllib_quote
 
 # Third-party modules
 import cachetools
@@ -26,28 +26,27 @@ import cachetools
 # NOC modules
 from noc.core.config.base import (
     BaseConfig,
-    ConfigSection,
     BaseRewrite,
+    ConfigSection,
+    DeprecatedValue,
     PrefixRewrite,
     ValueRewrite,
-    DeprecatedValue,
 )
-from noc.core.deprecations import RemovedInNOC26Warning
 from noc.core.config.params import (
-    StringParameter,
-    MapParameter,
-    IntParameter,
     BooleanParameter,
-    SecondsParameter,
     BytesSizeParameter,
     FloatParameter,
-    ServiceParameter,
-    SecretParameter,
+    IntParameter,
     ListParameter,
-    UUIDParameter,
+    MapParameter,
+    SecondsParameter,
+    SecretParameter,
+    ServiceParameter,
+    StringParameter,
     TimeZoneParameter,
+    UUIDParameter,
 )
-
+from noc.core.deprecations import RemovedInNOC26Warning
 
 SECRETS_BASE = Path("/", "run", "secrets")
 
@@ -1142,6 +1141,7 @@ class Config(BaseConfig):
             url.append(f"/{self.mongo.db}")
             self._mongo_connection_args["host"] = "".join(url)
             if self.perfomance.enable_mongo_hist:
+                # NOC modules
                 from noc.core.mongo.monitor import MongoCommandSpan
 
                 self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
@@ -1169,6 +1169,7 @@ class Config(BaseConfig):
         """
         logger = logging.getLogger()
         if len(logger.handlers):
+            # NOC modules
             from noc.core.log import ErrorFormatter
 
             # Logger is already initialized
@@ -1320,6 +1321,7 @@ class Config(BaseConfig):
         Get slot count
         :return:
         """
+        # NOC modules
         from noc.core.dcs.loader import get_dcs
         from noc.core.ioloop.util import run_sync
 

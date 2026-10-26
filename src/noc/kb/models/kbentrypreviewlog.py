@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
+from noc.core.model.base import NOCModel
 from noc.kb.models.kbentry import KBEntry
 
 

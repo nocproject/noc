@@ -5,23 +5,24 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from collections.abc import Iterable
-from threading import Lock
+
+# Python modules
 import operator
 import re
+from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, EmbeddedDocumentListField
-from mongoengine.errors import ValidationError
 import bson
 import cachetools
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
-
 
 id_lock = Lock()
 re_lock = Lock()

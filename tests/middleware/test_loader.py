@@ -9,8 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.script.http.middleware.base import middleware_loader
-from noc.core.script.http.middleware.base import BaseMiddleware
+from noc.core.script.http.middleware.base import BaseMiddleware, middleware_loader
 
 
 @pytest.mark.parametrize(

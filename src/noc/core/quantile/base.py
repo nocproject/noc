@@ -8,11 +8,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import operator
 import math
-from collections import namedtuple, deque
+import operator
 import sys
 import threading
+from collections import deque, namedtuple
 from time import perf_counter
 
 # Each sample contains

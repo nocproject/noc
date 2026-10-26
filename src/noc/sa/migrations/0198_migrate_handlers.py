@@ -7,7 +7,7 @@
 
 # Third-party modules
 import bson
-from pymongo import InsertOne, DeleteOne
+from pymongo import DeleteOne, InsertOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

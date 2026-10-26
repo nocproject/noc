@@ -12,8 +12,9 @@ import operator
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.application import Application, HasPerm, view, api
 from noc.core.translation import ugettext as _
+from noc.services.web.base.application import Application, HasPerm, api, view
+
 from .calculators.base import calculator_loader
 
 

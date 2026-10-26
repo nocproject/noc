@@ -6,27 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
+import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
-import logging
 from enum import Enum
+from typing import Any
 
 # Third-party modules
 from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-from noc.inv.models.objectmodel import ObjectModelConnection
-from noc.inv.models.object import Object
-from noc.inv.models.techdomain import TechDomain
-from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.core.channel.types import ChannelKind, ChannelTopology
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.resource import from_resource
 from noc.core.constraint.constraintset import ConstraintSet
 from noc.core.constraint.wave import LambdaConstraint
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.resource import from_resource
+from noc.inv.models.channel import Channel
+from noc.inv.models.endpoint import Endpoint as DBEndpoint
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModelConnection
+from noc.inv.models.techdomain import TechDomain
 
 
 @dataclass

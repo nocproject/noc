@@ -8,34 +8,36 @@
 # Python modules
 import datetime
 import time
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
 from jinja2.exceptions import UndefinedError
 
 # NOC modules
-from noc.services.escalator.jobs.base import SequenceJob
-from noc.core.span import Span
-from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
+from noc.core.lock.process import ProcessLock
+from noc.core.perf import metrics
+from noc.core.span import Span
+from noc.core.tt.base import TTSystemCtx
 from noc.core.tt.types import (
     EscalationItem as ECtxItem,
-    EscalationStatus,
-    EscalationResult,
-    EscalationMember,
-    TTActionContext,
-    TTAction,
 )
-from noc.core.tt.base import TTSystemCtx
-from noc.core.perf import metrics
-from noc.sa.models.action import Action
-from noc.main.models.notificationgroup import NotificationGroup
+from noc.core.tt.types import (
+    EscalationMember,
+    EscalationResult,
+    EscalationStatus,
+    TTAction,
+    TTActionContext,
+)
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.escalation import Escalation
 from noc.fm.models.escalationprofile import EscalationItem
-from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.ttsystem import TTSystem
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.sa.models.action import Action
+from noc.services.escalator.jobs.base import SequenceJob
 
 
 class EscalationJob(SequenceJob):
@@ -245,6 +247,7 @@ class EscalationJob(SequenceJob):
             e_ctx: Escalation Context
             changed: Was Changed
         """
+        # NOC modules
         from noc.main.models.template import Template
 
         for item in self.object.escalations:

@@ -11,6 +11,7 @@ from mongoengine.fields import StringField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+
 from .remotesystem import RemoteSystem
 
 

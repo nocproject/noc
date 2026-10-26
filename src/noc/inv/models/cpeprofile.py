@@ -5,50 +5,51 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass
+from functools import partial
 from threading import Lock, RLock
 from typing import Any
-from collections.abc import Callable
-from functools import partial
-from dataclasses import dataclass
 
 # Third-party modules
 import bson
 import cachetools
-from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
+    BooleanField,
+    EmbeddedDocumentListField,
+    IntField,
     ListField,
     LongField,
-    BooleanField,
-    ReferenceField,
     ObjectIdField,
-    IntField,
-    EmbeddedDocumentListField,
+    ReferenceField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
+from pymongo import ReadPreference
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.change.model import ChangeField
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.matcher import build_matcher
-from noc.main.models.style import Style
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.main.models.glyph import Glyph
 from noc.main.models.label import Label
 from noc.main.models.pool import Pool
-from noc.main.models.glyph import Glyph
+from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
-from noc.wf.models.workflow import Workflow
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.interfaces.igetcpe import IGetCPE
-from noc.config import config
-
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 ips_lock = RLock()
@@ -228,6 +229,7 @@ class CPEProfile(Document):
             pass
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.inv.models.cpe import CPE
 
         if not config.datastream.enable_cfgmetricstarget:

@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow, TableColumn
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
-from noc.core.translation import ugettext as _
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.services.web.base.simplereport import SectionRow, SimpleReport, TableColumn
 
 
 class ReportDiscoveryApplication(SimpleReport):

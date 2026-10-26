@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from dataclasses import dataclass
 from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Any
 
 # Third-party modules
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.sa.models.job import Job, JobStatus
 from noc.core.feature import Feature
 from noc.core.translation import ugettext as _
+from noc.sa.models.job import Job, JobStatus
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 SELECTABLE_CLASS = "job-selectable"
 STATUS_COLOR = {

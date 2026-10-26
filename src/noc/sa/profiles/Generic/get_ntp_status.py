@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetntpstatus import IGetNTPStatus
-from noc.core.mib import mib
-from noc.sa.interfaces.base import IPv4Parameter, IPv6Parameter
-from noc.core.snmp.render import render_bin
 from noc.core.interface.error import InterfaceTypeError
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.base import IPv4Parameter, IPv6Parameter
+from noc.sa.interfaces.igetntpstatus import IGetNTPStatus
 
 
 class Script(BaseScript):

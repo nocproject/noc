@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.link import Link
 from noc.inv.models.extnrilink import ExtNRILink
+
+from ..models.link import Link
+from .base import BaseLoader
 
 
 class LinkLoader(BaseLoader):

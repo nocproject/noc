@@ -5,23 +5,25 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
-from django.db import models
 import cachetools
+from django.db import models
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
-from noc.core.model.decorator import on_init
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.change.decorator import change
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.translation import ugettext as _
+from noc.main.models.notificationgroup import NotificationGroup
+
 from .dnsserver import DNSServer
 
 id_lock = Lock()

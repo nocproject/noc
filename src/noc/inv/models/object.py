@@ -5,60 +5,62 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import operator
+import warnings
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from threading import Lock
 from typing import Any
-from collections.abc import Iterator
-import warnings
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
-from pymongo import ReadPreference
+from mongoengine import signals
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    ListField,
-    PointField,
-    LongField,
-    EmbeddedDocumentListField,
-    DynamicField,
     BooleanField,
     DateTimeField,
+    DynamicField,
+    EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    PointField,
+    StringField,
 )
-from mongoengine import signals
 from mongoengine.queryset.queryset import QuerySet
-import cachetools
-from collections.abc import Iterable
+from pymongo import ReadPreference
 
 # NOC modules
-from noc.gis.models.layer import Layer, DEFAULT_ZOOM
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.copy import deep_merge
-from noc.core.middleware.tls import get_user
-from noc.core.gridvcs.manager import GridVCSField
-from noc.core.defer import call_later
-from noc.core.model.decorator import on_save, on_delete_check
+from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
+from noc.cm.models.configurationscope import ConfigurationScope
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.core.topology.types import TopologyNode, TopologyNodeType
-from noc.core.discriminator import discriminator
-from noc.core.confdb.collator.typing import PortItem, PathItem
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
 from noc.core.comp import smart_text
-from noc.config import config
-from noc.cm.models.configurationscope import ConfigurationScope
-from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
-from noc.inv.models.technology import Technology
+from noc.core.confdb.collator.typing import PathItem, PortItem
+from noc.core.copy import deep_merge
+from noc.core.defer import call_later
 from noc.core.deprecations import RemovedInNOC2501Warning
-from .objectmodel import ObjectModel, Crossing, ProtocolVariantItem
+from noc.core.discriminator import discriminator
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.middleware.tls import get_user
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.topology.types import TopologyNode, TopologyNodeType
+from noc.gis.models.layer import DEFAULT_ZOOM, Layer
+from noc.inv.models.technology import Technology
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+
+from .error import ConnectionError, ModelDataError
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
-from .error import ConnectionError, ModelDataError
+from .objectmodel import Crossing, ObjectModel, ProtocolVariantItem
 from .protocol import ProtocolVariant
 
 id_lock = Lock()
@@ -270,6 +272,7 @@ class Object(Document):
         self.set_point()
 
     def set_point(self):
+        # NOC modules
         from noc.gis.map import map
 
         # Reset previous data
@@ -306,6 +309,7 @@ class Object(Document):
                 for c, _, _ in self.get_genderless_connections(ct):
                     c.save()
             # Update nested objects
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mos = get_coordless_objects(self)
@@ -1471,8 +1475,9 @@ class Object(Document):
         """
         Find effective agent for object
         """
-        from noc.pm.models.agent import Agent
+        # NOC modules
         from noc.core.inv.path import find_path
+        from noc.pm.models.agent import Agent
 
         agent = self.get_data("agent", "agent")
         modbus = self.get_data("modbus", "type")

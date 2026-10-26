@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseAppDecorator
 from noc.wf.models.transition import Transition
+
+from .base import BaseAppDecorator
 
 
 class StateHandlerDecorator(BaseAppDecorator):

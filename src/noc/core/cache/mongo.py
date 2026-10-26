@@ -7,15 +7,16 @@
 
 # Python modules
 import datetime
-from pickle import loads, dumps, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, dumps, loads
 
 # Third-party modules
 import bson
 
 # NOC modules
-from .base import BaseCache
-from noc.core.mongo.connection import get_db
 from noc.config import config
+from noc.core.mongo.connection import get_db
+
+from .base import BaseCache
 
 
 class MongoCache(BaseCache):

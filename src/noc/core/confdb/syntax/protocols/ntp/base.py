@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import ANY, CHOICES, IP_ADDRESS, INTEGER
+from ...patterns import ANY, CHOICES, INTEGER, IP_ADDRESS
 
 PROTOCOLS_NTP_SYNTAX = DEF(
     "ntp",

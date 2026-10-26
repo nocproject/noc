@@ -5,14 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
 # Third-party modules
-from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
+from pymongo.errors import BulkWriteError
 
 # NOC modules
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
+from noc.inv.models.discoveryid import DiscoveryID
 
 BATCH_SIZE = 10000
 

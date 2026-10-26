@@ -9,13 +9,14 @@
 from typing import Any
 
 # Third-party modules
-from pydantic import BaseModel
 from jinja2 import Template
+from pydantic import BaseModel
 
 # NOC modules
 from noc.core.matcher import match
-from .base import BaseCDAGFactory, FactoryCtx
+
 from ..graph import CDAG
+from .base import BaseCDAGFactory, FactoryCtx
 
 
 class InputItem(BaseModel):

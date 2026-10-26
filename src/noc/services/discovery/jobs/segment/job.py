@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from ..base import MODiscoveryJob
-from noc.inv.models.networksegment import NetworkSegment
-from .mac import MACDiscoveryCheck
 from noc.core.span import Span
+from noc.inv.models.networksegment import NetworkSegment
+
+from ..base import MODiscoveryJob
+from .mac import MACDiscoveryCheck
 
 
 class SegmentDiscoveryJob(MODiscoveryJob):

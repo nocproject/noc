@@ -6,47 +6,51 @@
 # ---------------------------------------------------------------------
 
 # Python
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
+import logging
 import operator
 import re
-import logging
 from threading import Lock
 from typing import Any
 
 # Third-party modules
+import cachetools
+import orjson
 from bson import ObjectId
 from django.db import connection as pg_connection
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    BooleanField,
-    ReferenceField,
-    DateTimeField,
-    ListField,
-    EmbeddedDocumentListField,
-)
 from mongoengine.errors import ValidationError
-import cachetools
-import orjson
+from mongoengine.fields import (
+    BooleanField,
+    DateTimeField,
+    EmbeddedDocumentListField,
+    ListField,
+    ReferenceField,
+    StringField,
+)
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.model.decorator import on_save, on_delete
-from noc.core.defer import call_later
 from noc.core.change.decorator import change
-from noc.core.watchers.types import ObjectEffect
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_delete, on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.mx import MX_TO_STAGE_NAME, MessageType, send_message
 from noc.core.watchers.decorator import watchers
-from noc.core.mx import MessageType, send_message, MX_TO_STAGE_NAME
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.template import Template
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.service import Service
-from noc.sa.models.objectwatchersitem import WatchDocumentItem
+from noc.core.watchers.types import ObjectEffect
 from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
+from noc.sa.models.service import Service
+
 from .maintenancetype import MaintenanceType
 
 id_lock = Lock()

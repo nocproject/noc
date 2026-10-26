@@ -6,17 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, _GenericAlias, _SpecialForm
 from collections.abc import Iterable
 from itertools import zip_longest
+from typing import Any, _GenericAlias, _SpecialForm
 
 # Third-party modules
 from gufo.loader import Loader
-from pydantic import BaseModel as _BaseModel, ConfigDict
+from pydantic import BaseModel as _BaseModel
+from pydantic import ConfigDict
 from pydantic.fields import FieldInfo
 
 # NOC modules
 from noc.config import config
+
 from .typing import Reference
 
 

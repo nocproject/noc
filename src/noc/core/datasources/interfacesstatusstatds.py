@@ -6,14 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.interface import Interface
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 class InterfacesStatusStatDS(BaseDataSource):

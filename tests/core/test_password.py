@@ -13,15 +13,15 @@ import pytest
 
 # NOC modules
 from noc.core.password.check import (
-    check_password_policy,
+    _check_history,
     _check_len,
-    _check_uppercase,
     _check_lowercase,
     _check_numbers,
     _check_specials,
-    _check_history,
+    _check_uppercase,
+    check_password_policy,
 )
-from noc.core.password.hasher import check_password, must_change, BaseHasher, make_password
+from noc.core.password.hasher import BaseHasher, check_password, make_password, must_change
 
 # password
 PW_HASH = "pbkdf2_sha256$600000$kna0TW8uWDQ0TtTPEJUd5l$rEruK5HNq9ngjTVcW2G8Vz/Pp+LKjpDoejtQZrYeD6U="

@@ -8,10 +8,9 @@
 # Python modules
 import re
 import string
-from itertools import zip_longest, pairwise
-from typing import overload, Any
-from collections.abc import Iterable, Sequence, Iterator
-
+from collections.abc import Iterable, Iterator, Sequence
+from itertools import pairwise, zip_longest
+from typing import Any, overload
 
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
@@ -805,6 +804,7 @@ def parse_table_header(v: Sequence[str]) -> dict[int, str]:
                 69: "Link State",
             }
     """
+    # Third-party modules
     from numpy import array
 
     head = []

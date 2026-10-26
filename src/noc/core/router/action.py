@@ -8,28 +8,28 @@
 # Python modules
 import datetime
 import logging
-from typing import Literal, Any, ClassVar, cast
 from collections.abc import Iterator
 from dataclasses import dataclass
+from typing import Any, ClassVar, Literal, cast
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.msgstream.message import Message
-from noc.core.defer import JOBS_STREAM
-from noc.core.mx import (
-    MessageType,
-    MX_JOB_HANDLER,
-    MX_DISABLE_MUTATIONS,
-    NOTIFICATION_METHODS,
-    MX_NOTIFICATION_METHOD,
-    MX_NOTIFICATION_GROUP_ID,
-    MX_WATCH_FOR_ID,
-    MX_TO,
-    MX_FWD_ROUTER,
-)
 from noc.config import config
+from noc.core.defer import JOBS_STREAM
+from noc.core.msgstream.message import Message
+from noc.core.mx import (
+    MX_DISABLE_MUTATIONS,
+    MX_FWD_ROUTER,
+    MX_JOB_HANDLER,
+    MX_NOTIFICATION_GROUP_ID,
+    MX_NOTIFICATION_METHOD,
+    MX_TO,
+    MX_WATCH_FOR_ID,
+    NOTIFICATION_METHODS,
+    MessageType,
+)
 from noc.main.models.handler import Handler
 
 logger = logging.getLogger(__name__)
@@ -163,6 +163,7 @@ class MetricAction(Action):
         self.load_handlers()
 
     def load_handlers(self):
+        # NOC modules
         from noc.main.models.metricstream import MetricStream
 
         for mss in MetricStream.objects.filter():
@@ -218,6 +219,7 @@ class MessageAction(Action):
         self.rt: int | None = cfg.render_template
 
     def get_notification_group(self, ng: bytes | None):
+        # NOC modules
         from noc.main.models.notificationgroup import NotificationGroup
 
         if ng:
@@ -244,6 +246,7 @@ class MessageAction(Action):
             language: Language Code
             notification_group: Subject Tag
         """
+        # NOC modules
         from noc.main.models.template import Template
 
         if self.rt:

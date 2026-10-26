@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.sa.models.objectnotification import ObjectNotification
 from noc.core.translation import ugettext as _
+from noc.sa.models.objectnotification import ObjectNotification
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class ObjectNotificationApplication(ExtModelApplication):

@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.phone.models.dialplan import DialPlan
 from noc.core.translation import ugettext as _
+from noc.phone.models.dialplan import DialPlan
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class DialPlanApplication(ExtDocApplication):

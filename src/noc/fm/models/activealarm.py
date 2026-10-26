@@ -5,73 +5,74 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import asyncio
 import datetime
 import logging
-import asyncio
 import operator
+import uuid
 from collections import defaultdict
+from collections.abc import Iterable
 from itertools import chain
+from threading import Lock
 from typing import (
     Any,
+    Generic,
     Protocol,
     runtime_checkable,
-    Generic,
 )
-from collections.abc import Iterable
-from threading import Lock
-import uuid
 
 # Third-party modules
 import orjson
 from bson import ObjectId
+from cachetools import TTLCache
 from jinja2 import Template as Jinja2Template
-from pymongo import UpdateOne
 from mongoengine.document import Document
+from mongoengine.errors import SaveConditionError
 from mongoengine.fields import (
-    StringField,
+    BinaryField,
     DateTimeField,
-    ListField,
+    DictField,
     EmbeddedDocumentListField,
+    EnumField,
     IntField,
+    ListField,
     LongField,
     ObjectIdField,
-    DictField,
-    BinaryField,
-    EnumField,
+    StringField,
 )
-from mongoengine.errors import SaveConditionError
-from cachetools import TTLCache
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.models import get_model
 from noc.aaa.models.user import User
+from noc.config import config
+from noc.core.change.decorator import change
+from noc.core.debug import error_report
+from noc.core.defer import call_later, defer
+from noc.core.fm.enum import RCA_DOWNLINK_MERGE, RCA_NONE, RCA_OTHER, GroupType
+from noc.core.handler import get_handler
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.span import get_current_span
+from noc.inv.models.endpoint import Endpoint
+from noc.inv.models.object import Object
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.main.models.template import Template
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.pool import Pool
+from noc.models import get_model
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.inv.models.object import Object
-from noc.inv.models.endpoint import Endpoint
-from noc.core.change.decorator import change
-from noc.core.defer import call_later
-from noc.core.defer import defer
-from noc.core.debug import error_report
-from noc.config import config
-from noc.core.span import get_current_span
-from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE, GroupType
-from noc.core.handler import get_handler
-from .alarmseverity import AlarmSeverity
+from noc.sa.models.servicesummary import ObjectSummaryItem, ServiceSummary, SummaryItem
+
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
-from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
+from .alarmseverity import AlarmSeverity
 from .alarmwatch import Effect, WatchItem
-from .pathitem import HAS_FGALARMS, HAS_CHANNEL, _is_required_index, PathItem, PathCode
-
+from .pathitem import HAS_CHANNEL, HAS_FGALARMS, PathCode, PathItem, _is_required_index
+from .ttsystem import DEFAULT_TTSYSTEM_SHARD, TTSystem
 
 if HAS_FGALARMS:
     _slot_cache = TTLCache(1_000, ttl=60)
@@ -226,6 +227,7 @@ class ActiveAlarm(Document):
 
     @property
     def escalation_error(self) -> str | None:
+        # NOC modules
         from noc.fm.models.escalation import Escalation
 
         esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
@@ -660,6 +662,7 @@ class ActiveAlarm(Document):
             user: Set for Manual Clear
             timestamp: Clear Timestamp
         """
+        # NOC modules
         from noc.core.service.loader import get_service
         from noc.main.models.pool import Pool
 
@@ -1421,9 +1424,10 @@ class ActiveAlarm(Document):
                 r.append({"profile": p.name, "summary": k.summary})
             return sorted(r, key=lambda x: -x["summary"])
 
+        # NOC modules
+        from noc.crm.models.subscriberprofile import SubscriberProfile
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
         from noc.sa.models.serviceprofile import ServiceProfile
-        from noc.crm.models.subscriberprofile import SubscriberProfile
 
         if self.managed_object and self.managed_object.segment.is_redundant:
             uplinks = self.managed_object.uplinks
@@ -1474,8 +1478,9 @@ class ActiveAlarm(Document):
         job_id: str | None = None,
     ):
         """"""
-        from noc.services.correlator.alarmjob import AlarmJob
+        # NOC modules
         from noc.main.models.pool import Pool
+        from noc.services.correlator.alarmjob import AlarmJob
 
         if not job_id:
             job = AlarmJob.ensure_profile_job(self, profile)

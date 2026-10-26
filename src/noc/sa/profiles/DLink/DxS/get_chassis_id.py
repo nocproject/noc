@@ -9,12 +9,12 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
-from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.validators import is_mac
-from noc.core.text import parse_table
-from noc.core.mib import mib
 from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.text import parse_table
+from noc.core.validators import is_mac
+from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 
 
 class Script(BaseScript):

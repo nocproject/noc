@@ -12,9 +12,10 @@ from typing import Any
 from django.http import HttpRequest
 
 # NOC modules
-from noc.inv.models.object import Object
 from noc.cm.models.configurationparam import ConfigurationParam
-from noc.sa.interfaces.base import StringParameter, StringListParameter, DictListParameter
+from noc.inv.models.object import Object
+from noc.sa.interfaces.base import DictListParameter, StringListParameter, StringParameter
+
 from .base import InvPlugin
 
 

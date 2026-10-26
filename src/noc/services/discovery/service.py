@@ -11,8 +11,8 @@ from typing import Any
 
 # NOC modules
 from noc.config import config
-from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
+from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.base import BaseService
 
 

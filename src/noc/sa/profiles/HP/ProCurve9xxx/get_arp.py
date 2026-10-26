@@ -6,9 +6,12 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 rx_line = re.compile(
     r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\d+\s+(?P<interface>\S+)"

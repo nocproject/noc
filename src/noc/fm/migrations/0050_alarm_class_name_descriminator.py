@@ -8,11 +8,12 @@
 # Python modules
 import hashlib
 
+# Third-party modules
 from pymongo import UpdateMany
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.comp import smart_bytes
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

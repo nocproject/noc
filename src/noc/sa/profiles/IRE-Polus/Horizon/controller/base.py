@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any, cast
-from collections.abc import Iterable
 from uuid import UUID
 
 # NOC modules
-from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
-from noc.inv.models.object import Object
+from noc.core.runner.models.jobreq import InputMapping, JobRequest, KVInputMapping
 from noc.inv.models.endpoint import Endpoint
+from noc.inv.models.object import Object
 
 # Cards
 ADM_10 = UUID("60392e07-aab2-4d9f-a304-17b09b27675f")

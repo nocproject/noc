@@ -9,12 +9,12 @@
 import datetime
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport
 from noc.core.dateutils import humanize_distance
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.translation import ugettext as _
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class ReportStaleDiscoveryJob(SimpleReport):

@@ -9,13 +9,14 @@
 import re
 
 # NOC modules
+from noc.core.ip import IPv4, IPv6
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4, IPv6
 
 
 def ranges_to_list_str(s):
     # Python modules:
+    # Python modules
     import re
 
     rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")

@@ -16,21 +16,23 @@ Consul keys are converted into a hierarchical configuration tree and can be
 accessed using dot-separated configuration keys.
 """
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
+# Python modules
 import asyncio
 from dataclasses import dataclass
 from functools import cached_property
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote, urlparse
 
 # Third-party modules
 from consul.exceptions import Timeout
 
 # NOC modules
-from noc.core.consul import ConsulClient
 from noc.core.comp import smart_text
+from noc.core.consul import ConsulClient
 from noc.core.ioloop.util import run_sync
+
 from .base import DataConfigBackend
 
 DEFAULT_CONSUL_PORT = 8500

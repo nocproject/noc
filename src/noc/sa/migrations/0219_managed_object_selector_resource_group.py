@@ -6,17 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 from typing import NamedTuple
-import bson
 
 # Third-party modules
+import bson
 from pymongo import InsertOne
-from noc.core.mongo.connection import get_db
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
+from noc.core.mongo.connection import get_db
 from noc.core.validators import is_objectid
 
 selector = namedtuple(
@@ -79,6 +79,7 @@ class ManagedObjectSelectorLabels:
         :return:
         """
         if not hasattr(cls, "_cursor"):
+            # Third-party modules
             from django.db import connection
 
             cls._cursor = connection.cursor()

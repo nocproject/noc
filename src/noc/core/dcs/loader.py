@@ -6,18 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock, Thread, Event, get_ident
 import asyncio
 import logging
-
-# Third-party modules
-from typing import Any
 from collections.abc import Awaitable
+from threading import Event, Lock, Thread, get_ident
+from typing import Any
 
 # NOC modules
+from noc.config import config
 from noc.core.handler import get_handler
 from noc.core.ioloop.util import setup_asyncio
-from noc.config import config
+
 from .base import DCSBase
 
 DEFAULT_DCS = f"consul://{config.consul.host}:{config.consul.port}/{config.consul.base}"

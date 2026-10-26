@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
-from noc.inv.models.firmware import Firmware
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.text import ch_escape
+from noc.inv.models.firmware import Firmware
 
 
 class Version(DictionaryModel):

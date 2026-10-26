@@ -5,13 +5,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    ListOfParameter,
-    DictParameter,
-    StringParameter,
     BooleanParameter,
+    DictParameter,
     IPv4PrefixParameter,
+    ListOfParameter,
+    StringParameter,
 )
 
 

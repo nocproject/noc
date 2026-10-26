@@ -6,10 +6,13 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import datetime
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
-import re
-import datetime
 
 
 class Script(BaseScript):

@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import hashlib
+import os
 from pathlib import Path
 
 # Third-party modules
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 # NOC modules

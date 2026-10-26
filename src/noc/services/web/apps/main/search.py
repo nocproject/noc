@@ -9,11 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.interfaces.base import UnicodeParameter
+from noc.core.translation import ugettext as _
 from noc.main.models.textindex import TextIndex
 from noc.models import get_model
-from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import UnicodeParameter
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class SearchApplication(ExtApplication):

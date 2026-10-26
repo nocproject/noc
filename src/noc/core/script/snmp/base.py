@@ -6,38 +6,38 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import weakref
+from collections.abc import Callable
 from functools import partial
 from typing import Any
-from collections.abc import Callable
-import weakref
 
 # Third-party modules
 from gufo.snmp import (
+    NoSuchInstance,
+    SnmpAuthError,
     SnmpSession,
     SnmpVersion,
-    SnmpError as GSNMPError,
-    SnmpAuthError,
-    NoSuchInstance,
 )
-from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
-
+from gufo.snmp import (
+    SnmpError as GSNMPError,
+)
+from gufo.snmp.user import Aes128Key, DesKey, KeyType, Md5Key, Sha1Key, User
 
 # NOC modules
-from noc.core.snmp.error import SNMPError, BAD_VALUE, TIMED_OUT
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.ioloop.udp import UDPSocket
 from noc.core.error import (
-    NOCError,
-    ERR_SNMP_TIMEOUT,
-    ERR_SNMP_FATAL_TIMEOUT,
-    ERR_SNMP_BAD_COMMUNITY,
     ERR_SNMP_AUTH_FAILED,
+    ERR_SNMP_BAD_COMMUNITY,
+    ERR_SNMP_FATAL_TIMEOUT,
     ERR_SNMP_NO_SUCH_NAME,
+    ERR_SNMP_TIMEOUT,
+    NOCError,
 )
+from noc.core.ioloop.udp import UDPSocket
 from noc.core.ioloop.util import run_sync
+from noc.core.log import PrefixLoggerAdapter
 from noc.core.mib import mib
-
+from noc.core.snmp.error import BAD_VALUE, TIMED_OUT, SNMPError
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 
 GUFO_SNMP_VERSION_MAP = {
     SNMP_v1: SnmpVersion.v1,

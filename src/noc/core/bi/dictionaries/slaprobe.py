@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField, UInt64Field
-from noc.sla.models.slaprobe import SLAProbe as SLAProbeModel
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.text import ch_escape
+from noc.sla.models.slaprobe import SLAProbe as SLAProbeModel
 
 
 class SLAProbe(DictionaryModel):

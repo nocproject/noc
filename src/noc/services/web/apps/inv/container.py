@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class ObjectContainerApplication(ExtApplication):

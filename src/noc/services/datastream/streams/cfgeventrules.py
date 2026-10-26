@@ -11,7 +11,7 @@ from typing import Any
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.ignorepattern import IgnorePattern, DATASTREAM_RULE_PREFIX
+from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX, IgnorePattern
 
 
 class CfgEventRulesDataStream(DataStream):

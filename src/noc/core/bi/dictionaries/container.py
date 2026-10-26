@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import ReferenceField, StringField
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, ReferenceField
-from noc.inv.models.object import Object
 from noc.core.text import ch_escape
+from noc.inv.models.object import Object
 
 
 class Container(DictionaryModel):

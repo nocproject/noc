@@ -10,11 +10,11 @@ from django.db import connection
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.reportapplication import ReportApplication
-from noc.main.models.customfield import CustomField
-from noc.ip.models.vrfgroup import VRFGroup
-from noc.ip.models.prefix import Prefix
 from noc.core.ip import IP
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrfgroup import VRFGroup
+from noc.main.models.customfield import CustomField
+from noc.services.web.base.reportapplication import ReportApplication
 
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix") if not f.is_hidden]
 

@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC models
+# NOC modules
 from noc.core.migration.base import BaseMigration
 
 

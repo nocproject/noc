@@ -7,9 +7,9 @@
 
 # Python modules
 import re
-from noc.core.script.base import BaseScript
 
 # NOC modules
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 

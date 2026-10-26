@@ -5,20 +5,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField
+from mongoengine.fields import ListField, StringField
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField
-from noc.sa.models.managedobject import ManagedObject
+from noc.config import config
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
-from noc.config import config
+from noc.core.mongo.fields import ForeignKeyField
+from noc.sa.models.managedobject import ManagedObject
 
 
 @change(audit=False)

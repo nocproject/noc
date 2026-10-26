@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import ReferenceField, StringField, UInt32Field
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, UInt32Field, ReferenceField
 from noc.sa.models.service import Service as ServiceModel
 
 

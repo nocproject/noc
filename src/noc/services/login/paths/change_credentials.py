@@ -9,10 +9,11 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-
 # NOC modules
 from noc.config import config
-from ..auth import change_credentials as _change_credentials, ChangeCredentialsError, set_jwt_cookie
+
+from ..auth import ChangeCredentialsError, set_jwt_cookie
+from ..auth import change_credentials as _change_credentials
 from ..models.changecredentials import ChangeCredentialsRequest
 from ..models.status import StatusResponse
 

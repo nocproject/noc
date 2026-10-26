@@ -5,41 +5,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import re
+
+# Python modules
 import datetime
 import logging
+import re
 
 # Third-party modules
+from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
-    CharField,
-    ForeignKey,
-    IntegerField,
-    DateTimeField,
-    TextField,
     CASCADE,
     SET_NULL,
     BigIntegerField,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    IntegerField,
+    TextField,
 )
-from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.core.model.fields import INETField, DocumentReferenceField
-from noc.core.mx import send_message, MessageType, MX_PROFILE_ID
-from noc.core.model.decorator import on_save
-from noc.core.gridvcs.manager import GridVCSField
-from noc.core.wf.decorator import workflow
-from noc.core.change.decorator import change
-from noc.core.bgp import BGPState
-from noc.project.models.project import Project
-from noc.main.models.label import Label
-from noc.wf.models.state import State
 from noc.config import config
+from noc.core.bgp import BGPState
+from noc.core.change.decorator import change
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_save
+from noc.core.model.fields import DocumentReferenceField, INETField
+from noc.core.mx import MX_PROFILE_ID, MessageType, send_message
+from noc.core.wf.decorator import workflow
+from noc.main.models.label import Label
+from noc.project.models.project import Project
+from noc.wf.models.state import State
+
 from .asn import AS
-from .peerprofile import PeerProfile
 from .peeringpoint import PeeringPoint
+from .peerprofile import PeerProfile
 
 logger = logging.getLogger(__name__)
 
@@ -284,8 +287,9 @@ class Peer(NOCModel):
 
     def get_partner_object(self):
         """Search ManagedObject by Remote asn"""
-        from noc.sa.models.managedobject import ManagedObject
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
+        from noc.sa.models.managedobject import ManagedObject
 
         mo = ManagedObject.objects.filter(address=self.remote_ip).first()
         if mo:

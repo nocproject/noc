@@ -7,16 +7,16 @@
 
 # Python modules
 import logging
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField, BooleanField
+from mongoengine.fields import BooleanField, ListField, StringField
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField
 from noc.aaa.models.user import User
+from noc.core.mongo.fields import ForeignKeyField
 
 logger = logging.getLogger(__name__)
 

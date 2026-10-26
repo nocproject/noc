@@ -10,11 +10,11 @@ import logging
 from collections.abc import Iterable
 
 # NOC modules
-from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.core.checkers.base import Check, CheckResult, DataItem
-from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus, DiagnosticState
-from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.diagnostic.types import CheckStatus, DiagnosticConfig, DiagnosticState
 from noc.core.models.inputsources import InputSource
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.script.scheme import CLICredential, Protocol, SNMPCredential, SNMPv3Credential
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 
 

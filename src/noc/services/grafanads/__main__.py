@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.grafanads.service import GrafanaDSService
-
 
 if __name__ == "__main__":
     GrafanaDSService().start()

@@ -13,11 +13,12 @@ import struct
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import IntField, DateTimeField, FloatField
+from mongoengine.fields import DateTimeField, FloatField, IntField
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.service.loader import get_service
+from noc.sa.models.managedobject import ManagedObject
+
 from .reboot import Reboot
 
 logger = logging.getLogger(__name__)

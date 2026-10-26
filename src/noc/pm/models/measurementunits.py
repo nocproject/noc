@@ -5,26 +5,28 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
+from pathlib import Path
 from threading import Lock
 from typing import Any
-from pathlib import Path
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, IntField, UUIDField, EmbeddedDocumentListField
 from mongoengine.errors import ValidationError
-import cachetools
+from mongoengine.fields import EmbeddedDocumentListField, IntField, StringField, UUIDField
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_delete_check
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
 from noc.core.expr import get_fn
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.pm.models.scale import Scale
 
 DEFAULT_UNITS_NAME = "Scalar"

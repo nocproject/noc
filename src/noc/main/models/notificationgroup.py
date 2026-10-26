@@ -5,55 +5,56 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import logging
 import operator
-from threading import Lock
-from typing import Any
 from collections.abc import Iterable
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
-from django.db.models import (
-    TextField,
-    CharField,
-    ForeignKey,
-    BooleanField,
-    DateTimeField,
-    UUIDField,
-    CASCADE,
-)
+import cachetools
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    TextField,
+    UUIDField,
+)
 from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, RootModel, model_validator
-import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.core.model.fields import PydanticField, DocumentReferenceField
-from noc.core.mx import (
-    send_notification,
-    NOTIFICATION_METHODS,
-    MX_TO,
-    MessageType,
-    MessageMeta,
-    get_subscriber_id,
-    NotificationContact,
-)
-from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.change.decorator import change
-
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
 from noc.aaa.models.user import User
+from noc.config import config
+from noc.core.change.decorator import change
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.fields import DocumentReferenceField, PydanticField
+from noc.core.mx import (
+    MX_TO,
+    NOTIFICATION_METHODS,
+    MessageMeta,
+    MessageType,
+    NotificationContact,
+    get_subscriber_id,
+    send_notification,
+)
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
-from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.timepattern import TimePattern
-from noc.models import get_model_id, get_model
-from noc.config import config
+from noc.models import get_model, get_model_id
 from noc.settings import LANGUAGE_CODE
 
 id_lock = Lock()
@@ -85,6 +86,7 @@ class StaticMember(BaseModel):
 
     def get_contacts(self) -> list[NotificationContact]:
         """Build Notification Contact"""
+        # NOC modules
         from noc.main.models.messageroute import MessageRoute
 
         r = []
@@ -524,6 +526,7 @@ class NotificationGroup(NOCModel):
             body: Notification body
             attachments:
         """
+        # NOC modules
         from noc.main.models.messageroute import MessageRoute
 
         route = None

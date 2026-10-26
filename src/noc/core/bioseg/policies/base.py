@@ -7,18 +7,18 @@
 
 # Python modules
 import logging
-from django.db import connection
 
 # Third-party modules
+from django.db import connection
 from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
+from noc.core.topology.uplink import update_uplinks
+from noc.inv.models.link import Link
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
-from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.topology.uplink import update_uplinks
 
 
 class BaseBioSegPolicy:

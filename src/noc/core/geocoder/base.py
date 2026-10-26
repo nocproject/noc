@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterator
 
 # Third-party modules
 from gufo.loader import Loader
@@ -16,6 +16,7 @@ from gufo.loader import Loader
 # NOC modules
 from noc.config import config
 from noc.core.http.sync import HttpClient
+
 from .errors import GeoCoderError
 
 

@@ -10,11 +10,12 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.sa.models.profile import Profile
+from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.rpsl import rpsl_format
-from noc.core.model.decorator import on_delete_check
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.sa.models.profile import Profile
+
 from .asn import AS
 
 

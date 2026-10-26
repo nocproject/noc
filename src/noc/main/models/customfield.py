@@ -7,21 +7,22 @@
 
 # Python modules
 import logging
-from functools import reduce
 import threading
+from functools import reduce
 
 # Third-party modules
-from django.db import models, connection
-from django.db.models import signals as django_signals
-from django.apps import apps
-from mongoengine.base.common import _document_registry
-from mongoengine import fields
 import mongoengine.signals
+from django.apps import apps
+from django.db import connection, models
+from django.db.models import signals as django_signals
+from mongoengine import fields
+from mongoengine.base.common import _document_registry
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.model.base import NOCModel
 from noc.core.validators import is_int
-from noc.core.comp import smart_text
+
 from .customfieldenumgroup import CustomFieldEnumGroup
 from .customfieldenumvalue import CustomFieldEnumValue
 

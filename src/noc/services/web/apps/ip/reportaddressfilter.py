@@ -10,14 +10,14 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn
-from noc.main.models.customfield import CustomField
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+from noc.main.models.customfield import CustomField
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 
 class ReportFilterApplication(SimpleReport):

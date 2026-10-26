@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.inv.models.objectconfigurationrule import ObjectConfigurationRule, ConnectionRule
 from noc.core.translation import ugettext as _
+from noc.inv.models.objectconfigurationrule import ConnectionRule, ObjectConfigurationRule
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class ObjectConfigurationRuleApplication(ExtDocApplication):

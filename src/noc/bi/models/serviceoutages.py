@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
+    BooleanField,
     DateField,
     DateTimeField,
+    ReferenceField,
+    StringField,
     UInt8Field,
     UInt64Field,
-    StringField,
-    BooleanField,
-    ReferenceField,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

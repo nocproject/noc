@@ -14,7 +14,6 @@ from gufo.loader import Loader
 # NOC modules
 from noc.config import config
 
-
 # Args regular expression
 rx_args = re.compile(r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=quote)")
 

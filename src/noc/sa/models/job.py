@@ -6,23 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from enum import Enum
 from collections.abc import Iterable
-
+from enum import Enum
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    ReferenceField,
-    ListField,
     BooleanField,
-    ObjectIdField,
-    EmbeddedDocumentListField,
     DateTimeField,
     DictField,
+    EmbeddedDocumentListField,
+    ListField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
 )
 
+# NOC modules
 # NOC models
 from noc.core.model.decorator import on_delete_check
 

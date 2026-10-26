@@ -10,10 +10,11 @@ import datetime
 import operator
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.service import Service
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.service import Service
+
+from .base import BaseCard
 
 
 class ServiceCard(BaseCard):

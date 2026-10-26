@@ -7,15 +7,14 @@
 
 # Python modules
 import logging
-import time
 import sys
+import time
 
 # Third-party modules
 from pymongo import AsyncMongoClient
 
 # NOC modules
 from noc.config import config
-
 
 DEFAULT_CONNECTION_NAME = "default"
 

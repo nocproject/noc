@@ -12,12 +12,12 @@ import datetime
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
+from noc.core.translation import ugettext as _
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.timepatternterm import TimePatternTerm
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter, StringParameter
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 from noc.services.web.base.modelinline import ModelInline
-from noc.sa.interfaces.base import ModelParameter, ListOfParameter, StringParameter
-from noc.core.translation import ugettext as _
 
 
 class TimePatternApplication(ExtModelApplication):

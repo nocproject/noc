@@ -8,10 +8,9 @@
 # Python modules
 import datetime
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
 from .project import Project
+from .typing import Reference
 
 
 class IPVRF(BaseModel):

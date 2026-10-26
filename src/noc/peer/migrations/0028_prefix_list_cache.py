@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.model.fields import InetArrayField
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import InetArrayField
 
 
 class Migration(BaseMigration):

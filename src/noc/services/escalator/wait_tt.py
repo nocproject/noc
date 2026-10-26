@@ -6,15 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # NOC modules
-from noc.fm.models.utils import get_alarm
-from noc.fm.models.ttsystem import TTSystem
-from noc.core.scheduler.job import Job
 from noc.config import config
-
+from noc.core.scheduler.job import Job
+from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.utils import get_alarm
 
 logger = logging.getLogger(__name__)
 

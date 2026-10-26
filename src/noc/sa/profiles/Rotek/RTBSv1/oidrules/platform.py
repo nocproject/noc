@@ -5,8 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from noc.core.script.oidrules.oid import OIDRule
+# NOC modules
 from noc.core.mib import mib
+from noc.core.script.oidrules.oid import OIDRule
 
 
 class PlatformRule(OIDRule):

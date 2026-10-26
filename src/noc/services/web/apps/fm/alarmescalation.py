@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class AlarmEscalationApplication(ExtDocApplication):

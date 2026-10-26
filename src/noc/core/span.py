@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import logging
+import os
+import random
+import struct
 import threading
 import time
-from time import perf_counter
-import random
-import os
-import struct
-import logging
 import uuid
 from collections import namedtuple
 from contextvars import ContextVar
+from time import perf_counter
 
 # NOC modules
-from noc.core.error import NO_ERROR, ERR_UNKNOWN
-from noc.core.perf import metrics
 from noc.config import config
+from noc.core.error import ERR_UNKNOWN, NO_ERROR
+from noc.core.perf import metrics
 
 forensic_logger = logging.getLogger("noc.core.forensic")
 

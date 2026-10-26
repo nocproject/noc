@@ -7,15 +7,13 @@
 
 # Python modules
 import datetime
-
-# Third-party modules
 from dataclasses import dataclass
 
 # NOC modules
 from noc.core.checkers.base import Check, CheckResult
-from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
-from noc.core.diagnostic.hub import DiagnosticHub, SNMP_DIAG
 from noc.core.diagnostic.decorator import diagnostic
+from noc.core.diagnostic.hub import SNMP_DIAG, DiagnosticHub
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 
 
 @dataclass

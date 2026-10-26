@@ -13,7 +13,7 @@ from collections import defaultdict
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.base import BaseService
-from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
+from noc.fm.models.ttsystem import DEFAULT_TTSYSTEM_SHARD, TTSystem
 
 
 class EscalatorService(BaseService):

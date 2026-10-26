@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
+# NOC modules
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 
 
 class Script(BaseScript):

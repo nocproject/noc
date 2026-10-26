@@ -6,31 +6,31 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-import datetime
 import csv
+import datetime
+import logging
 from io import BytesIO, TextIOWrapper
-from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
+import xlsxwriter
 from django.http import HttpResponse
 from pymongo import ReadPreference
-import xlsxwriter
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.mongo.connection import get_db
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.main.models.pool import Pool
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.platform import Platform
-from noc.core.comp import smart_text
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.pool import Pool
+from noc.sa.interfaces.base import BooleanParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 
 logger = logging.getLogger(__name__)
 

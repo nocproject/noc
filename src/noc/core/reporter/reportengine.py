@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
-from io import BytesIO
+import logging
 from collections import defaultdict
+from io import BytesIO
 from typing import Any
 
 # Third-party modules
@@ -19,23 +19,22 @@ from jinja2 import Template as Jinja2Template
 from jinja2.exceptions import TemplateError
 
 # NOC modules
-from noc.main.reportsources.loader import loader as r_source_loader
+from noc.core.datasources.base import BaseDataSource, data_source_loader
 from noc.core.debug import error_report
 from noc.core.middleware.tls import get_user
-from noc.core.datasources.base import BaseDataSource
-from noc.core.datasources.base import data_source_loader
 from noc.core.reporter.band import Band, DataSet
 from noc.core.reporter.formatter.base import data_formatter_loader
 from noc.core.reporter.types import (
-    Template,
+    HEADER_BAND,
+    ROOT_BAND,
+    OutputDocument,
     OutputType,
-    RunParams,
     ReportConfig,
     ReportQuery,
-    OutputDocument,
-    ROOT_BAND,
-    HEADER_BAND,
+    RunParams,
+    Template,
 )
+from noc.main.reportsources.loader import loader as r_source_loader
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +114,7 @@ class ReportEngine:
         """
         :return:
         """
+        # NOC modules
         from noc.core.service.loader import get_service
 
         svc = get_service()

@@ -9,11 +9,11 @@
 import re
 
 # NOC modules
+from noc.core.mac import MAC
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.core.text import parse_table
 from noc.core.validators import is_int
-from noc.core.mac import MAC
+from noc.sa.interfaces.igetcpe import IGetCPE
 
 
 class Script(BaseScript):

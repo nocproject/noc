@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..cli.stream import BaseStream
 from ..cli.telnet import TelnetStream
 from .base import MMLBase

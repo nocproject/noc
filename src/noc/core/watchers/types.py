@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
+import enum
 from dataclasses import dataclass
 
+# NOC modules
 # NOC Modules
 from noc.core.models.cfgactions import ActionType
 

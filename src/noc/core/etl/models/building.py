@@ -8,10 +8,9 @@
 # Python modules
 from datetime import date
 
-# NOC modules
+from .admdiv import AdmDiv
 from .base import BaseModel
 from .typing import Reference
-from .admdiv import AdmDiv
 
 
 class Building(BaseModel):

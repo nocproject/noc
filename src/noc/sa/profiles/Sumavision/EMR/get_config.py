@@ -6,15 +6,15 @@
 # ---------------------------------------------------------------------
 # __author__ = 'FeNikS'
 
+# Python modules
+import gzip
+import os
+from ftplib import FTP
+from xml.dom.minidom import parseString
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-
-# Python modules
-import os
-from ftplib import FTP
-import gzip
-from xml.dom.minidom import parseString
 
 confdir = "para"
 path_to_temp_files = "/tmp/noc"

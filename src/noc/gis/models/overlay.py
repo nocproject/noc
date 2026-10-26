@@ -11,7 +11,7 @@ import inspect
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, DictField
+from mongoengine.fields import BooleanField, DictField, StringField
 
 
 class Overlay(Document):
@@ -31,6 +31,7 @@ class Overlay(Document):
 
     def get_overlay(self):
         if self.overlay not in self._overlay_cache:
+            # NOC modules
             from noc.gis.overlays.base import OverlayHandler
 
             m = importlib.import_module(f"noc.gis.overlays.{self.overlay}")

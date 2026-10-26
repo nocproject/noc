@@ -12,10 +12,11 @@ import datetime
 import jinja2
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.managedobject import ManagedObject
 from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
+
+from .base import BaseCard
 
 
 class MaintenanceCard(BaseCard):

@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from enum import Enum
+
+# Python modules
 from collections.abc import Iterable
+from enum import Enum
 
 
 class EscalationPolicy(Enum):

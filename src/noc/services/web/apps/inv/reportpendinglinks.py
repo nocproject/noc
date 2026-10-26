@@ -6,27 +6,26 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import ast
 import re
 from collections import defaultdict
-import ast
 
 # Third-party modules
 from django import forms
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.cache.base import cache
-from noc.services.web.base.simplereport import SimpleReport, SectionRow
 from noc.core.mongo.connection import get_db
-from pymongo import ReadPreference
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.core.translation import ugettext as _
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SectionRow, SimpleReport
 
 
 class ReportPendingLinks:

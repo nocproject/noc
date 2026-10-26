@@ -13,21 +13,21 @@ from pathlib import Path
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    DateTimeField,
-    ListField,
-    IntField,
     BinaryField,
-    UUIDField,
+    DateTimeField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
-from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
+from noc.aaa.models.user import User
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.prettyjson import to_json
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 DAL_NONE = -1
 DAL_RO = 0

@@ -7,35 +7,36 @@
 
 # Python modules
 import re
+from collections.abc import Callable, Iterable, Iterator
+from dataclasses import dataclass
 from typing import (
     Any,
     Literal,
 )
-from collections.abc import Iterator, Callable, Iterable
-from dataclasses import dataclass
 
 # Third-party modules
-from jinja2 import Template as JTemplate
 import orjson
+from jinja2 import Template as JTemplate
 
 # NOC modules
-from noc.core.msgstream.message import Message
-from noc.core.matcher import build_matcher
 from noc.core.defer import JOBS_STREAM
+from noc.core.matcher import build_matcher
+from noc.core.msgstream.message import Message
 from noc.core.mx import (
-    MX_H_VALUE_SPLITTER,
-    MX_NOTIFICATION_METHOD,
-    MX_NOTIFICATION_GROUP_ID,
-    MX_LABELS,
-    MX_RESOURCE_GROUPS,
-    MX_JOB_HANDLER,
     MX_DISABLE_MUTATIONS,
-    MX_REMOTE_SYSTEMS,
     MX_FWD_ROUTER,
-    MessageType,
+    MX_H_VALUE_SPLITTER,
+    MX_JOB_HANDLER,
+    MX_LABELS,
+    MX_NOTIFICATION_GROUP_ID,
+    MX_NOTIFICATION_METHOD,
+    MX_REMOTE_SYSTEMS,
+    MX_RESOURCE_GROUPS,
     MessageMeta,
+    MessageType,
 )
-from .action import Action, NotificationAction, MessageAction, ActionCfg, JobAction, HeaderItem, FWD
+
+from .action import FWD, Action, ActionCfg, HeaderItem, JobAction, MessageAction, NotificationAction
 
 T_BODY = bytes | Any
 
@@ -270,8 +271,9 @@ class Route:
         return build_matcher({"$or": expr})
 
     def update(self, data):
-        from noc.main.models.template import Template
+        # NOC modules
         from noc.main.models.handler import Handler
+        from noc.main.models.template import Template
 
         self.match_co = self.get_matcher(data["match"])
         # Compile transmute part

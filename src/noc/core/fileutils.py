@@ -4,16 +4,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
-import tempfile
-import tarfile
 import gzip
+import os
 import shutil
+import tarfile
+import tempfile
 from io import BytesIO
 
 # NOC modules
-from noc.core.version import version
 from noc.core.comp import smart_text
+from noc.core.version import version
 
 
 def safe_rewrite(path, text, mode=None):
@@ -74,7 +74,10 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
-    from urllib.request import urlopen, Request
+    # Python modules
+    from urllib.request import Request, urlopen
+
+    # NOC modules
     from noc.core.http.proxy import setup_urllib_proxies
 
     setup_urllib_proxies()

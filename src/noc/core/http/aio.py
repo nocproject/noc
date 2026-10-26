@@ -7,18 +7,19 @@
 
 # Python modules
 import logging
-from urllib.parse import urlparse
-from typing import Any
 from collections.abc import Callable
+from typing import Any
+from urllib.parse import urlparse
 
 # Third-party modules
-from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI, Proxy, HttpError
+from gufo.http import BROTLI, DEFLATE, GZIP, BasicAuth, HttpError, Proxy, RequestMethod
 from gufo.http.async_client import HttpClient as GufoHttpClient
 
 # NOC modules
-from noc.core.perf import metrics
 from noc.config import config
+from noc.core.perf import metrics
 from noc.core.validators import is_ipv4
+
 from .proxy import SYSTEM_PROXIES
 from .resolver import resolve_async
 

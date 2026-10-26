@@ -5,43 +5,46 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import enum
-from threading import Lock
+import operator
 from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    LongField,
-    ListField,
+    DateTimeField,
     EmbeddedDocumentListField,
     EnumField,
-    DateTimeField,
+    IntField,
+    ListField,
+    LongField,
     ReferenceField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.bi.decorator import bi_sync
-from noc.core.wf.decorator import workflow
-from noc.core.change.decorator import change
-from noc.core.caps.decorator import capabilities
-from noc.core.etl.remotemappings import mappings
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.remotemappingsitem import RemoteMappingItem
-from noc.inv.models.capsitem import CapsItem
-from noc.wf.models.state import State
-from noc.sa.models.managedobject import ManagedObject
 from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.caps.decorator import capabilities
+from noc.core.change.decorator import change
+from noc.core.etl.remotemappings import mappings
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.wf.decorator import workflow
+from noc.inv.models.capsitem import CapsItem
+from noc.main.models.label import Label
+from noc.main.models.remotemappingsitem import RemoteMappingItem
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
+
 from .agentprofile import AgentProfile
 
 id_lock = Lock()
@@ -75,8 +78,9 @@ def gen_key() -> str:
     Generate unique key
     :return:
     """
-    import secrets
+    # Python modules
     import base64
+    import secrets
 
     while True:
         # Generate key
@@ -226,6 +230,7 @@ class Agent(Document):
     @classmethod
     def get_metric_config(cls, agent: Agent):
         """Return MetricConfig for Target service"""
+        # NOC modules
         from noc.inv.models.sensor import Sensor
 
         if not agent.state.is_productive:

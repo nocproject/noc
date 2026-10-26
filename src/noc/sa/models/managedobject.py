@@ -5,161 +5,166 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import datetime
 import difflib
 import logging
+import operator
 import os
 import re
-import operator
-from threading import Lock
-import datetime
 import warnings
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from itertools import chain
+from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import cachetools
 import orjson
 from django.contrib.postgres.fields import ArrayField
-from django.db.models.query_utils import Q
 from django.core.validators import MinValueValidator
 from django.db.models import (
-    CharField,
+    CASCADE,
+    SET_NULL,
+    BigIntegerField,
     BooleanField,
+    Case,
+    CharField,
+    DateTimeField,
+    FloatField,
     ForeignKey,
     IntegerField,
-    FloatField,
-    BigIntegerField,
-    SET_NULL,
-    CASCADE,
-    DateTimeField,
-    TextChoices,
     JSONField,
-    When,
-    Case,
-    Value,
     Manager,
-    Subquery,
-    OuterRef,
     Min,
+    OuterRef,
+    Subquery,
+    TextChoices,
+    Value,
+    When,
 )
+from django.db.models.query_utils import Q
 from pydantic import BaseModel, RootModel
 from pymongo import ASCENDING
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.aaa.models.group import Group
+from noc.aaa.models.user import User
 from noc.config import config
-from noc.core.diagnostic.types import DiagnosticValue, DiagnosticConfig
-from noc.core.diagnostic.decorator import diagnostic
-from noc.core.diagnostic.hub import (
-    DIAGNOCSTIC_LABEL_SCOPE,
-    SA_DIAG,
-    ALARM_DIAG,
-    FIRST_AVAIL,
-    RESOLVER_DIAG,
-    SNMP_DIAG,
-    PROFILE_DIAG,
-    CLI_DIAG,
-    HTTP_DIAG,
-    SNMPTRAP_DIAG,
-    SYSLOG_DIAG,
-    SA_DIAGS,
-    FM_DIAGS,
-)
-from noc.core.wf.interaction import Interaction
-from noc.core.mx import (
-    send_message,
-    MessageType,
-    get_subscription_id,
-    MX_NOTIFICATION_DELAY,
-    MessageMeta,
-)
+from noc.core.bi.decorator import bi_sync
+from noc.core.cache.base import cache
+from noc.core.cache.decorator import cachedmethod
 from noc.core.caps.decorator import capabilities
 from noc.core.caps.types import CapsConfig
+from noc.core.change.decorator import change, get_datastreams
+from noc.core.change.policy import change_tracker
+from noc.core.comp import smart_text
+from noc.core.confdb.engine.base import Engine
+from noc.core.confdb.tokenizer.base import tokenizer_loader
+from noc.core.defer import call_later
 from noc.core.deprecations import RemovedInNOC2301Warning
-from noc.aaa.models.user import User
-from noc.aaa.models.group import Group
-from noc.main.models.pool import Pool
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.extstorage import ExtStorage
-from noc.vc.models.l2domain import L2Domain
-from noc.main.models.label import Label
-from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.profile import Profile
-from noc.inv.models.capsitem import ModelCapsItem
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.firmwarepolicy import FirmwarePolicy
-from noc.project.models.project import Project
-from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
+from noc.core.diagnostic.decorator import diagnostic
+from noc.core.diagnostic.hub import (
+    ALARM_DIAG,
+    CLI_DIAG,
+    DIAGNOCSTIC_LABEL_SCOPE,
+    FIRST_AVAIL,
+    FM_DIAGS,
+    HTTP_DIAG,
+    PROFILE_DIAG,
+    RESOLVER_DIAG,
+    SA_DIAG,
+    SA_DIAGS,
+    SNMP_DIAG,
+    SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
+)
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticValue
+from noc.core.etl.remotemappings import mappings
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.handler import get_handler
+from noc.core.ip import IP
+from noc.core.matcher import match
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import (
+    _get_field_snapshot,
+    on_delete,
+    on_delete_check,
+    on_init,
+    on_save,
+)
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.core.model.fields import (
-    INETField,
-    DocumentReferenceField,
     CachedForeignKey,
+    DocumentReferenceField,
+    INETField,
     ObjectIDArrayField,
     PydanticField,
 )
 from noc.core.model.sql import SQL
-from noc.core.validators import is_ipv4, is_ipv4_prefix
-from noc.core.ip import IP
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.gridvcs.manager import GridVCSField
-from noc.main.models.textindex import full_text_search, TextIndex
-from noc.core.scheduler.job import Job
-from noc.main.models.handler import Handler
-from noc.core.handler import get_handler
-from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import (
-    on_save,
-    on_init,
-    on_delete,
-    on_delete_check,
-    _get_field_snapshot,
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.models.problem import ProblemItem
+from noc.core.mx import (
+    MX_NOTIFICATION_DELAY,
+    MessageMeta,
+    MessageType,
+    get_subscription_id,
+    send_message,
 )
-from noc.inv.models.object import Object
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.defer import call_later
-from noc.core.cache.decorator import cachedmethod
-from noc.core.cache.base import cache
-from noc.core.script.caller import SessionContext, ScriptCaller
-from noc.core.bi.decorator import bi_sync
+from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.scheduler.job import Job
+from noc.core.script.caller import ScriptCaller, SessionContext
+from noc.core.script.loader import loader as script_loader
 from noc.core.script.scheme import (
     SCHEME_CHOICES,
+    TELNET,
+    CLICredential,
     SNMPCredential,
     SNMPv3Credential,
-    CLICredential,
-    TELNET,
+)
+from noc.core.script.scheme import (
     Protocol as CredProtocol,
 )
-from noc.core.matcher import match
-from noc.core.change.decorator import change, get_datastreams
-from noc.core.change.policy import change_tracker
-from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.confdb.tokenizer.base import tokenizer_loader
-from noc.core.confdb.engine.base import Engine
-from noc.core.comp import smart_text
-from noc.main.models.glyph import Glyph
 from noc.core.topology.types import (
-    ShapeOverlayPosition,
-    ShapeOverlayForm,
     ShapeOverlay,
+    ShapeOverlayForm,
+    ShapeOverlayPosition,
     TopologyNode,
     TopologyNodeType,
 )
-from noc.core.models.problem import ProblemItem
-from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
-from noc.core.wf.decorator import workflow
-from noc.core.etl.remotemappings import mappings
-from noc.core.model.dynamicprofile import dynamic_profile
-from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
+from noc.core.validators import is_ipv4, is_ipv4_prefix
+from noc.core.watchers.decorator import WATCHER_JCLS, get_next_ts, watchers
 from noc.core.watchers.types import ObjectEffect, WatchItem
+from noc.core.wf.decorator import workflow
+from noc.core.wf.interaction import Interaction
+from noc.fm.models.ttsystem import DEFAULT_TTSYSTEM_SHARD, TTSystem
+from noc.inv.models.capsitem import ModelCapsItem
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.vendor import Vendor
+from noc.main.models.extstorage import ExtStorage
+from noc.main.models.glyph import Glyph
+from noc.main.models.handler import Handler
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.textindex import TextIndex, full_text_search
+from noc.main.models.timepattern import TimePattern
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.models.profile import Profile
+from noc.vc.models.l2domain import L2Domain
 from noc.wf.models.state import State
+
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -1166,9 +1171,10 @@ class ManagedObject(NOCModel):
     def get_component(
         cls, managed_object: ManagedObject, mac=None, ipv4=None, vrf=None, **kwargs
     ) -> ManagedObject | None:
-        from noc.inv.models.subinterface import SubInterface
-        from noc.inv.models.forwardinginstance import ForwardingInstance
+        # NOC modules
         from noc.inv.models.discoveryid import DiscoveryID
+        from noc.inv.models.forwardinginstance import ForwardingInstance
+        from noc.inv.models.subinterface import SubInterface
 
         if mac:
             mac = MACAddressParameter().clean(mac)
@@ -1274,6 +1280,7 @@ class ManagedObject(NOCModel):
             self.segment.update_access()
             self.update_topology()
             # Refresh links
+            # NOC modules
             from noc.inv.models.link import Link
 
             for ll in Link.object_links(self):
@@ -1281,12 +1288,14 @@ class ManagedObject(NOCModel):
         # Handle became unmanaged
         if Interaction.Alarm not in self.interactions:
             # Clear alarms
+            # NOC modules
             from noc.fm.models.activealarm import ActiveAlarm
 
             for aa in ActiveAlarm.objects.filter(managed_object=self.id):
                 aa.clear_alarm("Management is disabled")
         if Interaction.ServiceActivation not in self.interactions:
             # Clear discovery id
+            # NOC modules
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
@@ -1447,6 +1456,7 @@ class ManagedObject(NOCModel):
         Returns a map of object id -> status
         for a list od object ids
         """
+        # Third-party modules
         from django.db import connection as pg_connection
 
         s = {}
@@ -1470,6 +1480,7 @@ class ManagedObject(NOCModel):
         Retuns a list of inventory Objects managed by
         this managed object
         """
+        # NOC modules
         from noc.inv.models.object import Object
 
         return list(
@@ -1718,6 +1729,7 @@ class ManagedObject(NOCModel):
         else:
             logger.debug("[%s] Object validation policy is not set. Skipping", self.name)
         # Interface-level validation
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
 
@@ -1786,6 +1798,7 @@ class ManagedObject(NOCModel):
         Generator yielding all recursive objects
         for effective PM settings
         """
+        # NOC modules
         from noc.inv.models.interface import Interface
 
         yield from Interface.objects.filter(managed_object=self.id)
@@ -1814,6 +1827,7 @@ class ManagedObject(NOCModel):
         return self._profile
 
     def get_interface(self, name: str):
+        # NOC modules
         from noc.inv.models.interface import Interface
 
         name = self.get_profile().convert_interface_name(name)
@@ -1919,6 +1933,7 @@ class ManagedObject(NOCModel):
             else:
                 try:
                     mac = MACAddressParameter().clean(query)
+                    # NOC modules
                     from noc.inv.models.discoveryid import DiscoveryID
 
                     mo = DiscoveryID.find_all_objects(mac)
@@ -2144,6 +2159,7 @@ class ManagedObject(NOCModel):
             if handler and not handler.allow_resolver:
                 logger.warning("Handler is not allowed for resolver")
                 return None
+        # Python modules
         import socket
 
         try:
@@ -2332,6 +2348,7 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def iter_effective_labels(cls, instance: ManagedObject) -> Iterable[list[str]]:
+        # NOC modules
         from noc.sa.models.service import Service
 
         yield list(instance.labels or [])
@@ -2413,7 +2430,10 @@ class ManagedObject(NOCModel):
         :param iter_uplinks: Iterable of ObjectUplinks
         :return:
         """
+        # Third-party modules
         from django.db import connection as pg_connection
+
+        # NOC modules
         from noc.core.change.model import ChangeField
 
         obj_data: list[ObjectUplinks] = []
@@ -2478,8 +2498,11 @@ class ManagedObject(NOCModel):
         :param exclude_link_ids: Exclude link ID from update
         :return:
         """
-        from noc.inv.models.link import Link
+        # Third-party modules
         from django.db import connection as pg_connection
+
+        # NOC modules
+        from noc.inv.models.link import Link
 
         coll = Link._get_collection()
         r: dict[int, set] = {lo: set() for lo in linked_objects}
@@ -2653,10 +2676,11 @@ class ManagedObject(NOCModel):
         """
         if Interaction.ServiceActivation not in self.interactions:
             return
+        # NOC modules
         from noc.inv.models.cpe import CPE
-        from noc.sla.models.slaprobe import SLAProbe
         from noc.inv.models.interface import Interface
         from noc.inv.models.sensor import Sensor
+        from noc.sla.models.slaprobe import SLAProbe
 
         metrics: list[MetricItem] = []
         d_interval = d_interval or self.get_metric_discovery_interval()
@@ -2691,13 +2715,14 @@ class ManagedObject(NOCModel):
         Return MetricConfig for Metrics service
         :return:
         """
+        # NOC modules
+        from noc.core.checkers.base import NODATA
+        from noc.core.models.serviceinstanceconfig import InstanceType
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
-        from noc.pm.models.metricrule import MetricRule
         from noc.inv.models.sensor import Sensor
+        from noc.pm.models.metricrule import MetricRule
         from noc.sa.models.serviceinstance import ServiceInstance
-        from noc.core.models.serviceinstanceconfig import InstanceType
-        from noc.core.checkers.base import NODATA
 
         if Interaction.ServiceActivation not in mo.interactions:
             return {}
@@ -2857,10 +2882,11 @@ class ManagedObject(NOCModel):
         Return Metric Discovery interval by MetricConfigs
         :return:
         """
+        # NOC modules
         from noc.inv.models.cpe import CPE
-        from noc.sla.models.slaprobe import SLAProbe
         from noc.inv.models.interface import Interface
         from noc.inv.models.sensor import Sensor
+        from noc.sla.models.slaprobe import SLAProbe
 
         r = [self.object_profile.get_metric_discovery_interval()]
         caps = self.get_caps()
@@ -2919,6 +2945,7 @@ class ManagedObject(NOCModel):
         bulk=None,
     ):
         """"""
+        # NOC modules
         from noc.core.scheduler.scheduler import Scheduler
 
         updated = []
@@ -3253,6 +3280,7 @@ class ManagedObject(NOCModel):
     @classmethod
     def reset_maintenance(cls, maintenance_id: str):
         """Reset Maintenance"""
+        # Third-party modules
         from django.db import connection as pg_connection
 
         with pg_connection.cursor() as cursor:
@@ -3308,6 +3336,7 @@ class ManagedObjectStatus(NOCModel):
         :param o: Managed Object
         :return: last status, last update or None
         """
+        # Third-party modules
         from django.db import connection as pg_connection
 
         with pg_connection.cursor() as cursor:
@@ -3347,11 +3376,16 @@ class ManagedObjectStatus(NOCModel):
             statuses: Statuses bulk
             update_jobs: Suspend ManagedObject jobs
         """
-        from django.db import connection as pg_connection
+        # Python modules
         from collections import defaultdict
+
+        # Third-party modules
+        from django.db import connection as pg_connection
         from psycopg2.extras import execute_values
-        from noc.core.service.loader import get_service
+
+        # NOC modules
         from noc.core.scheduler.scheduler import Scheduler
+        from noc.core.service.loader import get_service
 
         now = datetime.datetime.now()
         bulk = {}
@@ -3504,8 +3538,9 @@ class ManagedObjectWatchers(NOCModel):
     @classmethod
     def update_bulk(cls, updated: dict[int, list[WatchItem]]):
         """Update bulk query"""
-        from psycopg2.extras import execute_values
+        # Third-party modules
         from django.db import connection as pg_connection
+        from psycopg2.extras import execute_values
 
         bulk = []
         for oid, items in updated.items():
@@ -3654,8 +3689,10 @@ class InteractionHub:
 
 
 # Avoid circular references
-from .useraccess import UserAccess
-from .groupaccess import GroupAccess
-from .action import Action
+# NOC modules
 from noc.core.pm.utils import get_objects_metrics
 from noc.ip.models.vrf import VRF
+
+from .action import Action
+from .groupaccess import GroupAccess
+from .useraccess import UserAccess

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Protocol
 import inspect
+from typing import Protocol
 
 
 def check_protocol(proto: Protocol, impl: type[object]) -> None:

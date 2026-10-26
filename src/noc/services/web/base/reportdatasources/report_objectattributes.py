@@ -8,7 +8,6 @@
 # Third-party modules
 from django.db import connection
 
-# NOC modules
 from .base import BaseReportColumn
 
 

@@ -8,11 +8,13 @@
 
 
 # Python module
+# Python modules
 import re
 
+# NOC modules
 # NOC module
 from noc.core.profile.base import BaseProfile
-from noc.core.snmp.get import GetResponse, BERDecoder, PDU_RESPONSE
+from noc.core.snmp.get import PDU_RESPONSE, BERDecoder, GetResponse
 
 
 def parse_get_response(pdu: bytes, display_hints=None) -> GetResponse:

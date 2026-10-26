@@ -4,7 +4,8 @@
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from noc.main.refbooks.refbooks import RefBook, Field
+# NOC modules
+from noc.main.refbooks.refbooks import Field, RefBook
 
 
 class ISO3166(RefBook):

@@ -8,8 +8,7 @@
 # Python modules
 from math import asin
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class ASinNode(BaseCDAGNode):

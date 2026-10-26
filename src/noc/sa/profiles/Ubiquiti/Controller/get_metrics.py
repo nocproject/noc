@@ -9,8 +9,9 @@
 import time
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, ProfileMetricConfig
 from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.sa.profiles.Generic.get_metrics import ProfileMetricConfig
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
 NS = 1_000_000_000
 

@@ -6,15 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections import namedtuple
+# Python modules
 import datetime
-from collections.abc import Iterable, AsyncIterable
+from collections import namedtuple
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 MOInfo = namedtuple("MOInfo", ["name", "address", "platform", "segment"])
 

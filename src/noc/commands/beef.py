@@ -7,23 +7,23 @@
 
 # Python modules
 import argparse
+import codecs
 import datetime
 import os
 import re
-import codecs
-
-# Third-party modules
 import uuid
 import yaml
+
+# Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.mongo.connection import connect
+from noc.core.comp import smart_bytes, smart_text
+from noc.core.ioloop.util import setup_asyncio
 from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.script.beef import Beef
 from noc.main.models.extstorage import ExtStorage
-from noc.core.comp import smart_text, smart_bytes
-from noc.core.ioloop.util import setup_asyncio
 
 
 class Command(BaseCommand):
@@ -112,8 +112,9 @@ class Command(BaseCommand):
         self, storage, path, spec, force, objects, description=None, *args, **options
     ):
         connect()
-        from noc.inv.models.resourcegroup import ResourceGroup
+        # NOC modules
         from noc.dev.models.spec import Spec
+        from noc.inv.models.resourcegroup import ResourceGroup
 
         class FakeSpec:
             def __init__(self, name) -> None:
@@ -315,6 +316,7 @@ class Command(BaseCommand):
         *args,
         **options,
     ):
+        # NOC modules
         from noc.core.script.loader import loader
 
         if not path:
@@ -362,12 +364,14 @@ class Command(BaseCommand):
             )
             result = scr.run()
             if pretty:
+                # Python modules
                 import pprint
 
                 pprint.pprint(result)
             elif yaml:
-                import yaml
+                # Python modules
                 import sys
+                import yaml
 
                 yaml.dump(result, sys.stdout, indent=2)
             else:
@@ -419,7 +423,10 @@ class Command(BaseCommand):
                     self.handle_build_test_case(test_storage, save_path)
 
     def handle_build_test_case(self, test_storage, test_path, cfg=None, *args, **options):
+        # Python modules
         import bz2
+
+        # NOC modules
         from noc.core.script.loader import loader
 
         if isinstance(test_storage, str):

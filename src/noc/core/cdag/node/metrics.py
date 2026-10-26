@@ -7,18 +7,19 @@
 
 # Python modules
 import time
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 # Third-party modules
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.service.loader import get_service
-from noc.core.perf import metrics
-from noc.core.mx import MX_METRICS_SCOPE, MessageType
-from .base import BaseCDAGNode, ValueType, Category
 from noc.config import config
+from noc.core.mx import MX_METRICS_SCOPE, MessageType
+from noc.core.perf import metrics
+from noc.core.service.loader import get_service
+
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class MetricsNodeConfig(BaseModel):
@@ -158,6 +159,7 @@ class MetricsNode(BaseCDAGNode):
         Loading MX Metrics map rules
         :return:
         """
+        # NOC modules
         from noc.main.models.metricstream import MetricStream
 
         r = {}

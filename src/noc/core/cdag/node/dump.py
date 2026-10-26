@@ -13,8 +13,7 @@ from collections.abc import Callable
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from .base import BaseCDAGNode, Category, IN_OPTIONAL, IN_REQUIRED
+from .base import IN_OPTIONAL, IN_REQUIRED, BaseCDAGNode, Category
 
 
 class DumpNodeConfig(BaseModel):

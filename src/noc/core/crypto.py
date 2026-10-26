@@ -6,9 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import random
 import hashlib
-
+import random
 
 # Symbols used in salt
 ITOA64 = b"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

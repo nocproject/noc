@@ -7,16 +7,15 @@
 
 # Python modules
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
 from pymongo import ReadPreference
-from typing import Any
 
 # NOC modules
-from noc.core.text import ranges_to_list
-from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
-from noc.core.vpn import get_vpn_id
 from noc.core.service.rpc import RPCError
+from noc.core.text import ranges_to_list
+from noc.core.vpn import get_vpn_id
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -24,6 +23,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.technology import Technology
 from noc.main.models.label import Label
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 
 
 class InterfaceCheck(PolicyDiscoveryCheck):

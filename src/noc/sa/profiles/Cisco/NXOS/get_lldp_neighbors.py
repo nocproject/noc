@@ -9,26 +9,26 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.validators import is_int, is_ipv4
 from noc.core.lldp import (
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_UNSPECIFIED,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_OTHER,
     LLDP_CAP_REPEATER,
-    LLDP_CAP_BRIDGE,
-    LLDP_CAP_WLAN_ACCESS_POINT,
     LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE,
-    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_STATION_ONLY,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_UNSPECIFIED,
     lldp_caps_to_bits,
 )
+from noc.core.script.base import BaseScript
+from noc.core.validators import is_int, is_ipv4
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

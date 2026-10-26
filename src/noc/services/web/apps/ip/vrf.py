@@ -9,20 +9,20 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.ip.models.vrfgroup import VRFGroup
-from noc.ip.models.vrf import VRF
-from noc.sa.interfaces.base import (
-    StringParameter,
-    BooleanParameter,
-    ModelParameter,
-    RDParameter,
-    ListOfParameter,
-    DictParameter,
-)
 from noc.core.translation import ugettext as _
 from noc.core.vpn import get_vpn_id
+from noc.ip.models.vrf import VRF
+from noc.ip.models.vrfgroup import VRFGroup
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DictParameter,
+    ListOfParameter,
+    ModelParameter,
+    RDParameter,
+    StringParameter,
+)
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 
 
 @state_handler

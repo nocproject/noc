@@ -10,6 +10,7 @@
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+
 from .base import BaseGoal
 
 

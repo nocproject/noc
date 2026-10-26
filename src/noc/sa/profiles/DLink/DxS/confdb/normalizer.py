@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
-from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, match
+from noc.core.confdb.syntax.patterns import INTEGER, IP_ADDRESS
 from noc.core.validators import is_int
 
 

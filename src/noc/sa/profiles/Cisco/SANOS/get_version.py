@@ -12,7 +12,6 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
-
 rx_platform = re.compile(r"^Hardware\n\s+cisco\s+(?P<platform>MDS\s+\S+)", re.MULTILINE)
 rx_version = re.compile(
     r"^Software\n\s+BIOS:\s+version\s+\S+\n\s+loader:\s+version\s+\S+\n"

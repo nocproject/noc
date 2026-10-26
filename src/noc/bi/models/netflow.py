@@ -6,22 +6,22 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
     DateField,
     DateTimeField,
+    Float64Field,
+    IPv4Field,
+    # IPv6Field,
+    ReferenceField,
+    StringField,
     UInt8Field,
     UInt16Field,
     UInt32Field,
     UInt64Field,
-    StringField,
-    Float64Field,
-    ReferenceField,
-    IPv4Field,
-    # IPv6Field,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 NETFLOW_V5 = 5

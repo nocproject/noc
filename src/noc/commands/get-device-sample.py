@@ -12,8 +12,8 @@ import argparse
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.platform import Platform
-from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 
 
 class Command(BaseCommand):

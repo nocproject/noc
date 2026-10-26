@@ -10,11 +10,11 @@ from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, UUIDField, IntField, EmbeddedDocumentListField
+from mongoengine.fields import EmbeddedDocumentListField, IntField, StringField, UUIDField
 
 # NOC modules
-from noc.core.prettyjson import to_json
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 
 class DashboardCell(EmbeddedDocument):

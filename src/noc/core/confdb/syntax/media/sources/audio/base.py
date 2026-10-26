@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import ANY, CHOICES, INTEGER, BOOL
+from ....patterns import ANY, BOOL, CHOICES, INTEGER
 
 MEDIA_SOURCES_AUDIO_SYNTAX = DEF(
     "audio",

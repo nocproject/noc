@@ -6,8 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC Modules
-from .base import CHTableReportDataSource, ReportField
+# NOC modules
 from noc.config import config
+
+from .base import CHTableReportDataSource, ReportField
 
 
 class ReportInterfaceMetrics(CHTableReportDataSource):

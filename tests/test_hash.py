@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.hash import hash_str, hash_int, dict_hash_int, dict_hash_int_args
+from noc.core.hash import dict_hash_int, dict_hash_int_args, hash_int, hash_str
 
 
 @pytest.mark.parametrize(

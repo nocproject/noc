@@ -9,10 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api, HttpResponse
-from noc.main.models.modeltemplate import ModelTemplate, Param
 from noc.core.translation import ugettext as _
+from noc.main.models.modeltemplate import ModelTemplate, Param
 from noc.models import get_model
+from noc.services.web.base.extdocapplication import ExtDocApplication, HttpResponse, api
 
 
 class ModelTemplateApplication(ExtDocApplication):

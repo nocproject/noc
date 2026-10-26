@@ -6,16 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from uuid import UUID
 from pathlib import Path
+from uuid import UUID
 
 # Third-party modules
 import pytest
 
 # NOC modules
 from noc.core.protocols.to_json import ToJson
-from .util import get_documents
+
 from ..utils import check_protocol
+from .util import get_documents
 
 SELECTED_MODELS = [x for x in get_documents() if hasattr(x, "get_json_path")]
 

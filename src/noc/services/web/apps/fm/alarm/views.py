@@ -12,50 +12,50 @@ from typing import Any
 
 # Third-party modules
 import bson
-from django.http import HttpRequest
 import orjson
-from pymongo import ReadPreference
+from django.http import HttpRequest
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset.visitor import Q
+from pymongo import ReadPreference
 
 # NOC modules
+from noc.aaa.models.user import User
 from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.comp import smart_text
-from noc.services.web.base.extapplication import ExtApplication, view, api
-from noc.inv.models.object import Object
-from noc.inv.models.networksegment import NetworkSegment
+from noc.core.translation import ugettext as _
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.activealarm import ActiveAlarm, Effect
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmplugin import AlarmPlugin
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.utils import get_alarm
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.gis.utils.addr.ru import normalize_division
-from noc.aaa.models.user import User
-from noc.sa.models.useraccess import UserAccess
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.favorites import Favorites
-from noc.sa.interfaces.base import (
-    ModelParameter,
-    UnicodeParameter,
-    DateTimeParameter,
-    StringParameter,
-    StringListParameter,
-    BooleanParameter,
-    ListOfParameter,
-    ObjectIdParameter,
-)
 from noc.maintenance.models.maintenance import Maintenance
-from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DateTimeParameter,
+    ListOfParameter,
+    ModelParameter,
+    ObjectIdParameter,
+    StringListParameter,
+    StringParameter,
+    UnicodeParameter,
+)
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
-from noc.fm.models.alarmplugin import AlarmPlugin
-from noc.core.translation import ugettext as _
-from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api, view
 
 SQL_EVENTS = f"""select
     e.event_id, e.ts,
@@ -848,10 +848,12 @@ class AlarmApplication(ExtApplication):
             return ""
         r = []
         if "subscriber" in s:
+            # NOC modules
             from noc.crm.models.subscriberprofile import SubscriberProfile
 
             r.append(get_summary(s["subscriber"], SubscriberProfile))
         if "service" in s:
+            # NOC modules
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r.append(get_summary(s["service"], ServiceProfile))
@@ -956,10 +958,12 @@ class AlarmApplication(ExtApplication):
             return ""
         r = []
         if "subscriber" in s:
+            # NOC modules
             from noc.crm.models.subscriberprofile import SubscriberProfile
 
             r += get_summary(s["subscriber"], SubscriberProfile)
         if "service" in s:
+            # NOC modules
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r += get_summary(s["service"], ServiceProfile)

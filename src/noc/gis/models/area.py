@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Third-part modules
+# Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, IntField, GeoPointField
+from mongoengine.fields import BooleanField, GeoPointField, IntField, StringField
 
 
 class Area(Document):

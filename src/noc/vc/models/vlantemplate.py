@@ -5,34 +5,35 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-from collections.abc import Iterable
-import operator
+
+# Python modules
 import logging
+import operator
+from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
+from jinja2 import Template
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
     EmbeddedDocumentListField,
     ReferenceField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q
-from jinja2 import Template
-import cachetools
-
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.defer import defer
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.text import ranges_to_list
-from .vlanprofile import VLANProfile
-from .vlanfilter import VLANFilter
 
+from .vlanfilter import VLANFilter
+from .vlanprofile import VLANProfile
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -127,6 +128,7 @@ class VLANTemplate(Document):
 
 
 def allocate_vlans(template_id):
+    # NOC modules
     from noc.vc.models.l2domain import L2Domain
     from noc.vc.models.l2domainprofile import L2DomainProfile
 

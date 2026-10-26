@@ -8,9 +8,9 @@
 # NOC modules
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class Script(BaseScript):

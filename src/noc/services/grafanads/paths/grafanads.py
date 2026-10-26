@@ -8,7 +8,6 @@
 # Third-party modules
 from fastapi import APIRouter
 
-
 router = APIRouter()
 
 

@@ -7,13 +7,14 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    StringParameter,
-    InterfaceNameParameter,
-    ListOfParameter,
     DictParameter,
+    InterfaceNameParameter,
     IPv4Parameter,
+    ListOfParameter,
     MACAddressParameter,
+    StringParameter,
 )
 
 

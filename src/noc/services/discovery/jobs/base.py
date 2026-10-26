@@ -7,12 +7,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import contextlib
-import zlib
 import datetime
-import types
 import operator
+import types
+import zlib
+from collections import defaultdict
 from io import StringIO
 from time import perf_counter
 from typing import Any
@@ -21,38 +21,38 @@ from typing import Any
 import bson
 import cachetools
 import orjson
-from pymongo import UpdateOne
 from gufo.loader import ImportPathResolver
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.scheduler.periodicjob import PeriodicJob
-from noc.core.models.problem import ProblemItem
-from noc.main.models.label import Label, MATCH_OPS
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.core.cache.base import cache
+from noc.core.comp import smart_bytes
 from noc.core.debug import error_report
-from noc.core.log import PrefixLoggerAdapter
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
-from noc.core.mongo.connection import get_db
-from noc.core.service.error import RPCError, RPCRemoteError
+from noc.core.diagnostic.hub import DiagnosticHub
+from noc.core.diagnostic.types import DiagnosticState
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED,
-    ERR_CLI_NO_SUPER_COMMAND,
-    ERR_CLI_LOW_PRIVILEGES,
-    ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED,
+    ERR_CLI_LOW_PRIVILEGES,
+    ERR_CLI_NO_SUPER_COMMAND,
     ERR_CLI_PASSWORD_TIMEOUT,
+    ERR_CLI_SSH_PROTOCOL_ERROR,
 )
-from noc.core.span import Span
-from noc.core.cache.base import cache
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.models.problem import ProblemItem
+from noc.core.mongo.connection import get_db
 from noc.core.perf import metrics
-from noc.core.comp import smart_bytes
+from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.service.error import RPCError, RPCRemoteError
+from noc.core.span import Span
 from noc.core.wf.interaction import Interaction
-from noc.core.diagnostic.types import DiagnosticState
-from noc.core.diagnostic.hub import DiagnosticHub
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
+from noc.inv.models.subinterface import SubInterface
+from noc.main.models.label import MATCH_OPS, Label
+from noc.sa.models.managedobject import ManagedObject
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -271,6 +271,7 @@ class MODiscoveryJob(PeriodicJob):
         :param group_reference: Group Reference
         :return:
         """
+        # NOC modules
         from noc.fm.models.alarmclass import AlarmClass
 
         self.logger.info("Updating alarm statuses")

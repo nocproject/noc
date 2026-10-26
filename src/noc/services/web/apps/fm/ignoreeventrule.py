@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
+from noc.core.translation import ugettext as _
 from noc.fm.models.ignoreeventrules import IgnoreEventRules
 from noc.sa.interfaces.base import REParameter
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class IgnoreEventRuleApplication(ExtModelApplication):

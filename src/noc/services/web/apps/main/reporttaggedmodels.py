@@ -12,9 +12,9 @@ import importlib
 from django.db import models as django_models
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.simplereport import SimpleReport
 from noc.settings import INSTALLED_APPS
-from noc.core.translation import ugettext as _
 
 
 class ReportTaggedModels(SimpleReport):

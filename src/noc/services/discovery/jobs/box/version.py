@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform, MAX_PLATFORM_LENGTH
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.firmwarepolicy import FirmwarePolicy, FS_DENIED
 from noc.core.diagnostic.hub import SNMPTRAP_DIAG, SYSLOG_DIAG
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FS_DENIED, FirmwarePolicy
+from noc.inv.models.platform import MAX_PLATFORM_LENGTH, Platform
+from noc.inv.models.vendor import Vendor
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class VersionCheck(DiscoveryCheck):

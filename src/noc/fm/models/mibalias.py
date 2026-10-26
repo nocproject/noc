@@ -13,8 +13,8 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, UUIDField
 
 # NOC modules
-from noc.core.prettyjson import to_json
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 
 class MIBAlias(Document):

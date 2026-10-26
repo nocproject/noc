@@ -21,11 +21,11 @@ import importlib.abc
 import importlib.util
 import os
 import sys
+from collections.abc import Sequence
 from importlib.machinery import ModuleSpec
 from pathlib import Path
 from types import ModuleType
 from typing import Any
-from collections.abc import Sequence
 
 # NOC modules
 from noc.config import config
@@ -182,6 +182,7 @@ class NOCPyruleLoader(NOCLoader):
             MongoDB collection instance.
         """
         if self._collection is None:
+            # NOC modules
             from noc.core.mongo.connection import get_db
 
             self._collection = get_db()[self.COLLECTION_NAME]

@@ -8,17 +8,17 @@
 # Python modules
 import logging
 from collections import defaultdict
-from urllib.error import URLError
 from io import TextIOWrapper
+from urllib.error import URLError
 
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import urlopen
+from noc.core.mongo.connection import connect
+from noc.core.scheduler.job import Job
+from noc.peer.models.asn import AS
 from noc.peer.models.whoisassetmembers import WhoisASSetMembers
 from noc.peer.models.whoisoriginroute import WhoisOriginRoute
-from noc.peer.models.asn import AS
-from noc.core.scheduler.job import Job
-from noc.core.mongo.connection import connect
 
 logger = logging.getLogger(__name__)
 

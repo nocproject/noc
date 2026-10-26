@@ -9,11 +9,12 @@
 import operator
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.sa.models.managedobject import ManagedObject
-from noc.vc.models.l2domain import L2Domain
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.vc.models.l2domain import L2Domain
+
+from .base import BaseCard
 
 
 class L2DomainCard(BaseCard):

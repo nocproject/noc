@@ -12,9 +12,10 @@ from threading import Lock
 import creole
 
 # NOC modules
+from noc.core.comp import smart_text
+
 from ..macros.base import kb_macro_loader
 from .base import BaseParser
-from noc.core.comp import smart_text
 
 mw_lock = Lock()
 

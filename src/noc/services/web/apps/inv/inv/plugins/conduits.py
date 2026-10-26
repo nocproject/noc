@@ -12,17 +12,18 @@ from collections import defaultdict
 from django.http import HttpRequest
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
-from noc.core.geo import distance, bearing, bearing_sym
+from noc.core.geo import bearing, bearing_sym, distance
 from noc.gis.map import map
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
 from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DictListParameter,
     DocumentParameter,
     FloatParameter,
-    DictListParameter,
     IntParameter,
-    BooleanParameter,
 )
+
 from .base import InvPlugin
 
 

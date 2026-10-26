@@ -6,22 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
-from urllib.request import parse_http_list, parse_keqv_list
-from typing import Any
-
-# Third-party modules
 import hashlib
+import os
+from typing import Any
+from urllib.request import parse_http_list, parse_keqv_list
 
 # NOC modules
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
-from noc.core.span import Span
 from noc.core.ioloop.util import IOLoopContext
 from noc.core.perf import metrics
+from noc.core.span import Span
+
 from ..cli.base import BaseCLI
 from ..cli.stream import BaseStream
-from .error import RTSPConnectionRefused, RTSPAuthFailed, RTSPBadResponse, RTSPError
+from .error import RTSPAuthFailed, RTSPBadResponse, RTSPConnectionRefused, RTSPError
 
 DEFAULT_PROTOCOL = b"RTSP/1.0"
 DEFAULT_USER_AGENT = smart_bytes(config.http_client.user_agent)

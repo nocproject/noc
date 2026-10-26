@@ -5,26 +5,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from typing import Any
-from collections.abc import Iterable, Iterator
-from logging import getLogger
-from weakref import ref, ReferenceType
+
+# Python modules
 import asyncio
-from dataclasses import dataclass, asdict
 from collections import defaultdict
+from collections.abc import Iterable, Iterator
+from dataclasses import asdict, dataclass
+from logging import getLogger
+from typing import Any
+from weakref import ReferenceType, ref
 
 # Third-party modules
 from bson import ObjectId
 from jinja2 import Template, TemplateSyntaxError
 
 # NOC modules
-from .models.jobreq import JobRequest
 from noc.sa.models.job import JobStatus
-from .actions.base import action_loader
-from .actions.base import BaseAction
+
+from .actions.base import BaseAction, action_loader
 from .env import Environment
+from .models.jobreq import JobRequest
 
 logger = getLogger(__name__)
 

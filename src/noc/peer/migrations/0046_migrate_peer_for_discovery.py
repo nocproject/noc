@@ -8,6 +8,7 @@
 # Third-party modules
 from django.db import models
 
+# NOC modules
 # NOC module
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from pymongo import UpdateOne
 import bson
+from pymongo import UpdateOne
 
 # NOC modules
 from noc.core.bi.decorator import bi_hash

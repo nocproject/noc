@@ -9,8 +9,9 @@
 import pytest
 
 # NOC modules
-from noc.models import get_model_id, get_model, iter_model_id
-from .util import get_models, get_documents
+from noc.models import get_model, get_model_id, iter_model_id
+
+from .util import get_documents, get_models
 
 
 def test_iter_model_id() -> None:

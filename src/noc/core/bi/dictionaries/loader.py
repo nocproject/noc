@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.loader.base import BaseLoader
 from noc.core.clickhouse.model import DictionaryModel
+from noc.core.loader.base import BaseLoader
 
 
 class BIDictionaryLoader(BaseLoader):

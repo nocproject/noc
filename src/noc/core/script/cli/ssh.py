@@ -6,24 +6,26 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import codecs
+import logging
+import operator
 import os
 import threading
-import operator
-import logging
-import codecs
 
+# Third-party modules
 # Third-party modules modules
 import cachetools
-from ssh2.session import Session, LIBSSH2_HOSTKEY_HASH_SHA1
-from ssh2.exceptions import SSH2Error
 from ssh2.error_codes import LIBSSH2_ERROR_EAGAIN
+from ssh2.exceptions import SSH2Error
+from ssh2.session import LIBSSH2_HOSTKEY_HASH_SHA1, Session
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
-from .cli import CLI
+from noc.core.perf import metrics
+
 from .base import BaseStream
+from .cli import CLI
 from .error import CLIAuthFailed, CLISSHProtocolError
 
 key_lock = threading.Lock()

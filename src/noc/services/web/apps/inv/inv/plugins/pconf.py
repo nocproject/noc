@@ -6,22 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
-from enum import IntEnum, Enum
-from dataclasses import dataclass
 import uuid
 from collections import defaultdict
+from collections.abc import Iterable
+from dataclasses import dataclass
+from enum import Enum, IntEnum
+from typing import Any
 
 # Third-party modules
-from django.http import HttpRequest
 import orjson
+from django.http import HttpRequest
 
 # NOC modules
 from noc.inv.models.object import Object
+from noc.main.models.extstorage import ExtStorage
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
-from noc.main.models.extstorage import ExtStorage
+
 from .base import InvPlugin
 
 DEFAULT_GROUP = "Card"

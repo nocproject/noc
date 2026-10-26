@@ -6,17 +6,19 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import math
+from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from collections import defaultdict
 from enum import Enum
-import math
 
+# Third-party modules
 # Third-party moduls
 from bson import ObjectId
 
 # NOC modules
 from noc.inv.models.object import Object
+
 from ..result import Result
 
 

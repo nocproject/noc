@@ -8,6 +8,7 @@
 # Third-party modules
 import progressbar
 
+# NOC modules
 # NOC module
 from noc.maintenance.models.maintenance import Maintenance
 

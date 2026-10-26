@@ -5,38 +5,41 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import itertools
 import operator
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
-    EmbeddedDocumentListField,
-    ReferenceField,
-)
 from mongoengine.errors import ValidationError
-import cachetools
+from mongoengine.fields import (
+    EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    ReferenceField,
+    StringField,
+)
 
 # NOC modules
+from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.inv.models.resourcepool import ResourcePool
+from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
-from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_delete_check
-from noc.core.change.decorator import change
-from noc.inv.models.resourcepool import ResourcePool
+
 from .vlanfilter import VLANFilter
-from .vlantemplate import VLANTemplate
 from .vlanprofile import VLANProfile
+from .vlantemplate import VLANTemplate
 
 id_lock = Lock()
 

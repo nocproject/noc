@@ -13,6 +13,7 @@ from django.http import HttpRequest
 
 # NOC modules
 from noc.inv.models.object import Object
+
 from .base import InvPlugin
 
 

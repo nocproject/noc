@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # NOC modules
-from noc.core.debug import get_traceback, error_fingerprint
 from noc.core.comp import smart_text
+from noc.core.debug import error_fingerprint, get_traceback
 
 
 class PrefixLoggerAdapter:
@@ -129,6 +129,7 @@ class ColorFormatter(logging.Formatter):
         """
         Set up terminal colors
         """
+        # Python modules
         import curses
 
         self._colors = {}

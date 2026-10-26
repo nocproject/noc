@@ -9,8 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.cdag.node.base import node_loader
-from noc.core.cdag.node.base import Category
+from noc.core.cdag.node.base import Category, node_loader
 
 CATEGORIES = {
     Category.MATH: {

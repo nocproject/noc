@@ -8,16 +8,15 @@
 # Python modules
 
 # Third-party modules
-import pytest
 import bson
+import pytest
 
 # NOC modules
-from noc.core.bioseg.policies.base import bioseg_policy_loader
-from noc.core.bioseg.policies.base import BaseBioSegPolicy
+from noc.core.bioseg.policies.base import BaseBioSegPolicy, bioseg_policy_loader
 from noc.core.bioseg.policies.keep import KeepBioSegPolicy
 from noc.core.bioseg.policies.merge import MergeBioSegPolicy
-from noc.inv.models.networksegmentprofile import NetworkSegmentProfile, BioCollisionPolicy
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.networksegmentprofile import BioCollisionPolicy, NetworkSegmentProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 

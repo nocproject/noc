@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictListParameter, StringParameter, IntParameter
+
+from .base import DictListParameter, IntParameter, StringParameter
 
 
 class IGetActivatorInfo(BaseInterface):

@@ -12,17 +12,17 @@ from itertools import product
 from pymongo import InsertOne, UpdateOne
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
-from noc.core.diagnostic.types import DiagnosticState
 from noc.core.diagnostic.hub import (
+    CLI_DIAG,
+    DIAGNOCSTIC_LABEL_SCOPE,
+    HTTP_DIAG,
     PROFILE_DIAG,
     SNMP_DIAG,
-    CLI_DIAG,
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
-    HTTP_DIAG,
-    DIAGNOCSTIC_LABEL_SCOPE,
 )
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.migration.base import BaseMigration
 
 DIAGNOSTICS = ["Access", PROFILE_DIAG, SNMP_DIAG, CLI_DIAG, SNMPTRAP_DIAG, SYSLOG_DIAG, HTTP_DIAG]
 

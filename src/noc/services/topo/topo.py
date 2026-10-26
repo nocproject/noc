@@ -6,16 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
-from logging import getLogger
 import time
 from collections import defaultdict
+from collections.abc import Iterable
+from logging import getLogger
 
 # Third-party modules
 import networkx as nx
 
+# NOC modules
 # NOC Modules
 from noc.core.perf import metrics
+
 from .types import ObjectSnapshot
 
 logger = getLogger(__name__)

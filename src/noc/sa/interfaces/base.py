@@ -6,19 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import re
 import datetime
+import re
 
-# NOC Modules
-from noc.core.text import list_to_ranges, ranges_to_list
-from noc.core.ip import IPv6
-from noc.core.mac import MAC
-from noc.core.validators import is_ipv6
+# NOC modules
+from noc.core.comp import smart_text
+from noc.core.discriminator import discriminator
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter  # noqa
-from noc.core.discriminator import discriminator
-from noc.core.comp import smart_text
+from noc.core.ip import IPv6
+from noc.core.mac import MAC
+
+# NOC Modules
+from noc.core.text import list_to_ranges, ranges_to_list
+from noc.core.validators import is_ipv6
 
 
 class NoneParameter(Parameter):

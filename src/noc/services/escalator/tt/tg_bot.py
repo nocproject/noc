@@ -9,22 +9,21 @@
 import datetime
 from urllib.parse import urlparse
 
-
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.tt.base import BaseTTSystem, TTError, TemporaryTTError
-from noc.core.tt.types import (
-    EscalationContext,
-    DeescalationContext,
-    TTActionContext,
-    TTInfo,
-    TTAction,
-    TTChange,
-)
-from noc.core.span import Span
 from noc.core.http.sync import HttpClient
+from noc.core.span import Span
+from noc.core.tt.base import BaseTTSystem, TemporaryTTError, TTError
+from noc.core.tt.types import (
+    DeescalationContext,
+    EscalationContext,
+    TTAction,
+    TTActionContext,
+    TTChange,
+    TTInfo,
+)
 
 
 class TGBotTTSystem(BaseTTSystem):

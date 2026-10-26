@@ -13,9 +13,9 @@ from io import BytesIO
 from gufo.loader import Loader
 
 # NOC modules
-from noc.core.reporter.band import Band
-from noc.core.reporter.types import Template, OutputType, BandFormat
 from noc.config import config
+from noc.core.reporter.band import Band
+from noc.core.reporter.types import BandFormat, OutputType, Template
 
 logger = logging.getLogger(__name__)
 

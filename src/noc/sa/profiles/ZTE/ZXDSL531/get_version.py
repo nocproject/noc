@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.text import strip_html_tags
+from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_html_ver = re.compile(r"Firmware Version\s+\S+\s+(?P<version>\S+)")
 

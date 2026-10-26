@@ -9,8 +9,8 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_uptime import Script as BaseScript
 from noc.sa.interfaces.igetuptime import IGetUptime
+from noc.sa.profiles.Generic.get_uptime import Script as BaseScript
 
 
 class Script(BaseScript):

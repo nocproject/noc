@@ -10,8 +10,8 @@ import bson
 from pymongo import InsertOne
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

@@ -5,31 +5,33 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-import cachetools
-from threading import Lock
 from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
+    EmbeddedDocumentListField,
     IntField,
     LongField,
-    EmbeddedDocumentListField,
+    StringField,
 )
 
 # NOC modules
+from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.main.models.template import Template
-from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.bi.decorator import bi_sync
-from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 DEFAULT_UPLINK_POLICY = "seghier"

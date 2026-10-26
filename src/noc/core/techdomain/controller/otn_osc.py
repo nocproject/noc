@@ -6,15 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # NOC modules
-from noc.inv.models.object import Object
 from noc.core.channel.types import ChannelKind, ChannelTopology
+from noc.core.runner.models.jobreq import JobRequest
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
-from noc.core.runner.models.jobreq import JobRequest
+from noc.inv.models.object import Object
+
 from ..profile.channel import ProfileChannelController
 from .base import BaseController, Endpoint, PathItem
 

@@ -12,14 +12,14 @@ from dataclasses import dataclass
 from typing import Any
 
 # NOC modules
-from noc.core.fm.request import ActionConfig, WhenCondition
-from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
+from noc.core.fm.enum import ActionStatus, AlarmAction
+from noc.core.fm.request import ActionConfig, WhenCondition
+from noc.core.timepattern import TimePattern
+from noc.fm.models.activealarm import ActiveAlarm, Effect, WatchItem
+from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
-from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.activealarm import ActiveAlarm, WatchItem, Effect
 
 
 @dataclass(frozen=True)

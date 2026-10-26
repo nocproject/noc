@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
+
 from .base import BaseConstraint
 
 

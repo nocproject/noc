@@ -9,8 +9,8 @@
 import re
 
 # NOC modules
-from noc.core.reporter.reportsource import ReportSource
 from noc.core.reporter.band import Band, DataSet
+from noc.core.reporter.reportsource import ReportSource
 from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 
@@ -41,6 +41,7 @@ class ReportClassificationRule(ReportSource):
         profile = kwargs.get("profile")
         if isinstance(profile, str):
             # For test running
+            # NOC modules
             from noc.sa.models.profile import Profile
 
             profile = Profile.get_by_name(profile)

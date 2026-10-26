@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.gis.overlays.base import OverlayHandler
 from noc.gis.models.area import Area
+from noc.gis.overlays.base import OverlayHandler
 
 
 class AreasOverlay(OverlayHandler):

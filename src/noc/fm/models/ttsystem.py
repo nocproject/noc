@@ -5,34 +5,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import datetime
 import logging
+import operator
 from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    ListField,
-    IntField,
-    ReferenceField,
-    DateTimeField,
     BooleanField,
+    DateTimeField,
+    IntField,
+    ListField,
+    ReferenceField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete_check
+from noc.core.scheduler.job import Job
 from noc.core.tt.base import BaseTTSystem
 from noc.core.tt.types import TTSystemConfig
-from noc.core.scheduler.job import Job
-from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -121,8 +123,9 @@ class TTSystem(Document):
         return f"{self.name}:{doc_id}"
 
     def save(self, *args, **kwargs):
+        # NOC modules
         from noc.core.cache.base import cache
-        from noc.sa.models.managedobject import ManagedObject, MANAGEDOBJECT_CACHE_VERSION
+        from noc.sa.models.managedobject import MANAGEDOBJECT_CACHE_VERSION, ManagedObject
 
         # After save changed_fields will be empty
         super().save(*args, **kwargs)

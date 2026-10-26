@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+
 from .base import AlarmPlugin
 
 

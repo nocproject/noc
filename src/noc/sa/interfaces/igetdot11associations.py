@@ -4,8 +4,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import ListOfParameter, DictParameter, MACAddressParameter, IPv4Parameter
+
+from .base import DictParameter, IPv4Parameter, ListOfParameter, MACAddressParameter
 
 
 class IGetDot11Associations(BaseInterface):

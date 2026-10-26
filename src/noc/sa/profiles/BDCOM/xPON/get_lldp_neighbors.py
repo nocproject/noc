@@ -9,19 +9,19 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.validators import is_ipv4, is_ipv6, is_mac
 from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_COMPONENT,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_NAME,
     LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
 )
+from noc.core.script.base import BaseScript
+from noc.core.validators import is_ipv4, is_ipv6, is_mac
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

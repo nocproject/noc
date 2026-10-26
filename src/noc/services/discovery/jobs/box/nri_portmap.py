@@ -5,17 +5,19 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from pymongo import UpdateOne
-from mongoengine.queryset.visitor import Q
+# Python modules
 from collections import namedtuple
 
+# Third-party modules
+from mongoengine.queryset.visitor import Q
+from pymongo import UpdateOne
+
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.change.decorator import get_datastreams
+from noc.core.change.policy import change_tracker
 from noc.inv.models.interface import Interface
 from noc.inv.models.sensor import Sensor
-from noc.core.change.policy import change_tracker
-from noc.core.change.decorator import get_datastreams
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 IFHint = namedtuple("IFHint", ("name", "ifindex"))
 

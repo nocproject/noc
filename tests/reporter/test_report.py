@@ -5,15 +5,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import pytest
+# Python modules
 import os
 import yaml
 
+# Third-party modules
+import pytest
+
 # NOC modules
-from noc.core.reporter.reportengine import ReportEngine
-from noc.core.reporter.types import ReportConfig, RunParams, OutputType
 from noc.core.mongo.connection import connect
+from noc.core.reporter.reportengine import ReportEngine
+from noc.core.reporter.types import OutputType, ReportConfig, RunParams
 
 
 @pytest.mark.parametrize(

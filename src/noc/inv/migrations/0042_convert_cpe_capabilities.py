@@ -5,11 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.core.migration.base import BaseMigration
-
 # Third-party modules
 from pymongo import UpdateOne
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

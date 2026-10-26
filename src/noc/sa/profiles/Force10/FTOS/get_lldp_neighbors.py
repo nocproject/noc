@@ -12,7 +12,6 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
-
 rx_sep = re.compile(r"^===+\n", re.MULTILINE)
 rx_local_interface = re.compile(
     r"Local interface (?P<interface>\S+\s+\S+) has \d+ neighbor", re.IGNORECASE | re.MULTILINE

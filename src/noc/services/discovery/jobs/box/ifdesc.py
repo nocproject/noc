@@ -8,13 +8,13 @@
 # Python modules
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.core.validators import is_ipv4
-from noc.inv.models.interface import Interface
-from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.ifdescpatterns import IfDescPatterns
+from noc.inv.models.interface import Interface
 from noc.main.models.handler import Handler
 from noc.sa.models.managedobject import ManagedObject
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class IfDescCheck(TopologyDiscoveryCheck):

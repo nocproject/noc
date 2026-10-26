@@ -7,14 +7,15 @@
 
 # Python modules
 import enum
-from urllib.parse import urlparse
 from dataclasses import dataclass
 from typing import Any, ClassVar
+from urllib.parse import urlparse
 
 # Third-party modules
 import bson
 from mongoengine.queryset.visitor import Q
 
+# NOC modules
 # NOC Modules
 from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_fqdn, is_ipv4
@@ -129,6 +130,7 @@ class NetworkHostInstance(ServiceInstanceConfig):
 
     @classmethod
     def from_group(cls, group) -> list["NetworkHostInstance"]:
+        # NOC modules
         from noc.inv.models.resourcegroup import ResourceGroup
 
         r = []

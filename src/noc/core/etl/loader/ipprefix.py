@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ipprefix import IPPrefix
 from noc.ip.models.prefix import Prefix
+
+from ..models.ipprefix import IPPrefix
+from .base import BaseLoader
 
 
 class IPPrefixLoader(BaseLoader):

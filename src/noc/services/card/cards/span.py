@@ -6,12 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import operator
 import datetime
+import operator
 
 # NOC modules
-from .base import BaseCard
 from noc.core.clickhouse.connect import connection
+
+from .base import BaseCard
 
 
 class Span:

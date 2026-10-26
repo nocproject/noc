@@ -7,11 +7,12 @@
 
 # Python modules
 import re
-import uuid
 import socket
+import uuid
 
 # Third-party modules
 try:
+    # Third-party modules
     from django.forms import ValidationError
 # pragma: no cover
 except Exception:  # noqa

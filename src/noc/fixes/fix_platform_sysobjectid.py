@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.inv.models.platform import Platform
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.error import NOCError
 from noc.core.mib import mib
+from noc.inv.models.platform import Platform
+from noc.sa.models.managedobject import ManagedObject
 
 
 def fix():

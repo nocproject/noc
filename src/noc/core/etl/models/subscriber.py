@@ -7,10 +7,9 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
 from .subscriberprofile import SubscriberProfile
+from .typing import Reference
 
 
 class Subscriber(BaseModel):

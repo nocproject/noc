@@ -5,16 +5,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField
-import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check

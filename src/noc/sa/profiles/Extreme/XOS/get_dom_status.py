@@ -9,11 +9,11 @@
 import re
 
 # NOC modules
+from noc.core.convert.dbm import mw2dbm
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.core.text import parse_kv
 from noc.core.validators import is_int
-from noc.core.convert.dbm import mw2dbm
+from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
 
 class Script(BaseScript):

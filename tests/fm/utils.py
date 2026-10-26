@@ -5,9 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import datetime
 import logging
+
+# Third-party modules
 from bson import ObjectId
 
 # NOC modules

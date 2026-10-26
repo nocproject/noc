@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import pytest
 import networkx as nx
+import pytest
 
 # NOC modules
 from noc.core.graph.nexthop import iter_next_hops

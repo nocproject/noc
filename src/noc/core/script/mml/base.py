@@ -10,12 +10,13 @@ import re
 
 # NOC modules
 from noc.config import config
-from noc.core.span import Span
 from noc.core.comp import smart_bytes
-from noc.core.perf import metrics
 from noc.core.ioloop.util import IOLoopContext
-from .error import MMLConnectionRefused, MMLAuthFailed, MMLBadResponse, MMLError
+from noc.core.perf import metrics
+from noc.core.span import Span
+
 from ..cli.base import BaseCLI
+from .error import MMLAuthFailed, MMLBadResponse, MMLConnectionRefused, MMLError
 
 
 class MMLBase(BaseCLI):

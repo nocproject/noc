@@ -8,7 +8,6 @@
 # Third-party modules
 from django.http import HttpRequest
 
-# NOC modules
 from .base import InvPlugin
 
 

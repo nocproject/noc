@@ -9,13 +9,13 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api, PermitLogged
-from noc.sa.interfaces.base import StringParameter, ListOfParameter, DictParameter, ModelParameter
-from noc.settings import LANGUAGES
-from noc.main.models.timepattern import TimePattern
 from noc.aaa.models.usercontact import UserContact
-from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES, NotificationGroup
 from noc.core.translation import ugettext as _
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES, NotificationGroup
+from noc.main.models.timepattern import TimePattern
+from noc.sa.interfaces.base import DictParameter, ListOfParameter, ModelParameter, StringParameter
+from noc.services.web.base.extapplication import ExtApplication, PermitLogged, api
+from noc.settings import LANGUAGES
 
 
 class UserProfileApplication(ExtApplication):

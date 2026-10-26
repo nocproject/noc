@@ -5,37 +5,40 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-from functools import partial
+
+# Python modules
 import operator
+from functools import partial
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
     BooleanField,
     DateTimeField,
     EmbeddedDocumentListField,
+    ListField,
+    LongField,
     ReferenceField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
+from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.scheduler.job import Job
+from noc.inv.models.resourcepool import ResourcePool
+from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.main.models.template import Template
-from noc.main.models.label import Label
-from noc.inv.models.resourcepool import ResourcePool
 from noc.wf.models.workflow import Workflow
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save, on_delete_check
-from noc.core.scheduler.job import Job
+
 from .addressprofile import AddressProfile
 
 id_lock = Lock()
@@ -153,6 +156,7 @@ class PrefixProfile(Document):
         return pp
 
     def ensure_ip_discovery_job(self):
+        # NOC modules
         from noc.services.discovery.jobs.ipping.address import JCLS_IPPING_PREFIX
 
         if self.enable_ip_ping_discovery:

@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
+
 from ..models.resourcegroup import ResourceGroupDataStreamItem
-from noc.core.comp import smart_text
 
 
 def qs(s):

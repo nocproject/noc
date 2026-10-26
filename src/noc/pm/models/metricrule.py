@@ -5,42 +5,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from collections import defaultdict
-from typing import Any
 from collections.abc import Callable, Iterable
 from threading import Lock
+from typing import Any
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
+from django.db.models.query_utils import Q as d_q
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
+    BooleanField,
+    DictField,
+    EmbeddedDocumentListField,
     FloatField,
     ListField,
-    DictField,
-    StringField,
-    BooleanField,
     ObjectIdField,
-    EmbeddedDocumentListField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
-from django.db.models.query_utils import Q as d_q
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.change.decorator import change
-from noc.core.cdag.factory.config import NodeItem, GraphConfig
-from noc.core.cdag.node.alarm import VarItem
-from noc.core.matcher import build_matcher
-from noc.main.models.label import Label
-from noc.pm.models.metrictype import MetricType
-from noc.pm.models.metricaction import MetricAction
-from noc.main.models.pool import Pool
-from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
+from noc.core.cdag.factory.config import GraphConfig, NodeItem
+from noc.core.cdag.node.alarm import VarItem
+from noc.core.change.decorator import change
+from noc.core.matcher import build_matcher
+from noc.core.mongo.fields import PlainReferenceField
+from noc.fm.models.alarmclass import AlarmClass
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.pm.models.metricaction import MetricAction
+from noc.pm.models.metrictype import MetricType
 
 id_lock = Lock()
 rule_lock = Lock()
@@ -246,11 +248,12 @@ class MetricRule(Document):
         return scopes
 
     def iter_changed_datastream(self, changed_fields=None):
-        from noc.inv.models.interface import Interface
-        from noc.sla.models.slaprobe import SLAProbe
+        # NOC modules
         from noc.inv.models.cpe import CPE
+        from noc.inv.models.interface import Interface
         from noc.inv.models.sensor import Sensor
         from noc.sa.models.managedobject import ManagedObject
+        from noc.sla.models.slaprobe import SLAProbe
 
         if config.datastream.enable_cfgmetricrules:
             yield "cfgmetricrules", self.id

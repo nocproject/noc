@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.comp import smart_text
+from noc.main.models.language import Language
 from noc.main.models.refbook import RefBook as RB
 from noc.main.models.refbookfield import RefBookField
-from noc.main.models.language import Language
-from noc.core.comp import smart_text
 
 lang_cache = {}
 

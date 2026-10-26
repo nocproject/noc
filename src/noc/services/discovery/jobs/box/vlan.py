@@ -9,13 +9,13 @@
 from dataclasses import dataclass
 
 # NOC modules
+from noc.config import config
+from noc.core.text import list_to_ranges
+from noc.inv.models.resourcepool import ResourcePool
+from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
-from noc.inv.models.resourcepool import ResourcePool
-from noc.sa.interfaces.igetvlans import IGetVlans
-from noc.core.text import list_to_ranges
-from noc.config import config
 
 
 @dataclass

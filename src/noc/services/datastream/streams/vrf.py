@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.datastream.base import DataStream
-from ..models.vrf import VRFGroupDataStreamItem
-from noc.ip.models.vrf import VRF
 from noc.core.comp import smart_text
+from noc.core.datastream.base import DataStream
+from noc.ip.models.vrf import VRF
+
+from ..models.vrf import VRFGroupDataStreamItem
 
 
 def qs(s):

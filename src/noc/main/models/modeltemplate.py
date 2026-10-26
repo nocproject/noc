@@ -5,40 +5,43 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
+import threading
 from typing import Any
 
 # Third-party modules
 import cachetools
 from bson import ObjectId
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    BooleanField,
-    ListField,
-    UUIDField,
-    EmbeddedDocumentListField,
-)
-from mongoengine.errors import ValidationError
-from django.db.models.fields.related import ForeignKey
 from django.db.models.fields import CharField, IntegerField
-from pydantic import BaseModel
+from django.db.models.fields.related import ForeignKey
 from jinja2 import Template as Jinja2Template
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    ListField,
+    StringField,
+    UUIDField,
+)
+from pydantic import BaseModel
+
+# NOC modules
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import CachedForeignKey, DocumentReferenceField
 
 # NOC Modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
-from noc.models import get_model, get_model_id
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.label import Label
+from noc.models import get_model, get_model_id
 from noc.wf.models.state import State
-
 
 id_lock = threading.Lock()
 

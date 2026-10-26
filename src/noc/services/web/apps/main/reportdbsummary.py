@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 
 class ReportreportDBSummary(SimpleReport):

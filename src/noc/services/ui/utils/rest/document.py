@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections.abc import Callable
 from http import HTTPStatus
+from typing import Any
 
 # Third-party modules
 from fastapi import HTTPException
@@ -17,13 +17,14 @@ from mongoengine.fields import ReferenceField
 from mongoengine.queryset import QuerySet
 
 # NOC modules
-from noc.config import config
-from noc.models import get_model
 from noc.aaa.models.user import User
+from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.typing import SupportsGetById
-from .base import BaseResourceAPI
+from noc.models import get_model
+
 from ...models.utils import SummaryItem
+from .base import BaseResourceAPI
 
 
 class DocumentResourceAPI[T: Document](BaseResourceAPI[T]):

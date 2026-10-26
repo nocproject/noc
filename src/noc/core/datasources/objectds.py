@@ -6,12 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource
 from noc.inv.models.object import Object
+
+from .base import BaseDataSource, FieldInfo
 
 
 class ObjectDS(BaseDataSource):

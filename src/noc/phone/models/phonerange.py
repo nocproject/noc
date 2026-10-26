@@ -5,36 +5,38 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-import operator
+
+# Python modules
 import logging
+import operator
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ListField, ObjectIdField
-from mongoengine.queryset import Q
 from mongoengine.errors import ValidationError
-import cachetools
+from mongoengine.fields import BooleanField, ListField, ObjectIdField, StringField
+from mongoengine.queryset import Q
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
+from noc.core.defer import defer
+from noc.core.hash import hash_int
+from noc.core.model.decorator import on_delete, on_delete_check, on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.text import clean_number
+from noc.core.wf.decorator import workflow
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.mongo.fields import ForeignKeyField
 from noc.wf.models.state import State
-from noc.core.wf.decorator import workflow
-from noc.core.model.decorator import on_save, on_delete, on_delete_check
-from noc.core.defer import defer
-from noc.core.hash import hash_int
-from noc.core.text import clean_number
-from noc.core.resourcegroup.decorator import resourcegroup
+
 from .dialplan import DialPlan
-from .phonerangeprofile import PhoneRangeProfile
 from .numbercategory import NumberCategory
+from .phonerangeprofile import PhoneRangeProfile
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()

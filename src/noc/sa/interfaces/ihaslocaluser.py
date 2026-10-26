@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import StringParameter, BooleanParameter
+
+from .base import BooleanParameter, StringParameter
 
 
 class IHasLocalUser(BaseInterface):

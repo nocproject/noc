@@ -5,46 +5,48 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
-from collections import defaultdict
 
 # Third-party modules
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
-    StringField,
+    BooleanField,
+    DictField,
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
-    UUIDField,
-    DictField,
     FloatField,
     IntField,
-    BooleanField,
+    StringField,
+    UUIDField,
 )
-from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.core.model.decorator import on_delete_check
-from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
+from noc.config import config
+from noc.core.cdag.factory.config import GraphConfig, InputItem, NodeItem
 from noc.core.cdag.node.alarm import VarItem
 from noc.core.change.decorator import change
 from noc.core.expr import get_fn, get_vars
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sa.interfaces.base import (
-    StringParameter,
-    IntParameter,
     BooleanParameter,
     FloatParameter,
+    IntParameter,
     Parameter,
+    StringParameter,
 )
-from noc.config import config
 
 TYPE_MAP: dict[str, Parameter] = {
     "str": StringParameter(),
@@ -440,6 +442,7 @@ class MetricAction(Document):
         return GraphConfig(nodes=list(nodes.values()))
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.pm.models.metricrule import MetricRule
 
         if config.datastream.enable_cfgmetricrules:

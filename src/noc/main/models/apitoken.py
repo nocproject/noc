@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import IntField, StringField
 
 
 class APIToken(Document):

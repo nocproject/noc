@@ -9,17 +9,18 @@
 from typing import Any
 
 # NOC modules
-from noc.core.datastream.base import DataStream
-from noc.sa.models.service import Service
-from noc.inv.models.resourcegroup import ResourceGroup
-from ..models.service import ServiceDataStreamItem
 from noc.core.comp import smart_text
+from noc.core.datastream.base import DataStream
 from noc.core.mx import (
+    MX_H_VALUE_SPLITTER,
     MX_LABELS,
     MX_PROFILE_ID,
-    MX_H_VALUE_SPLITTER,
     MX_RESOURCE_GROUPS,
 )
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.service import Service
+
+from ..models.service import ServiceDataStreamItem
 
 
 def qs(s):
@@ -143,6 +144,7 @@ class ServiceDataStream(DataStream):
 
     @classmethod
     def _apply_instances(cls, svc: Service, r):
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         instances = []

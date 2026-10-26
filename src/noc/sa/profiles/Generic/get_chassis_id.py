@@ -8,12 +8,12 @@
 # Python modules
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.core.snmp.error import SNMPError
-from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.snmp.error import SNMPError
 from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):

@@ -10,6 +10,7 @@ from fastapi import APIRouter
 
 # NOC modules
 from noc.inv.models.resourcegroup import ResourceGroup
+
 from ..models.resourcegroup import DefaultResourceGroupItem, FormResourceGroupItem
 from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.document import DocumentResourceAPI

@@ -16,18 +16,17 @@ The loaded YAML document must contain a mapping at the top level. Nested
 values can be accessed using dot-separated configuration keys.
 """
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import yaml
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
-from urllib.parse import urlparse
 from typing import cast
+from urllib.parse import urlparse
 
-# Third-party modules
-import yaml
-
-# NOC modules
 from .base import DataConfigBackend
 
 

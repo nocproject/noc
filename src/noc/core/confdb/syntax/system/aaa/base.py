@@ -5,10 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import ANY, CHOICES, IP_ADDRESS, INTEGER, VR_NAME, FI_NAME
-
+from ...patterns import ANY, CHOICES, FI_NAME, INTEGER, IP_ADDRESS, VR_NAME
 
 SYSTEM_AAA_SYNTAX = DEF(
     "aaa",

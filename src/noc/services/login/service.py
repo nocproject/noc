@@ -7,19 +7,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import orjson
-import heapq
-import datetime
 import asyncio
+import datetime
+import heapq
 
-# import time
+# Third-party modules
+import orjson
 
 # NOC modules
-from noc.core.service.base import BaseService
 from noc.config import config
-from noc.core.msgstream.message import Message
-from noc.services.login.auth import get_exp_from_jwt
 from noc.core.comp import smart_bytes
+from noc.core.msgstream.message import Message
+
+# import time
+from noc.core.service.base import BaseService
+from noc.services.login.auth import get_exp_from_jwt
 
 
 class LoginService(BaseService):

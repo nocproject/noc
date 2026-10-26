@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import namedtuple
 import bisect
-import itertools
 import codecs
+import itertools
+from collections import namedtuple
 from io import StringIO
+from typing import NamedTuple
 
 # Third-party modules
 import orjson
-from typing import NamedTuple
 
 # NOC modules
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 from noc.main.models.extstorage import ExtStorage
 
 Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
@@ -168,6 +168,7 @@ class Beef:
 
     @staticmethod
     def compress_gzip(data: bytes) -> bytes:
+        # Python modules
         import gzip
 
         f = StringIO()
@@ -177,12 +178,14 @@ class Beef:
 
     @staticmethod
     def compress_bz2(data: bytes) -> bytes:
+        # Python modules
         import bz2
 
         return bz2.compress(data)
 
     @staticmethod
     def decompress_gzip(data: bytes) -> bytes:
+        # Python modules
         import gzip
 
         f = StringIO(data)
@@ -191,6 +194,7 @@ class Beef:
 
     @staticmethod
     def decompress_bz2(data: bytes) -> bytes:
+        # Python modules
         import bz2
 
         return bz2.decompress(data)

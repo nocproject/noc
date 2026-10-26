@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
 
 
 class AdministrativeDomainApplication(ExtModelApplication):

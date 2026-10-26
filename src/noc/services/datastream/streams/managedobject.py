@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import operator
+from collections import defaultdict
 from typing import Any
 
 # Third-party modules
@@ -15,28 +15,29 @@ from bson import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.core.datastream.base import DataStream
-from ..models.managedobject import ManagedObjectDataStreamItem
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.main.models.label import Label
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.forwardinginstance import ForwardingInstance
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.link import Link
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.object import Object
-from noc.sa.models.service import Service
-from noc.core.text import alnum_key
 from noc.core.comp import smart_text
+from noc.core.datastream.base import DataStream
 from noc.core.mx import (
     MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_H_VALUE_SPLITTER,
     MX_LABELS,
     MX_PROFILE_ID,
-    MX_H_VALUE_SPLITTER,
     MX_RESOURCE_GROUPS,
 )
+from noc.core.text import alnum_key
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.forwardinginstance import ForwardingInstance
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
+from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.subinterface import SubInterface
+from noc.main.models.label import Label
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
+
+from ..models.managedobject import ManagedObjectDataStreamItem
 
 
 def qs(s):

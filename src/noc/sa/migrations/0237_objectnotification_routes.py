@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import orjson
-import bson
+# Python modules
 import hashlib
+
+# Third-party modules
+import bson
+import orjson
 from pymongo import InsertOne
 
 # NOC modules

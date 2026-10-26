@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 from collections.abc import Callable
 
 # NOC modules

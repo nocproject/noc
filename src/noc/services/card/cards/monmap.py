@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import operator
 import itertools
+import operator
 from collections import defaultdict
 
 # Third-party modules
@@ -15,17 +15,18 @@ import cachetools
 from mongoengine import ValidationError
 from pymongo import ReadPreference
 
+# NOC modules
+from noc.config import config
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.gis.models.layer import Layer
+from noc.inv.models.object import Object
+from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
+
 # import geojson
 # import random
-# NOC modules
 from .base import BaseCard
-from noc.inv.models.object import Object
-from noc.sa.models.managedobject import ManagedObject
-from noc.maintenance.models.maintenance import Maintenance
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.gis.models.layer import Layer
-from noc.config import config
 
 
 class MonMapCard(BaseCard):
@@ -316,10 +317,12 @@ class MonMapCard(BaseCard):
             return ""
         r = []
         if "subscriber" in s:
+            # NOC modules
             from noc.crm.models.subscriberprofile import SubscriberProfile
 
             r.append(get_summary(s["subscriber"], SubscriberProfile))
         if "service" in s:
+            # NOC modules
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r.append(get_summary(s["service"], ServiceProfile))

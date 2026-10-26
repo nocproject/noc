@@ -46,6 +46,7 @@ class Migration(BaseMigration):
             "./scripts/set-conf.py etc/noc-probe.conf autoconf passwd $PW"
         )
         if r != 0:
+            # Python modules
             import sys
 
             sys.stderr.write("\nCannot create probe user. Terminating\n")

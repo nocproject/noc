@@ -7,11 +7,10 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
 from .building import Building
 from .street import Street
+from .typing import Reference
 
 
 class Address(BaseModel):

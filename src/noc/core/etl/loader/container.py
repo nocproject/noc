@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.container import Container
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+
+from ..models.container import Container
+from .base import BaseLoader
 
 
 class ContainerLoader(BaseLoader):

@@ -14,10 +14,11 @@ from typing import Any
 import orjson
 
 # NOC modules
+from noc.core.discriminator import LambdaDiscriminator
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from .profile import PolusParam, Component
-from noc.core.discriminator import LambdaDiscriminator
+
+from .profile import Component, PolusParam
 
 
 @dataclass

@@ -6,27 +6,28 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import ssl
-import logging
-import zlib
-import time
-import struct
-import codecs
-from urllib.parse import urlparse
 import asyncio
+import codecs
+import logging
+import ssl
+import struct
+import time
+import zlib
+from typing import Any
+from urllib.parse import urlparse
 
 # Third-party modules
 import orjson
-from typing import Any
 
 # NOC modules
-from noc.core.perf import metrics
-from noc.core.validators import is_ipv4
-from .proxy import SYSTEM_PROXIES
-from .resolver import resolve_async
 from noc.config import config
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.ioloop.util import run_sync
+from noc.core.perf import metrics
+from noc.core.validators import is_ipv4
+
+from .proxy import SYSTEM_PROXIES
+from .resolver import resolve_async
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +93,7 @@ async def fetch(
             opts["ssl"] = ctx
         return opts
 
+    # Third-party modules
     from http_parser.parser import HttpParser
 
     metrics["httpclient_requests", ("method", method.lower())] += 1

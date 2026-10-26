@@ -5,40 +5,42 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 import re
-from itertools import filterfalse
 from functools import partial
-from typing import Any
+from itertools import filterfalse
 from threading import Lock
+from typing import Any
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
     EmbeddedDocumentListField,
     IntField,
-    UUIDField,
     ListField,
     ObjectIdField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
-from noc.core.ip import IPv4, IP
+from noc.core.ip import IP, IPv4
 from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.purgatorium import SOURCES, ETL_SOURCE
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
+from noc.core.purgatorium import ETL_SOURCE, SOURCES
 from noc.main.models.label import Label
+from noc.main.models.modeltemplate import ModelTemplate
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.modeltemplate import ModelTemplate
 from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
@@ -378,6 +380,7 @@ class ObjectDiscoveryRule(Document):
         """
         Refresh records after update rule
         """
+        # NOC modules
         from noc.sa.models.discoveredobject import DiscoveredObject
 
         changed_fields = frozenset(getattr(self, "_changed_fields", None) or [])

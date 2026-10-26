@@ -9,14 +9,18 @@
 import re
 from collections import defaultdict
 
+# NOC modules
+from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.core.text import list_to_ranges, parse_kv
+from noc.sa.profiles.Generic.get_metrics import (
+    ProfileMetricConfig,
+    metrics,
+)
+
 # NOC Modules
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
-    metrics,
-    ProfileMetricConfig,
 )
-from noc.core.models.cfgmetrics import MetricCollectorConfig
-from noc.core.text import list_to_ranges, parse_kv
 
 
 class Script(GetMetricsScript):

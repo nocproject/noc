@@ -9,10 +9,9 @@
 from collections import defaultdict
 
 # Third-party modules
+from django.db.models import Model, get_models
 from mongoengine.base.common import _document_registry
 from mongoengine.document import Document
-from django.db.models import get_models
-from django.db.models import Model
 
 # NOC modules
 from noc.services.web.base.site import site

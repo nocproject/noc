@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.inv.models.objectconnection import ObjectConnection
 from noc.gis.models.layer import Layer
+from noc.inv.models.objectconnection import ObjectConnection
 
 
 def fix():

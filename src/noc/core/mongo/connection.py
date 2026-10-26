@@ -7,23 +7,24 @@
 
 # Python modules
 import logging
-import time
 import sys
+import time
 
 # Third-party modules
-from pymongo.mongo_client import MongoClient
-from pymongo.errors import AutoReconnect
-from pymongo.database import Database
 from mongoengine.connection import (
     ConnectionFailure,
-    connect as mongo_connect,
     _get_connection,
     _get_db,
 )
+from mongoengine.connection import (
+    connect as mongo_connect,
+)
+from pymongo.database import Database
+from pymongo.errors import AutoReconnect
+from pymongo.mongo_client import MongoClient
 
 # NOC modules
 from noc.config import config
-
 
 logger = logging.getLogger(__name__)
 _connected = False

@@ -9,12 +9,12 @@
 from time import perf_counter
 
 # Third-party modules
-from starlette.types import Scope, Receive, Send
 from starlette.datastructures import Headers
+from starlette.types import Receive, Scope, Send
 
 # NOC modules
-from noc.core.perf import metrics
 from noc.core.comp import smart_text
+from noc.core.perf import metrics
 
 
 class LoggingMiddleware:

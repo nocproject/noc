@@ -7,8 +7,8 @@
 
 # NOC modules
 # from ..syntax import SYNTAX
-from .node import Node
 from .marshall.base import marshaller_loader
+from .node import Node
 
 
 class ConfDB:

@@ -7,16 +7,16 @@
 
 
 # Python modules
-from typing import Any
-import bson
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
+import bson
 from pymongo import InsertOne, UpdateOne
 
 # NOC modules
-from noc.core.mongo.connection import get_db
 from noc.core.migration.base import BaseMigration
+from noc.core.mongo.connection import get_db
 
 
 class InterfaceClassifierLabels:
@@ -40,6 +40,7 @@ class InterfaceClassifierLabels:
         :return:
         """
         if not hasattr(cls, "_cursor"):
+            # Third-party modules
             from django.db import connection
 
             cls._cursor = connection.cursor()

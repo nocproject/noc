@@ -12,10 +12,9 @@ from collections import defaultdict
 from pymongo import UpdateMany
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
-
+from noc.sa.models.managedobject import ManagedObject
 
 BULK_SIZE = 50
 IN_SIZE = 1000

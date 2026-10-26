@@ -9,11 +9,11 @@
 from collections import namedtuple
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.ip.models.vrf import VRF
-from noc.core.perf import metrics
 from noc.core.handler import get_handler
+from noc.core.perf import metrics
 from noc.core.vpn import get_vpn_id
+from noc.ip.models.vrf import VRF
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 DiscoveredVPN = namedtuple(
     "DiscoveredVPN", ["type", "rd", "vpn_id", "name", "profile", "description", "source"]

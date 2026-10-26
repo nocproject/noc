@@ -6,20 +6,20 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import ViewModel
-from noc.core.clickhouse.functions import ArgMax
-from noc.core.clickhouse.fields import (
-    UInt64Field,
-    UInt16Field,
-    StringField,
-    ReferenceField,
-    AggregatedField,
-    DateTimeField,
-)
-from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
+from noc.core.bi.dictionaries.managedobject import ManagedObject
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.clickhouse.engines import AggregatingMergeTree
+from noc.core.clickhouse.fields import (
+    AggregatedField,
+    DateTimeField,
+    ReferenceField,
+    StringField,
+    UInt16Field,
+    UInt64Field,
+)
+from noc.core.clickhouse.functions import ArgMax
+from noc.core.clickhouse.model import ViewModel
 from noc.core.translation import ugettext as _
 
 

@@ -22,15 +22,18 @@ Example:
     ``NOC_DATABASE_HOST``.
 """
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from functools import cached_property
+
+# Python modules
 import os
 from dataclasses import dataclass
+from functools import cached_property
 from urllib.parse import urlparse
 
 # NOC modules
 from noc.core.typing import SENTINEL
+
 from .base import BaseConfigBackend
 
 

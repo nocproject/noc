@@ -6,17 +6,19 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    DictListParameter,
-    StringParameter,
     BooleanParameter,
-    FloatParameter,
-    StringListParameter,
-    REStringParameter,
-    OIDParameter,
-    LabelListParameter,
+    DictListParameter,
     DiscriminatorParameter,
+    FloatParameter,
+    LabelListParameter,
+    OIDParameter,
+    REStringParameter,
+    StringListParameter,
+    StringParameter,
 )
 
 

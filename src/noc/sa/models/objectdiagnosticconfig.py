@@ -5,42 +5,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from collections import defaultdict
+from collections.abc import Callable, Iterable
+from pathlib import Path
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable, Callable
-from pathlib import Path
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    EnumField,
+    IntField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    ReferenceField,
     StringField,
     UUIDField,
-    BooleanField,
-    ListField,
-    EmbeddedDocumentListField,
-    ReferenceField,
-    LongField,
-    IntField,
-    ObjectIdField,
-    EnumField,
 )
 from mongoengine.queryset.base import NULLIFY
-from mongoengine.errors import ValidationError
-import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
-from noc.core.prettyjson import to_json
-from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState, CtxItem
 from noc.core.checkers.base import Check
-from noc.core.path import safe_json_path
+from noc.core.diagnostic.types import CtxItem, DiagnosticConfig, DiagnosticState
 from noc.core.matcher import build_matcher
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label

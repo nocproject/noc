@@ -10,8 +10,9 @@ import itertools
 from collections.abc import Iterable
 
 # NOC modules
-from .base import BaseDiscriminatorSource, DiscriminatorDataItem
 from noc.core.discriminator import LambdaDiscriminator
+
+from .base import BaseDiscriminatorSource, DiscriminatorDataItem
 
 GRID_BASE = 192.1 * 1_000
 GRID_STEP = 0.05 * 1_000

@@ -6,12 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
 from collections.abc import Iterable
+from dataclasses import dataclass
+
+# NOC modules
+from noc.config import config
 
 # NOC Modules
-from noc.core.checkers.base import CheckResult, NODATA
-from noc.config import config
+from noc.core.checkers.base import NODATA, CheckResult
 
 
 @dataclass

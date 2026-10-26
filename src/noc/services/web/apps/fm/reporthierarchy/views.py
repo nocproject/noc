@@ -9,11 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.reportapplication import ReportApplication
-from noc.fm.models.eventclass import EventClass, EventClassCategory
-from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory
-from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory
+from noc.fm.models.eventclass import EventClass, EventClassCategory
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.services.web.base.reportapplication import ReportApplication
 
 
 class HierarchyReportAppplication(ReportApplication):

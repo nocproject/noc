@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.core.text import parse_table
+from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
 
 class Script(BaseScript):

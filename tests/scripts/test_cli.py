@@ -12,10 +12,10 @@ import socket
 import pytest
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.core.script.cli.error import CLIConnectionRefused, CLIAuthFailed
-from noc.sa.interfaces.igetdict import IGetDict
 from noc.config import config
+from noc.core.script.base import BaseScript
+from noc.core.script.cli.error import CLIAuthFailed, CLIConnectionRefused
+from noc.sa.interfaces.igetdict import IGetDict
 
 SSHD_HOST = config.tests.sshd_host
 SSHD_PORT = config.tests.sshd_port

@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party models
+# Third-party modules
 from django.db import models
 
 # NOC modules

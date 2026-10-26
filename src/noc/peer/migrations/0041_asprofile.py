@@ -8,9 +8,11 @@
 # Third-party modules
 import bson
 
+# NOC modules
+from noc.core.migration.base import BaseMigration
+
 # NOC module
 from noc.core.model.fields import DocumentReferenceField
-from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

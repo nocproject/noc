@@ -5,8 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from .base import BaseAction, ActionError
+from .base import ActionError, BaseAction
 
 
 class FailAction(BaseAction):

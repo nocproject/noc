@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ipvrf import IPVRF
 from noc.ip.models.vrf import VRF
+
+from ..models.ipvrf import IPVRF
+from .base import BaseLoader
 
 
 class IPVRFLoader(BaseLoader):

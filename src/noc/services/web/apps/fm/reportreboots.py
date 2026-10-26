@@ -14,11 +14,11 @@ from django.db import connection
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.core.translation import ugettext as _
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import PredefinedReport, SimpleReport, TableColumn
 
 
 class ReportForm(forms.Form):

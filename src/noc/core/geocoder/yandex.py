@@ -12,9 +12,10 @@ from urllib.parse import quote as urllib_quote
 import orjson
 
 # NOC modules
+from noc.config import config
+
 from .base import BaseGeocoder, GeoCoderResult
 from .errors import GeoCoderError, GeoCoderLimitExceeded
-from noc.config import config
 
 
 class YandexGeocoder(BaseGeocoder):

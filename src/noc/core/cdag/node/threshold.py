@@ -8,8 +8,8 @@
 # Python modules
 import datetime
 import logging
-from typing import Literal, Any
 from collections.abc import Iterable
+from typing import Any, Literal
 
 # Third-party modules
 import orjson
@@ -17,8 +17,9 @@ from jinja2 import Template
 from pydantic import BaseModel, TypeAdapter
 
 # NOC modules
-from .base import BaseCDAGNode, ValueType, Category
 from noc.core.service.loader import get_service
+
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class ThresholdState(BaseModel):

@@ -6,36 +6,36 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.config import config
+from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
+from noc.core.bi.dictionaries.container import Container
+from noc.core.bi.dictionaries.eventclass import EventClass
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.bi.dictionaries.platform import Platform
+from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.profile import Profile
+from noc.core.bi.dictionaries.remotesystem import RemoteSystem
+from noc.core.bi.dictionaries.service import Service
+from noc.core.bi.dictionaries.vendor import Vendor
+from noc.core.bi.dictionaries.version import Version
+from noc.core.clickhouse.connect import ClickhouseClient
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
+    ArrayField,
     DateField,
     DateTimeField,
-    StringField,
-    ReferenceField,
-    UInt64Field,
     Int8Field,
     IPv4Field,
     MapField,
-    ArrayField,
+    ReferenceField,
+    StringField,
+    UInt64Field,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.clickhouse.connect import ClickhouseClient
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.remotesystem import RemoteSystem
-from noc.core.bi.dictionaries.vendor import Vendor
-from noc.core.bi.dictionaries.platform import Platform
-from noc.core.bi.dictionaries.version import Version
-from noc.core.bi.dictionaries.profile import Profile
-from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
-from noc.core.bi.dictionaries.eventclass import EventClass
-from noc.core.bi.dictionaries.pool import Pool
-from noc.core.bi.dictionaries.networksegment import NetworkSegment
-from noc.core.bi.dictionaries.container import Container
-from noc.core.bi.dictionaries.service import Service
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
-from noc.config import config
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
+from noc.sa.models.useraccess import UserAccess
 
 
 class Events(Model):

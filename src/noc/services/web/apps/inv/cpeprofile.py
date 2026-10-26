@@ -7,10 +7,10 @@
 
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.core.translation import ugettext as _
 from noc.inv.models.cpeprofile import CPEProfile
 from noc.main.models.label import MATCH_BADGES, MATCH_OPS
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 def clean_label(label: str) -> tuple[str, str, list[str]]:

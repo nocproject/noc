@@ -6,18 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import sys
 import argparse
+import sys
 
 # Third-party modules
 from django.apps import apps
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject  # noqa
-from noc.core.management.base import BaseCommand
 from noc.core.csvutils import csv_export
-from noc.models import load_models
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.models import load_models
+from noc.sa.models.managedobject import ManagedObject  # noqa
 
 
 class Command(BaseCommand):

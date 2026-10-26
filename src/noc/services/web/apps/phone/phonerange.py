@@ -6,16 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from mongoengine.queryset import Q
 from django.http import HttpRequest
+from mongoengine.queryset import Q
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonerange import PhoneRange
 from noc.services.web.base.decorators.state import state_handler
-from noc.core.comp import smart_text
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 @state_handler

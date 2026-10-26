@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseCard
 from noc.main.models.timepattern import TimePattern
+
+from .base import BaseCard
 
 
 class TimePatternCard(BaseCard):

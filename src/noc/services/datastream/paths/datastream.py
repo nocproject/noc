@@ -6,24 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+import logging
+import random
+import threading
+import time
 from collections.abc import Callable
 from http import HTTPStatus
-import time
-import cachetools
-import logging
-import asyncio
-import threading
-import random
-from queue import Queue, Empty
+from queue import Empty, Queue
 
 # Third-party modules
+import cachetools
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 from pymongo.errors import PyMongoError
-from fastapi import APIRouter, Query, Header, HTTPException, Response, Depends
 
 # NOC modules
-from noc.core.datastream.base import data_stream_loader
-from noc.core.datastream.base import DataStream
 from noc.config import config
+from noc.core.datastream.base import DataStream, data_stream_loader
 from noc.core.ioloop.util import setup_asyncio
 
 router = APIRouter()

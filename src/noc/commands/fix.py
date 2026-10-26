@@ -10,9 +10,9 @@ import argparse
 import os
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.handler import get_handler
 from noc.config import config
+from noc.core.handler import get_handler
+from noc.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -55,6 +55,7 @@ class Command(BaseCommand):
         if not fixes:
             return
         # Connect to mongo
+        # NOC modules
         from noc.core.mongo.connection import connect
 
         connect()

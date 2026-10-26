@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.project import Project
 from noc.project.models.project import Project as ProjectModel
+
+from ..models.project import Project
+from .base import BaseLoader
 
 
 class ProjectLoader(BaseLoader):

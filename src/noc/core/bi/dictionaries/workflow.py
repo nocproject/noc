@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import BooleanField, StringField
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, BooleanField
 from noc.wf.models.workflow import Workflow as WorkflowModel
 
 

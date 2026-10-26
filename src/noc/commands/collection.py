@@ -6,20 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import argparse
+import os
 from pathlib import Path
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
 from noc.core.fileutils import safe_rewrite
-from noc.models import COLLECTIONS, get_model
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.models import is_document
+from noc.models import COLLECTIONS, get_model, is_document
 
 
 class Command(BaseCommand):

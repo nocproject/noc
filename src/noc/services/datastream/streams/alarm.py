@@ -10,15 +10,16 @@ from typing import Any
 
 # NOC modules
 from noc.config import config
-from noc.sa.models.serviceprofile import ServiceProfile
-from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.core.comp import smart_bytes
 from noc.core.datastream.base import DataStream
-from ..models.alarm import AlarmDataStreamItem
+from noc.core.mx import MX_ADMINISTRATIVE_DOMAIN_ID, MX_H_VALUE_SPLITTER, MX_LABELS, MX_PROFILE_ID
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
 from noc.main.models.label import Label
-from noc.core.comp import smart_bytes
-from noc.core.mx import MX_LABELS, MX_PROFILE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_H_VALUE_SPLITTER
+from noc.sa.models.serviceprofile import ServiceProfile
+
+from ..models.alarm import AlarmDataStreamItem
 
 
 class AlarmDataStream(DataStream):

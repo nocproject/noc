@@ -9,37 +9,37 @@
 from typing import Any
 
 # Third-party modules
-from mongoengine.queryset import Q
 from django.http import HttpRequest
+from mongoengine.queryset import Q
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.services.web.base.decorators.state import state_handler
-from noc.services.web.base.decorators.caps import capabilities_handler
-from noc.services.web.base.decorators.watch import watch_handler
-from noc.sa.interfaces.base import (
-    UnicodeParameter,
-    ModelParameter,
-    DictListParameter,
-    StringListParameter,
-    IntParameter,
-    IPv4Parameter,
-    DictParameter,
-)
-from noc.sa.models.service import Service
-from noc.sa.models.serviceinstance import ServiceInstance
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.core.comp import smart_text
+from noc.core.middleware.tls import get_user
+from noc.core.models.inputsources import InputSource
+from noc.core.models.serviceinstanceconfig import InstanceType
+from noc.core.resource import from_resource
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_ipv4, is_mac, is_objectid
 from noc.inv.models.interface import Interface
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.subinterface import SubInterface
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.core.middleware.tls import get_user
-from noc.core.translation import ugettext as _
-from noc.core.validators import is_objectid, is_ipv4, is_mac
-from noc.core.models.serviceinstanceconfig import InstanceType
-from noc.core.models.inputsources import InputSource
-from noc.core.resource import from_resource
-from noc.core.comp import smart_text
+from noc.sa.interfaces.base import (
+    DictListParameter,
+    DictParameter,
+    IntParameter,
+    IPv4Parameter,
+    ModelParameter,
+    StringListParameter,
+    UnicodeParameter,
+)
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
+from noc.sa.models.serviceinstance import ServiceInstance
+from noc.services.web.base.decorators.caps import capabilities_handler
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.decorators.watch import watch_handler
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 @watch_handler

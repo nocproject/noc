@@ -7,18 +7,18 @@
 
 # Python modules
 import datetime
-import orjson
 
 # Third-party modules
 import cachetools
+import orjson
 from pymongo import ReadPreference
 from pymongo.errors import BulkWriteError
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.interface import Interface
 from noc.fm.models.alarmclass import AlarmClass
+from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class InterfaceStatusCheck(DiscoveryCheck):

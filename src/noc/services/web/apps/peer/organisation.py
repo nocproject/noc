@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.peer.models.organisation import Organisation
 from noc.core.translation import ugettext as _
+from noc.peer.models.organisation import Organisation
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class OrganisationApplication(ExtModelApplication):

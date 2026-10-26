@@ -5,14 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import pytest
+# Python modules
 import os
 
+# Third-party modules
+import pytest
+
 # NOC modules
+from noc.core.config.backends.env import EnvParams
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import IntParameter, StringParameter
-from noc.core.config.backends.env import EnvParams
 
 
 @pytest.mark.parametrize(

@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import time
 import os
+import time
 from pathlib import Path
 
 # Third-party modules
 import pytest
 
 # NOC modules
-from noc.core.fileutils import safe_rewrite, write_tempfile, temporary_file
+from noc.core.fileutils import safe_rewrite, temporary_file, write_tempfile
 
 
 @pytest.mark.parametrize(

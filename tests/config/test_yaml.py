@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import tempfile
 from pathlib import Path
 
@@ -13,9 +13,9 @@ from pathlib import Path
 import pytest
 
 # NOC modules
+from noc.core.config.backends.yaml import YAMLParams
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import IntParameter, StringParameter
-from noc.core.config.backends.yaml import YAMLParams
 
 YAML = """x: "15"
 y:

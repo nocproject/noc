@@ -5,10 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import bson
-
 # Third-party modules
+import bson
 from pymongo import UpdateMany
 
 # NOC modules

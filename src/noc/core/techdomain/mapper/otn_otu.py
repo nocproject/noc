@@ -6,14 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import itertools
 from typing import Any
 
-# Python modules
+# NOC modules
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
+
 from ..controller.base import Endpoint, PathItem
-from .base import BaseMapper
 from ..controller.otn_otu import OTNOTUController
-import itertools
+from .base import BaseMapper
 
 
 class DWDMOTUMapper(BaseMapper):

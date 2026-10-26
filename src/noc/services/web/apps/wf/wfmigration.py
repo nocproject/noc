@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.wf.models.wfmigration import WFMigration
-from noc.core.translation import ugettext as _
 
 
 class WFMigrationApplication(ExtDocApplication):

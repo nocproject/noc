@@ -13,10 +13,10 @@ from configparser import RawConfigParser
 # Third-party modules
 import orjson
 
-# Python modules
+# NOC modules
+from noc.core.comp import smart_text
 from noc.core.http.sync import HttpClient
 from noc.core.version import version
-from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 

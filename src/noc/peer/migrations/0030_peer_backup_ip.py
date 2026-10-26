@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.model.fields import INETField
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import INETField
 
 
 class Migration(BaseMigration):

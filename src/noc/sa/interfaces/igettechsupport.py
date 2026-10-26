@@ -4,8 +4,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import ListOfParameter, DictParameter, StringParameter
+
+from .base import DictParameter, ListOfParameter, StringParameter
 
 
 class IGetTechSupport(BaseInterface):

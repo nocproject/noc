@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
-import logging
 
 # NOC modules
 from noc.core.ioloop.timers import PeriodicCallback

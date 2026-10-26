@@ -5,11 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-from threading import Lock, RLock
 from functools import partial
+from threading import Lock, RLock
 from typing import Any
 
 # Third-party modules
@@ -18,11 +20,11 @@ from django.db.models import CharField, IntegerField
 from pydantic import BaseModel, RootModel
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.core.model.fields import DocumentReferenceField, PydanticField
-from noc.core.model.decorator import on_delete_check, on_init
-from noc.wf.models.workflow import Workflow
 from noc.core.change.decorator import change
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.model.fields import DocumentReferenceField, PydanticField
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 ips_lock = RLock()

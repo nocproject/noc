@@ -8,18 +8,19 @@
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BinaryField,
     DateTimeField,
-    ListField,
     EmbeddedDocumentListField,
+    ListField,
     ObjectIdField,
+    StringField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+from noc.sa.models.servicesummary import ObjectSummaryItem, SummaryItem
+
 from .escalationprofile import EscalationProfile
 
 

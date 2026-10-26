@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # python modules
-import dbf
+# Python modules
 import csv
 import logging
 import os
@@ -15,14 +15,18 @@ from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile, is_zipfile
 
+# Third-party modules
+import dbf
+
 # NOC modules
-from .base import BaseExtractor
-from ..models.street import Street
-from ..models.address import Address
-from ..models.building import Building
-from ..models.admdiv import AdmDiv
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
 from noc.core.http.sync import HttpClient
+
+from ..models.address import Address
+from ..models.admdiv import AdmDiv
+from ..models.building import Building
+from ..models.street import Street
+from .base import BaseExtractor
 
 logger = logging.getLogger(__name__)
 

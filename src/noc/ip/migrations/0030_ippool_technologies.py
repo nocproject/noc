@@ -5,11 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from noc.core.model.fields import TextArrayField
-
 # NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import TextArrayField
 
 
 class Migration(BaseMigration):

@@ -8,20 +8,20 @@
 # Python modules
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.mac import MAC
-from noc.core.ip import IP
-from noc.core.mib import mib
-from noc.core.lldp import (
-    LLDP_PORT_SUBTYPE_ALIAS,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
-)
 from noc.core import lldp
+from noc.core.ip import IP
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+)
+from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
 from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

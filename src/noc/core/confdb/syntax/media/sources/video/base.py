@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import ANY, INTEGER, BOOL
+from ....patterns import ANY, BOOL, INTEGER
 
 MEDIA_SOURCES_VIDEO_SYNTAX = DEF(
     "video",

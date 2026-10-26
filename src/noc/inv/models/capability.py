@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
+
+# Python modules
 import operator
+from pathlib import Path
 from threading import Lock
 from typing import Any
 
@@ -17,20 +19,20 @@ import bson
 import cachetools
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    UUIDField,
-    ObjectIdField,
     BooleanField,
     DictField,
     EnumField,
+    ObjectIdField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
-from noc.main.models.doccategory import category
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
 from noc.core.model.decorator import on_delete_check
-from noc.core.models.valuetype import ValueType, ARRAY_ANNEX
+from noc.core.models.valuetype import ARRAY_ANNEX, ValueType
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.doccategory import category
 
 id_lock = Lock()
 

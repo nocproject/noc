@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
 from .inet.base import VR_ROUTE_INET_SYNTAX
 from .inet6.base import VR_ROUTE_INET6_SYNTAX

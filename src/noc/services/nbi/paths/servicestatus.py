@@ -13,9 +13,10 @@ from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 # NOC modules
-from noc.sa.models.service import Service
 from noc.main.models.remotesystem import RemoteSystem
-from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
+from noc.sa.models.service import Service
+
+from ..base import API_ACCESS_HEADER, FORBIDDEN_MESSAGE, NBIAPI
 
 router = APIRouter()
 

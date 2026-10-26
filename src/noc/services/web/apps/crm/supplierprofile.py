@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.crm.models.supplierprofile import SupplierProfile
 from noc.core.translation import ugettext as _
+from noc.crm.models.supplierprofile import SupplierProfile
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class SupplierProfileApplication(ExtDocApplication):

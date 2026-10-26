@@ -5,18 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
-from .ntp.base import PROTOCOLS_NTP_SYNTAX
 from .cdp.base import PROTOCOLS_CDP_SYNTAX
-from .lldp.base import PROTOCOLS_LLDP_SYNTAX
-from .spanningtree.base import PROTOCOLS_SPANNING_TREE_SYNTAX
-from .udld.base import PROTOCOLS_UDLD_SYNTAX
-from .loopdetect.base import PROTOCOLS_LOOP_DETECT_SYNTAX
-from .lacp.base import PROTOCOLS_LACP_SYNTAX
 from .dns.base import PROTOCOLS_DNS_SYNTAX
+from .lacp.base import PROTOCOLS_LACP_SYNTAX
+from .lldp.base import PROTOCOLS_LLDP_SYNTAX
+from .loopdetect.base import PROTOCOLS_LOOP_DETECT_SYNTAX
+from .ntp.base import PROTOCOLS_NTP_SYNTAX
+from .spanningtree.base import PROTOCOLS_SPANNING_TREE_SYNTAX
 from .syslog.base import PROTOCOLS_SYSLOG_SYNTAX
-
+from .udld.base import PROTOCOLS_UDLD_SYNTAX
 
 PROTOCOLS_SYNTAX = DEF(
     "protocols",

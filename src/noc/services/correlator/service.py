@@ -6,76 +6,77 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import sys
-import datetime
-import re
-from collections import defaultdict, deque
-import threading
-from typing import Any
-from collections.abc import Iterable
-import operator
-from itertools import chain
-from hashlib import sha512
+
+# Python modules
 import asyncio
+import datetime
+import operator
+import re
+import sys
+import threading
+from collections import defaultdict, deque
+from collections.abc import Iterable
+from hashlib import sha512
+from itertools import chain
+from typing import Any
 
 # Third-party modules
+import cachetools
 import orjson
 from bson import ObjectId
 from dateutil.parser import parse as parse_date
 from pydantic import TypeAdapter, ValidationError
-import cachetools
 from pymongo import UpdateOne
 
 # NOC modules
 from noc.config import config
+from noc.core.change.policy import change_tracker
+from noc.core.debug import error_report, format_frames, get_traceback_frames
+from noc.core.defer import defer
+from noc.core.fm.enum import RCA_DOWNLINK_MERGE, RCA_RULE, RCA_TOPOLOGY, EventSeverity, GroupType
+from noc.core.fm.event import Event
+from noc.core.mongo.connection import connect
+from noc.core.msgstream.message import Message
+from noc.core.perf import metrics
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.service.base import BaseService
-from noc.core.mongo.connection import connect
-from noc.core.change.policy import change_tracker
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.service import Service, SVC_REF_PREFIX
-from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule, GroupItem
-from noc.services.correlator.rule import EventAlarmRule
-from noc.services.correlator.rcacondition import RCACondition
-from noc.services.correlator.trigger import Trigger
-from noc.services.correlator.models.disposereq import DisposeRequest
-from noc.services.correlator.models.eventreq import EventRequest
-from noc.services.correlator.models.clearreq import ClearRequest
-from noc.services.correlator.models.clearidreq import ClearIdRequest
-from noc.services.correlator.models.raisereq import RaiseRequest
-from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
-from noc.services.correlator.models.setstatusreq import SetStatusRequest
-from noc.services.correlator.models.dispositionreq import DispositionRequest
-from noc.fm.models.eventclass import EventClass
+from noc.core.version import version
+from noc.core.wf.interaction import Interaction
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
-from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.alarmtrigger import AlarmTrigger
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.alarmwatch import Effect
-from noc.main.models.remotesystem import RemoteSystem
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.eventclass import EventClass
 from noc.main.models.pool import Pool
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.version import version
-from noc.core.debug import format_frames, get_traceback_frames, error_report
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import SVC_REF_PREFIX, Service
+from noc.sa.models.servicesummary import ObjectSummaryItem, ServiceSummary, SummaryItem
 from noc.services.correlator import utils
-from noc.core.defer import defer
-from noc.core.perf import metrics
-from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE, GroupType
-from noc.core.msgstream.message import Message
-from noc.core.wf.interaction import Interaction
-from noc.core.fm.event import Event
-from noc.core.fm.enum import EventSeverity
-from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmjob import ALARM_WATCHER_JCLS
+from noc.services.correlator.alarmrule import AlarmRule as CAlarmRule
+from noc.services.correlator.alarmrule import AlarmRuleSet, GroupItem
+from noc.services.correlator.models.clearidreq import ClearIdRequest
+from noc.services.correlator.models.clearreq import ClearRequest
+from noc.services.correlator.models.disposereq import DisposeRequest
+from noc.services.correlator.models.dispositionreq import DispositionRequest
+from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
+from noc.services.correlator.models.eventreq import EventRequest
+from noc.services.correlator.models.raisereq import RaiseRequest
+from noc.services.correlator.models.setstatusreq import SetStatusRequest
+from noc.services.correlator.rcacondition import RCACondition
+from noc.services.correlator.rcalock import RCALock
+from noc.services.correlator.rule import EventAlarmRule
+from noc.services.correlator.trigger import Trigger
 from noc.services.datastream.models.cfgalarm import CfgAlarm
-
 
 ref_lock = threading.Lock()
 ta_DisposeRequest = TypeAdapter(DisposeRequest)
@@ -470,6 +471,7 @@ class CorrelatorService(BaseService):
         on_refresh: bool = False,
     ) -> dict[str, Any]:
         """Apply alarm rules"""
+        # NOC modules
         from noc.fm.models.escalationprofile import EscalationProfile
 
         groups = {}
@@ -1991,6 +1993,7 @@ class CorrelatorService(BaseService):
 
     async def update_object_statuses(self):
         """Update object statuses"""
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObjectStatus
 
         self.logger.info("Running object status updater")

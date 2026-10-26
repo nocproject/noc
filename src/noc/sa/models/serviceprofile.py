@@ -5,58 +5,59 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 import re
 from collections import defaultdict
-from threading import Lock
 from collections.abc import Iterable
 from functools import partial
+from threading import Lock
 
 # Third-party modules
 import cachetools
 from bson import ObjectId
-from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    ReferenceField,
-    IntField,
     BooleanField,
-    LongField,
-    ListField,
     EmbeddedDocumentListField,
     EnumField,
+    IntField,
+    ListField,
+    LongField,
+    ReferenceField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
+from noc.core.caps.types import CapsConfig
+from noc.core.change.decorator import change
 from noc.core.defer import defer
+from noc.core.diagnostic.types import CtxItem, DiagnosticConfig
 from noc.core.hash import hash_int
-from noc.core.models.servicestatus import Status
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.models.serviceinstanceconfig import (
     InstanceType,
     ServiceInstanceConfig,
     ServiceInstanceTypeConfig,
 )
-from noc.core.model.decorator import on_delete_check
-from noc.core.change.decorator import change
-from noc.core.caps.types import CapsConfig
-from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
-from noc.main.models.handler import Handler
+from noc.core.models.servicestatus import Status
+from noc.core.mongo.fields import PlainReferenceField
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.inv.models.capability import Capability
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.handler import Handler
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.capsprofile import CapsProfile
 from noc.wf.models.workflow import Workflow
-from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.alarmclass import AlarmClass
 
 id_lock = Lock()
 
@@ -613,6 +614,7 @@ class ServiceProfile(Document):
     @classmethod
     def get_alarm_service_filter(cls, alarm) -> list[tuple[m_q | None, list[str]]]:
         """Getting alarm filter by ServiceProfile rules"""
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         r = defaultdict(list)
@@ -661,8 +663,10 @@ class ServiceProfile(Document):
 
 
 def refresh_interface_profiles(sp_id, ip_id):
-    from .service import Service
+    # NOC modules
     from noc.inv.models.interface import Interface
+
+    from .service import Service
 
     svc = [x["_id"] for x in Service._get_collection().find({"profile": sp_id}, {"_id": 1})]
     if not svc:

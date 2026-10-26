@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
 
 HTTP_SYNTAX = DEF("http", gen="make_protocols_http")

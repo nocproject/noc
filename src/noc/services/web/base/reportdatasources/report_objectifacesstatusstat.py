@@ -5,13 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 from collections import defaultdict
+
+# Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import BaseReportColumn
 from noc.core.mongo.connection import get_db
+
+from .base import BaseReportColumn
 
 
 class ReportObjectIfacesStatusStat(BaseReportColumn):

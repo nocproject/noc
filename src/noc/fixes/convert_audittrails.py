@@ -8,17 +8,17 @@
 # Python modules
 import datetime
 import uuid
+from collections import defaultdict
 
 # Third-party modules
 import orjson
-from collections import defaultdict
 
 # NOC modules
-from noc.main.models.audittrail import AuditTrail
-from noc.core.service.pub import publish
-from noc.sa.models.managedobject import ManagedObject
-from noc.models import get_model
 from noc.config import config
+from noc.core.service.pub import publish
+from noc.main.models.audittrail import AuditTrail
+from noc.models import get_model
+from noc.sa.models.managedobject import ManagedObject
 
 CHUNK = 70
 

@@ -7,8 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import numpy as np
 from itertools import zip_longest
+
+# Third-party modules
+import numpy as np
 
 # NOC modules
 from noc.core.profile.base import BaseProfile

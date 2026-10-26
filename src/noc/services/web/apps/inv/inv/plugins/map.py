@@ -9,20 +9,21 @@
 from django.http import HttpRequest
 
 # NOC modules
+from noc.config import config
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
-from noc.config import config
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object, ObjectAttr
+from noc.inv.models.objectmodel import ObjectModel
 from noc.sa.interfaces.base import (
-    StringParameter,
-    FloatParameter,
     BooleanParameter,
     DocumentParameter,
+    FloatParameter,
+    StringParameter,
     UnicodeParameter,
 )
+from noc.sa.models.managedobject import ManagedObject
+
 from .base import InvPlugin
 
 

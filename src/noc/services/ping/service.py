@@ -7,11 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import functools
-import time
-import datetime
-import os
 import asyncio
+import datetime
+import functools
+import os
+import time
 from collections import defaultdict
 from typing import Any
 
@@ -20,14 +20,14 @@ import orjson
 from gufo.ping import Ping
 
 # NOC modules
-from noc.core.service.base import BaseService
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 from noc.core.timeout import retry_timeout
-from noc.services.ping.probesetting import ProbeSetting, Policy
 from noc.services.ping.datastream import PingDataStreamClient
+from noc.services.ping.probesetting import Policy, ProbeSetting
 
 
 class PingService(BaseService):

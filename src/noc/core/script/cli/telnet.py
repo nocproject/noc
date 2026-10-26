@@ -6,13 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import codecs
-
-# Third-party modules
+import logging
 
 # NOC modules
 from noc.core.perf import metrics
+
 from .cli import CLI
 from .stream import BaseStream
 

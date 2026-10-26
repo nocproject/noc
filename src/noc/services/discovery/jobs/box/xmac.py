@@ -9,8 +9,8 @@
 
 # NOC modules
 from noc.core.mac import MAC
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
+from noc.sa.models.managedobject import ManagedObject
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 

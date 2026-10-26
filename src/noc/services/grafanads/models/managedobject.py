@@ -9,15 +9,15 @@
 from typing import Literal
 
 # Third-party modules
-from pydantic import BaseModel
 from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.inv.models.interface import Interface
 from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.inv.models.interface import Interface
 
 MAX_MANAGED_OBJECT_RESPONSE = 2000
 

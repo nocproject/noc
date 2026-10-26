@@ -9,11 +9,9 @@
 # Python modules
 import logging
 
-# Third-party modules
-
 # NOC modules
-from noc.core.msgstream.client import MessageStreamClient
 from noc.core.ioloop.util import run_sync
+from noc.core.msgstream.client import MessageStreamClient
 
 logger = logging.getLogger(__name__)
 

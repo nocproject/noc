@@ -6,11 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django import forms
 from django.utils.safestring import mark_safe
 
 # NOC modules
+from noc.core.translation import ugettext as _
+
 from .base import BaseCalculator
 
 

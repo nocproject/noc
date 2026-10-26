@@ -6,19 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
-from collections.abc import Iterable
 import uuid
+from collections.abc import Iterable
+from dataclasses import dataclass
 
 # Third-party modules
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
 # NOC modules
-from .result import Result
 from noc.inv.models.object import Object, ObjectAttr, ObjectConnectionData
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
 from noc.inv.models.objectmodel import Crossing, ObjectModel
+
+from .result import Result
 
 LC_LC_SMF_UID = uuid.UUID("217ba845-5309-4c4b-8543-d26dea35f11a")
 

@@ -8,20 +8,21 @@
 # Python modules
 import datetime
 import difflib
-import zlib
 import struct
-
-# Third-party modules
-import pymongo
-import gridfs
-import gridfs.errors
-import bsdiff4
-from bson import ObjectId
+import zlib
 from collections.abc import Iterable
 
+# Third-party modules
+import bsdiff4
+import gridfs
+import gridfs.errors
+import pymongo
+from bson import ObjectId
+
 # NOC modules
-from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.mongo.connection import get_db
+
 from .revision import Revision
 
 

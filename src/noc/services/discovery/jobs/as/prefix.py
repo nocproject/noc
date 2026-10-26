@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from ..box.prefix import PrefixCheck as BasePrefixCheck, DiscoveredPrefix, SRC_WHOIS_ROUTE
+from ..box.prefix import SRC_WHOIS_ROUTE, DiscoveredPrefix
+from ..box.prefix import PrefixCheck as BasePrefixCheck
 
 
 class PrefixCheck(BasePrefixCheck):

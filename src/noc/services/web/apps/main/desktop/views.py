@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 import datetime
 import os
 
@@ -13,17 +13,17 @@ import os
 from django.http import HttpRequest
 
 # NOC modules
-from noc.config import config
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.services.web.base.access import PermitLogged
-from noc.core.version import version
 from noc.aaa.models.group import Group
-from noc.main.models.userstate import UserState
+from noc.aaa.models.permission import Permission
+from noc.config import config
+from noc.core.feature import active_features
+from noc.core.version import version
 from noc.main.models.favorites import Favorites
 from noc.main.models.style import Style
-from noc.aaa.models.permission import Permission
+from noc.main.models.userstate import UserState
+from noc.services.web.base.access import PermitLogged
+from noc.services.web.base.extapplication import ExtApplication, api
 from noc.support.cp import CPClient
-from noc.core.feature import active_features
 
 
 class DesktopApplication(ExtApplication):

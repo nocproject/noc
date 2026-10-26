@@ -5,46 +5,48 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
+from collections.abc import Callable
 from threading import Lock
 from typing import Any
-from collections.abc import Callable
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
+    EmbeddedDocumentListField,
+    IntField,
     ListField,
     LongField,
-    IntField,
-    ReferenceField,
     ObjectIdField,
-    EmbeddedDocumentListField,
+    ReferenceField,
+    StringField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.aaa.models.user import User
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.fm.enum import AlarmAction
 from noc.core.fm.request import ActionConfig
 from noc.core.matcher import build_matcher
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.handler import Handler
-from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
-from noc.aaa.models.user import User
+from noc.main.models.template import Template
 from noc.sa.models.action import Action as ObjectAction
-from .alarmseverity import AlarmSeverity
-from .alarmclass import AlarmClass
-from .escalationprofile import EscalationProfile
 
+from .alarmclass import AlarmClass
+from .alarmseverity import AlarmSeverity
+from .escalationprofile import EscalationProfile
 
 id_lock = Lock()
 

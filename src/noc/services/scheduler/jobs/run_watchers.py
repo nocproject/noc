@@ -9,8 +9,8 @@
 import datetime
 
 # NOC modules
-from noc.models import get_model
 from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.models import get_model
 
 WAIT_DEFAULT_INTERVAL_SEC = 180
 MIN_NEXT_SHIFT_SEC = 30

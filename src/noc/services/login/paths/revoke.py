@@ -9,12 +9,12 @@
 from fastapi import APIRouter, Depends
 
 # NOC modules
-from ..auth import get_user_from_jwt
-from ..models.revoke import RevokeRequest
-from ..models.status import StatusResponseError, StatusResponse
 from noc.core.service.deps.service import get_service
 from noc.services.login.service import LoginService
 
+from ..auth import get_user_from_jwt
+from ..models.revoke import RevokeRequest
+from ..models.status import StatusResponse, StatusResponseError
 
 router = APIRouter()
 

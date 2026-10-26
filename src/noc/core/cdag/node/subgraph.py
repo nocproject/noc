@@ -6,19 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
+import yaml
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import Any
 
 # Third-party modules
 from pydantic import BaseModel
-import yaml
 
-# NOC modules
-from ..graph import CDAG
 from ..factory.config import ConfigCDAGFactory, GraphConfig
-from .base import BaseCDAGNode, ValueType, Category, IN_INVALID, IN_REQUIRED
+from ..graph import CDAG
+from .base import IN_INVALID, IN_REQUIRED, BaseCDAGNode, Category, ValueType
 
 
 class InputMapping(BaseModel):

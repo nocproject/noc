@@ -5,6 +5,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import BooleanParameter, DictParameter, StringParameter
 
 

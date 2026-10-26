@@ -9,8 +9,8 @@
 from pathlib import Path
 
 # Third-party modules
-from mongoengine.document import Document
 from mongoengine import fields
+from mongoengine.document import Document
 
 # NOC modules
 from noc.core.path import safe_json_path

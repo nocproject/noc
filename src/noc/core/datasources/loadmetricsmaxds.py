@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import datetime
 import time
-from typing import Any
+from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable
+from typing import Any
 
 # Third-party modules
 from pymongo import ReadPreference
@@ -20,10 +20,11 @@ from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.mongo.connection import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.resourcegroup import ResourceGroup
-from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 QUERY = f"""SELECT
     managed_object AS mo_bi_id,

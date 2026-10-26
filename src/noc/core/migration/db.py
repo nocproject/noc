@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # Third-party modules
-from django.db.models import AutoField
 from django.db import connection
 from django.db.backends.utils import names_digest, truncate_name
+from django.db.models import AutoField
 
 logger = logging.getLogger("migration")
 

@@ -8,8 +8,10 @@
 # Third-party modules
 from mongoengine.document import Document
 
+# NOC modules
 # NOC models
 from noc.core.mongo.fields import PlainReferenceField
+
 from .normativedocument import NormativeDocument
 
 

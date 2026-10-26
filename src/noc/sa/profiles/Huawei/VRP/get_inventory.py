@@ -7,15 +7,15 @@
 
 # Python modules
 import re
+from collections import namedtuple
 
 # Third-party modules
-from collections import namedtuple
 from dateutil.parser import parse as parse_date
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.text import parse_kv
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):

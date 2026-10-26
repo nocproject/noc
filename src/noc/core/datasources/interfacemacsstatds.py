@@ -6,19 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import datetime
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
-from noc.core.clickhouse.connect import connection
 from noc.config import config
-from noc.inv.models.macvendor import MACVendor
+from noc.core.clickhouse.connect import connection
 from noc.core.mac import MAC
+from noc.inv.models.macvendor import MACVendor
 from noc.ip.models.address import Address
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 SQL = f"""
    SELECT dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,

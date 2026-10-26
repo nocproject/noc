@@ -9,8 +9,8 @@
 from collections import defaultdict
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.core.error import NOCError
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class STPCheck(TopologyDiscoveryCheck):

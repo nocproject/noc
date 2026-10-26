@@ -10,10 +10,10 @@ import orjson
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.interfaces.base import StringParameter
 from noc.core.collection.base import Collection
 from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import StringParameter
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class JSONImportApplication(ExtApplication):

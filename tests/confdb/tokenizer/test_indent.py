@@ -11,7 +11,6 @@ import pytest
 # NOC modules
 from noc.core.confdb.tokenizer.indent import IndentTokenizer
 
-
 CFG1 = """# comment
 
 interface Gi 0/1

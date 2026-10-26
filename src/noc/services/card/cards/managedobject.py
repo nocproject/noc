@@ -15,25 +15,25 @@ from django.db.models import Q
 from mongoengine.errors import DoesNotExist
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.sa.models.servicesummary import SummaryItem
-from noc.sa.models.service import Service
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.sa.models.useraccess import UserAccess
+from noc.core.perf import metrics
+from noc.core.pm.utils import MetricProxy
+from noc.core.text import alnum_key, list_to_ranges
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.uptime import Uptime
-from noc.inv.models.object import Object
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.firmwarepolicy import FirmwarePolicy
+from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.sensor import Sensor
 from noc.maintenance.models.maintenance import Maintenance
-from noc.core.text import alnum_key, list_to_ranges
-from noc.core.pm.utils import MetricProxy
-from noc.core.perf import metrics
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.useraccess import UserAccess
+
+from .base import BaseCard
 
 
 class ManagedObjectCard(BaseCard):

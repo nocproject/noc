@@ -5,26 +5,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
-import threading
+
+# Python modules
 import operator
+import threading
+from pathlib import Path
 from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField, ListField
-import cachetools
+from mongoengine.fields import ListField, ObjectIdField, StringField, UUIDField
 
 # NOC modules
-from noc.core.prettyjson import to_json
+from noc.core.facade.utils import SLOT_PREFIX_LEN, is_slot_id, slot_to_id
 from noc.core.model.decorator import on_delete_check
-from noc.main.models.doccategory import category
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.core.svg import SVG
-from noc.core.facade.utils import is_slot_id, slot_to_id, SLOT_PREFIX_LEN
+from noc.main.models.doccategory import category
 
 id_lock = threading.Lock()
 

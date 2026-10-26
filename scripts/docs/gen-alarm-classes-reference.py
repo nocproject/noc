@@ -6,22 +6,22 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
+import json
+import logging
 import os
 import re
-import json
-from dataclasses import dataclass, field
-from typing import Any
-from collections.abc import Iterable
-import logging
+import time
 from collections import defaultdict
-from pathlib import Path
-from itertools import islice
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 from enum import Enum
+from itertools import islice
+from pathlib import Path
+from typing import Any
 
 # Third-party modules
-import mkdocs_gen_files
 import jinja2
+import mkdocs_gen_files
 
 # @todo: Arbitrary ToC depth
 # @todo: en/ru

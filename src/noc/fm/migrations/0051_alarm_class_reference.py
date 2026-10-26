@@ -9,7 +9,7 @@
 import hashlib
 
 # Third-party modules
-from pymongo import UpdateOne, UpdateMany
+from pymongo import UpdateMany, UpdateOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

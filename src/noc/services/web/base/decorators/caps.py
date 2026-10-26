@@ -6,14 +6,15 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseAppDecorator
 from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import (
-    StringParameter,
     BooleanParameter,
     IntParameter,
     StringListParameter,
+    StringParameter,
 )
+
+from .base import BaseAppDecorator
 
 
 class CapabilitiesHandlerDecorator(BaseAppDecorator):

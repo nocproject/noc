@@ -9,12 +9,13 @@
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.object import Object
 from noc.core.svg import SVG
+from noc.inv.models.object import Object
+
+from .fallback import get_fallback_facade_for_model
+from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
 from .load import get_svg_for_facade
 from .utils import slot_to_id
-from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
-from .fallback import get_fallback_facade_for_model
 
 
 def get_svg_for_box(

@@ -9,15 +9,16 @@
 from functools import reduce
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
 from django.db.models import Q
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
-from .groupaccess import GroupAccess
+from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
+
 from .administrativedomain import AdministrativeDomain
+from .groupaccess import GroupAccess
 
 
 class UserAccess(NOCModel):

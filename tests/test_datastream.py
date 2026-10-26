@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import time
 import threading
+import time
 
 # Third-party modules
-import pytest
-import orjson
 import bson
+import orjson
+import pytest
 
 # NOC modules
-from noc.core.datastream.base import DataStream
+from noc.core.datastream.base import DataStream, data_stream_loader
 from noc.core.perf import metrics
-from noc.core.datastream.base import data_stream_loader
+
 from .conftest import IN_GITHUB_ACTIONS
 
 

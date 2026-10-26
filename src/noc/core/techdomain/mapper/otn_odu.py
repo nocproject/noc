@@ -11,9 +11,10 @@
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.inv.models.object import Object
+
 from ..controller.base import Endpoint
-from .base import BaseMapper
 from ..controller.otn_odu import OTNODUController
+from .base import BaseMapper
 
 
 class DWDMOdUMapper(BaseMapper):

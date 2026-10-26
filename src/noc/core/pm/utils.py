@@ -5,25 +5,28 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import itertools
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import orjson
 
+# NOC modules
 # NOC Modules
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
+from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.scale import Scale
-from noc.pm.models.measurementunits import MeasurementUnits
 
 
 def is_nan(*v: str) -> bool:
@@ -551,6 +554,7 @@ class MetricProxy:
 
     def fill_all_scopes(self):
         """Request all scopes for object"""
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
         from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
@@ -597,8 +601,9 @@ def get_objects_metrics(
     Returns:
         Dictionary ManagedObject -> Path -> MetricName -> value
     """
-    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+    # NOC modules
     from noc.sa.models.managedobject import ManagedObject
+    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
@@ -702,8 +707,9 @@ def get_interface_metrics(
     Returns:
         Dictionary ManagedObject -> Path -> MetricName -> value
     """
-    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+    # NOC modules
     from noc.sa.models.managedobject import ManagedObject
+    from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
     # mo = self.object
     if metrics and "map" not in metrics:

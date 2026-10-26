@@ -7,8 +7,6 @@
 
 # Python modules
 from dataclasses import dataclass, field
-
-# Third-party modules
 from typing import Any
 
 

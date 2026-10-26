@@ -6,20 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import subprocess
 import argparse
 import os
+import subprocess
+from functools import cache
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 # Third-party modules
 from babel.util import pathmatch
-from functools import cache
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
-from noc.core.comp import smart_text
 
 BABEL_CFG = b"""# Translation extraction config
 [python: **.py]

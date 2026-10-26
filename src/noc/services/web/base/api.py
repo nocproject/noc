@@ -14,7 +14,8 @@ from django.http import HttpRequest
 
 # NOC modules
 from noc.sa.interfaces.base import DictParameter
-from .access import HasPerm, Permit, Deny, Permission
+
+from .access import Deny, HasPerm, Permission, Permit
 
 __all__ = ["api", "view"]
 

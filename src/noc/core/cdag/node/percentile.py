@@ -7,9 +7,8 @@
 
 # Python modules
 
-# NOC modules
-from .base import ValueType, Category
-from .window import WindowNode, WindowConfig
+from .base import Category, ValueType
+from .window import WindowConfig, WindowNode
 
 
 class PercentileNodeConfig(WindowConfig):

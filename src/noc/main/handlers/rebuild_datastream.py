@@ -9,8 +9,8 @@
 import logging
 
 # NOC modules
-from noc.models import get_model
 from noc.core.change.policy import change_tracker
+from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 

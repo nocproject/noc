@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.clickhouse.fields import BaseField
 from noc.bi.models.reboots import Reboots
+from noc.core.clickhouse.fields import BaseField
 
 MODEL = Reboots
 

@@ -11,7 +11,6 @@ from django.forms.boundfield import BoundField
 from django.forms.widgets import CheckboxInput
 from django.utils.html import escape
 
-
 # NOC modules
 from noc.core.comp import smart_text
 

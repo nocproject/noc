@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import itertools
 import math
 import time
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 # NOC modules
 from noc.core.handler import get_handler
-import itertools
 
 type Window = list[tuple[int, float]]
 type WindowFunction = Callable[..., Any]

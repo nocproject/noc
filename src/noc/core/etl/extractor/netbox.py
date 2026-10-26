@@ -6,28 +6,28 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import bisect
-from typing import Any
+import datetime
 from collections.abc import Iterable
+from typing import Any
 from urllib.parse import urlparse
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.http.sync import HttpClient
 from noc.core.etl.extractor.base import BaseExtractor, RemovedItem
 from noc.core.etl.models.base import BaseModel
-from noc.core.etl.remotesystem.base import BaseRemoteSystem
-from noc.core.etl.models.object import Object, ObjectData
-from noc.core.etl.models.managedobject import ManagedObject
-from noc.core.etl.models.ipaddressprofile import IPAddressProfile
-from noc.core.etl.models.ipprefixprofile import IPPrefixProfile
-from noc.core.etl.models.ipprefix import IPPrefix
 from noc.core.etl.models.ipaddress import IPAddress
+from noc.core.etl.models.ipaddressprofile import IPAddressProfile
+from noc.core.etl.models.ipprefix import IPPrefix
+from noc.core.etl.models.ipprefixprofile import IPPrefixProfile
+from noc.core.etl.models.managedobject import ManagedObject
+from noc.core.etl.models.object import Object, ObjectData
 from noc.core.etl.models.resourcegroup import ResourceGroup
-from noc.core.etl.models.typing import ETLMapping, CapsItem
+from noc.core.etl.models.typing import CapsItem, ETLMapping
+from noc.core.etl.remotesystem.base import BaseRemoteSystem
+from noc.core.http.sync import HttpClient
 from noc.inv.models.objectmodel import ObjectModel
 
 

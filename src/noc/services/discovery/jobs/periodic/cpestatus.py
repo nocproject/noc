@@ -11,9 +11,9 @@
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.cpe import CPE
 from noc.inv.models.cpeprofile import CPEProfile
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class CPEStatusCheck(DiscoveryCheck):

@@ -8,8 +8,7 @@
 # Third-party modules
 import pytest
 
-# NOC modules
-from .util import NodeCDAG, publish_service, MetricTarget
+from .util import MetricTarget, NodeCDAG, publish_service
 
 
 @pytest.mark.parametrize(

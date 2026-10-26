@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any, cast
-from collections.abc import Callable
 import enum
-from logging import Logger
+from collections.abc import Callable
 from inspect import signature
+from logging import Logger
+from typing import Any, cast
 
 # Third-party modules
 from gufo.loader import Loader
@@ -18,6 +18,7 @@ from gufo.loader import Loader
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
+
 from ..env import Environment
 
 

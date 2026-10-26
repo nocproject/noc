@@ -10,10 +10,11 @@ from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DictField, ListField
+from mongoengine.fields import DictField, ListField, StringField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+
 from .mib import MIB
 
 

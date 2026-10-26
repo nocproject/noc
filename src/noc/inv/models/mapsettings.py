@@ -6,29 +6,29 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 import datetime
 import logging
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (
-    StringField,
     DateTimeField,
+    DictField,
+    EmbeddedDocumentListField,
+    EnumField,
     FloatField,
     IntField,
-    DictField,
-    EnumField,
-    EmbeddedDocumentListField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q
-from mongoengine.errors import NotUniqueError
 
 # NOC modules
-from noc.core.topology.base import loader as t_loader
-from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import Layout, TopologyNodeType
 from noc.config import config
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.base import loader as t_loader
+from noc.core.topology.types import Layout, TopologyNodeType
 
 logger = logging.getLogger(__name__)
 

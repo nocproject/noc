@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
-import logging
 import gettext
+import logging
+import os
 
 # NOC modules
 from noc.core.comp import smart_text

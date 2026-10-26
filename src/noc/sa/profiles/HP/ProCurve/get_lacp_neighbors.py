@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 from noc.core.text import parse_table
+from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 
 
 class Script(BaseScript):

@@ -6,13 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import calendar
+import datetime
+
+# NOC modules
+from noc.config import config
+from noc.core.clickhouse.connect import connection
 
 # NOC Modules
 from noc.pm.models.metricscope import MetricScope
-from noc.core.clickhouse.connect import connection
-from noc.config import config
 
 # DB with old schema data (with path)
 SOURCE_DB_NAME = "noc_old"

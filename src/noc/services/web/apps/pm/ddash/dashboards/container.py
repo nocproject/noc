@@ -8,14 +8,16 @@
 # Python modules
 from collections import defaultdict
 
+# Third-party modules
 # Third-Party modules
 from mongoengine.errors import DoesNotExist
 
 # NOC modules
-from .jinja import JinjaDashboard
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
 from noc.inv.models.sensor import Sensor
+from noc.sa.models.managedobject import ManagedObject
+
+from .jinja import JinjaDashboard
 
 
 class ContainerDashboard(JinjaDashboard):

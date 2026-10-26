@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.action import Action
 from noc.core.translation import ugettext as _
+from noc.sa.models.action import Action
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class ActionApplication(ExtDocApplication):

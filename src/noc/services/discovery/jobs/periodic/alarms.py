@@ -6,14 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import time
 import datetime
+import time
+
+# Third-party modules
 import orjson
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class AlarmsCheck(DiscoveryCheck):

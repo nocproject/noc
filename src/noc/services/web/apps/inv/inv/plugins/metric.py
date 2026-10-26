@@ -4,24 +4,24 @@
 # Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-import datetime
-
 # Python modules
+import datetime
 import operator
 from typing import Any
 
 # Third-party modules
-from django.http import HttpRequest
 import orjson
+from django.http import HttpRequest
 
 # NOC modules
-from .base import InvPlugin
-from noc.inv.models.sensor import Sensor
 from noc.cm.models.configurationparam import ConfigurationParam
-from noc.pm.models.metrictype import MetricType
-from noc.sa.interfaces.base import DictListParameter, StringParameter, FloatParameter
-from noc.core.translation import ugettext as _
 from noc.core.clickhouse.connect import connection
+from noc.core.translation import ugettext as _
+from noc.inv.models.sensor import Sensor
+from noc.pm.models.metrictype import MetricType
+from noc.sa.interfaces.base import DictListParameter, FloatParameter, StringParameter
+
+from .base import InvPlugin
 
 
 class MetricPlugin(InvPlugin):

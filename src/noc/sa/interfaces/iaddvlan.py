@@ -5,7 +5,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import VLANIDParameter, StringParameter, StringListParameter, BooleanParameter
+
+from .base import BooleanParameter, StringListParameter, StringParameter, VLANIDParameter
 
 
 class IAddVlan(BaseInterface):

@@ -6,12 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 def get_labels():

@@ -9,10 +9,10 @@
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.inv.models.extnrilink import ExtNRILink
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class NRICheck(TopologyDiscoveryCheck):

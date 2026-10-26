@@ -13,6 +13,7 @@ from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import BioCollisionPolicy
 from noc.sa.models.managedobject import ManagedObject
+
 from ..policies.base import bioseg_policy_loader
 
 logger = logging.getLogger(__name__)

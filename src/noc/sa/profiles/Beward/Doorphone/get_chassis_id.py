@@ -7,8 +7,8 @@
 
 
 # NOC modules
-from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 
 
 class Script(BaseScript):

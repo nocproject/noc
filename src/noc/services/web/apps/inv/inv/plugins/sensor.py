@@ -9,11 +9,12 @@
 from django.http import HttpRequest
 
 # NOC modules
-from .base import InvPlugin
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.sa.interfaces.base import ObjectIdParameter
+
+from .base import InvPlugin
 
 
 class SensorPlugin(InvPlugin):

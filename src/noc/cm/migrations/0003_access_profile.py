@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote, urlparse
 
 # Third-party modules
 from django.db import models
 
 # NOC modules
-from noc.core.script.scheme import TELNET, SSH
 from noc.core.migration.base import BaseMigration
+from noc.core.script.scheme import SSH, TELNET
 
 
 class Migration(BaseMigration):

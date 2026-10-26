@@ -13,8 +13,8 @@ import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.script.loader import loader as script_loader
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.script.loader import loader as script_loader
 
 
 class Command(BaseCommand):

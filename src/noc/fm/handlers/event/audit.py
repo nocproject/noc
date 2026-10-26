@@ -9,8 +9,8 @@
 import datetime
 
 # NOC modules
-from noc.sa.models.interactionlog import InteractionLog, Interaction
 from noc.config import config
+from noc.sa.models.interactionlog import Interaction, InteractionLog
 
 
 def get_seconds(section, option):

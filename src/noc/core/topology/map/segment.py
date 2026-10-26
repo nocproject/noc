@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import operator
-import logging
 import itertools
+import logging
+import operator
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -18,17 +18,17 @@ from bson import ObjectId
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.sa.models.useraccess import UserAccess
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.ip import IP
 from noc.core.graph.nexthop import iter_next_hops
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.networksegment import NetworkSegment
+from noc.core.ip import IP
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.types import MapItem, MapMeta, PathItem, Portal
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.core.topology.base import TopologyBase
-from noc.core.topology.types import MapItem, PathItem, Portal, MapMeta
-from noc.core.translation import ugettext as _
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 
 logger = logging.getLogger(__name__)
 
@@ -243,6 +243,7 @@ class SegmentTopology(TopologyBase):
             # Shortest path first
             return sorted(ups, key=lambda x: ups[x])
 
+        # NOC modules
         from noc.sa.models.managedobject import ObjectUplinks
 
         uplinks = self.get_uplinks()

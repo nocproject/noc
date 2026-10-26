@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import orjson
 from pickle import loads
 
 # Third-party modules
+import orjson
 from django.db import models
 
 # NOC modules

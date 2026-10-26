@@ -8,8 +8,9 @@
 # Python modules
 
 # NOC modules
-from .base import BaseModel, _BaseModel
 from noc.core.fm.event import Target
+
+from .base import BaseModel, _BaseModel
 
 
 class Var(_BaseModel):

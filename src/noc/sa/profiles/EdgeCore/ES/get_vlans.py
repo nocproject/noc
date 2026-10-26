@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import operator
+import re
 
+# NOC modules
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans

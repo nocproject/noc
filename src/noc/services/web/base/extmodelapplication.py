@@ -7,53 +7,53 @@
 
 # Python modules
 import datetime
-from pathlib import Path
 import uuid
 from collections import defaultdict
 from functools import reduce
+from pathlib import Path
 
 # Third-party modules
-from django.http import HttpResponse
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.db.models.fields import (
-    CharField,
     BooleanField,
-    IntegerField,
-    FloatField,
+    CharField,
     DateField,
     DateTimeField,
+    FloatField,
+    IntegerField,
     related,
 )
-from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import ArrayField
+from django.http import HttpResponse
 
 # NOC modules
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
+from noc.aaa.models.permission import Permission
+from noc.core.collection.base import Collection
+from noc.core.comp import smart_text
+from noc.core.debug import error_report
+from noc.core.middleware.tls import get_user
+from noc.core.model.util import is_related_field
+from noc.core.protocols.get_css_class import GetCssClass
+from noc.core.validators import is_int
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.label import Label
+from noc.models import get_model_id, is_document
 from noc.sa.interfaces.base import (
     BooleanParameter,
-    IntParameter,
-    FloatParameter,
-    TagsParameter,
-    NoneParameter,
-    StringListParameter,
     DictParameter,
+    FloatParameter,
+    InterfaceTypeError,
+    IntParameter,
     ListOfParameter,
     ModelParameter,
-    InterfaceTypeError,
+    NoneParameter,
+    StringListParameter,
+    TagsParameter,
 )
-from noc.core.validators import is_int
-from noc.models import is_document
-from noc.core.debug import error_report
-from noc.aaa.models.permission import Permission
-from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
-from noc.main.models.label import Label
-from noc.core.middleware.tls import get_user
-from noc.core.comp import smart_text
-from noc.core.collection.base import Collection
-from noc.core.protocols.get_css_class import GetCssClass
-from noc.models import get_model_id
-from noc.core.model.util import is_related_field
-from noc.inv.models.resourcegroup import ResourceGroup
+
 from .api import api, view
 from .extapplication import ExtApplication
 from .interfaces import DateParameter, DateTimeParameter
@@ -173,6 +173,7 @@ class ExtModelApplication(ExtApplication):
         :type field: Field
         :return:
         """
+        # NOC modules
         from noc.core.model.fields import TagsField, TextArrayField
 
         if isinstance(field, BooleanField):
@@ -201,6 +202,7 @@ class ExtModelApplication(ExtApplication):
         return int(item)
 
     def get_custom_fields(self):
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         return list(CustomField.table_fields(self.model._meta.db_table))

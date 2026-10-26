@@ -5,31 +5,34 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField, ListField, ObjectIdField
 from mongoengine.errors import ValidationError
-import cachetools
+from mongoengine.fields import DateTimeField, ListField, ObjectIdField, StringField
 
 # NOC modules
-from .phonerange import PhoneRange
-from .numbercategory import NumberCategory
-from noc.sa.models.service import Service
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.text import clean_number
+from noc.core.wf.decorator import workflow
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.text import clean_number
-from noc.core.resourcegroup.decorator import resourcegroup
+from noc.sa.models.service import Service
 from noc.wf.models.state import State
-from noc.core.wf.decorator import workflow
+
 from .dialplan import DialPlan
+from .numbercategory import NumberCategory
 from .phonenumberprofile import PhoneNumberProfile
+from .phonerange import PhoneRange
 
 id_lock = Lock()
 

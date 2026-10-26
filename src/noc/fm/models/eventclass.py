@@ -5,41 +5,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 from pathlib import Path
 from threading import Lock
-import operator
 
 # Third-party modules
-from bson import ObjectId
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    BooleanField,
-    IntField,
-    LongField,
-    ListField,
-    DictField,
-    ObjectIdField,
-    EnumField,
-    EmbeddedDocumentListField,
-    UUIDField,
-)
-from mongoengine.errors import ValidationError
 import cachetools
 import jinja2
+from bson import ObjectId
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
+from mongoengine.fields import (
+    BooleanField,
+    DictField,
+    EmbeddedDocumentListField,
+    EnumField,
+    IntField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    StringField,
+    UUIDField,
+)
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.escape import json_escape as q
-from noc.core.path import safe_json_path
-from noc.core.handler import get_handler
-from noc.core.model.decorator import on_delete_check
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.escape import json_escape as q
+from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete_check
 from noc.core.models.valuetype import ValueType
-from noc.config import config
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+
 from .alarmclass import AlarmClass
 
 id_lock = Lock()

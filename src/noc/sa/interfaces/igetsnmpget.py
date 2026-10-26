@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import OIDParameter, StringParameter, NoneParameter
+
+from .base import NoneParameter, OIDParameter, StringParameter
 
 
 class IGetSNMPGet(BaseInterface):

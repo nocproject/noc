@@ -5,10 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import BOOL, INTEGER, IF_NAME
-
+from ...patterns import BOOL, IF_NAME, INTEGER
 
 HINTS_PROTOCOLS_SPANNING_TREE = DEF(
     "spanning-tree",

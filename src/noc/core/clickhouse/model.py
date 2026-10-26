@@ -6,20 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, cast
 import operator
 import string
 from random import choices
 from time import perf_counter
+from typing import Any, cast
 
 # NOC modules
 from noc.config import config
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from .fields import BaseField, MaterializedField, AggregatedField
-from .engines import ReplacingMergeTree, AggregatingMergeTree
+from noc.sa.models.useraccess import UserAccess
+
 from .connect import ClickhouseClient, connection
+from .engines import AggregatingMergeTree, ReplacingMergeTree
 from .error import ClickhouseError
+from .fields import AggregatedField, BaseField, MaterializedField
 
 __all__ = ["DictionaryModel", "Model", "NestedModel", "ViewModel"]
 
@@ -429,7 +430,8 @@ class Model(metaclass=ModelBase):
         :param dry_run: Do not query, only return it.
         :return:
         """
-        from noc.core.bi.query import to_sql, escape_field
+        # NOC modules
+        from noc.core.bi.query import escape_field, to_sql
 
         # Get field expressions
         fields = query.get("fields", [])

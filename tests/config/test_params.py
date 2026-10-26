@@ -11,16 +11,16 @@ import pytest
 # NOC modules
 from noc.core.config.base import BaseConfig
 from noc.core.config.params import (
-    StringParameter,
-    SecretParameter,
-    IntParameter,
     BooleanParameter,
-    FloatParameter,
-    MapParameter,
-    HandlerParameter,
-    SecondsParameter,
-    ListParameter,
     BytesSizeParameter,
+    FloatParameter,
+    HandlerParameter,
+    IntParameter,
+    ListParameter,
+    MapParameter,
+    SecondsParameter,
+    SecretParameter,
+    StringParameter,
     UUIDParameter,
 )
 

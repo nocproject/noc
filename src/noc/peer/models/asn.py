@@ -5,32 +5,35 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 from threading import Lock
 from typing import Any
-import operator
 
 # Third-party modules
-from django.db import models
+import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
-import cachetools
+from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.project.models.project import Project
-from noc.main.models.label import Label
 from noc.config import config
-from noc.core.rpsl import rpsl_format
-from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.model.fields import DocumentReferenceField
-from .person import Person
-from .organisation import Organisation
-from .maintainer import Maintainer
-from .rir import RIR
+from noc.core.rpsl import rpsl_format
+from noc.main.models.label import Label
+from noc.project.models.project import Project
+
 from .asprofile import ASProfile
+from .maintainer import Maintainer
+from .organisation import Organisation
+from .person import Person
+from .rir import RIR
 
 id_lock = Lock()
 

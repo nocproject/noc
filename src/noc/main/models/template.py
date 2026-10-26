@@ -5,25 +5,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
+from pathlib import Path
 from threading import Lock
 from typing import Any
-from pathlib import Path
 
 # Third-party modules
-from django.db import models
-from django.core.exceptions import ValidationError
-import jinja2
 import cachetools
+import jinja2
+from django.core.exceptions import ValidationError
+from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
 from noc.core.mx import MessageType
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 from noc.settings import LANGUAGES
 
 id_lock = Lock()

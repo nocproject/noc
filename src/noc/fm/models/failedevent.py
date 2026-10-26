@@ -10,13 +10,14 @@ import datetime
 import time
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentListField
 import orjson
+from mongoengine.document import Document
+from mongoengine.fields import DateTimeField, EmbeddedDocumentListField, StringField
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.fields import ForeignKeyField, RawDictField
+from noc.sa.models.managedobject import ManagedObject
+
 from .eventlog import EventLog
 
 
@@ -44,6 +45,7 @@ class FailedEvent(Document):
         """
         Move to unclassified queue
         """
+        # NOC modules
         from noc.core.service.pub import publish
 
         data = {"source": self.source}

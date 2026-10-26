@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
-from collections.abc import Iterable
 import re
+from collections.abc import Iterable
+from dataclasses import dataclass
 
 # NOC modules
-from noc.core.text import find_balanced
 from noc.config import config
+from noc.core.text import find_balanced
+
 from .connect import connection
 
 

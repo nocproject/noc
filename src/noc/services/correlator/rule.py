@@ -6,18 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 # NOC modules
 from noc.core.fm.event import Event
 from noc.core.matcher import build_matcher
 from noc.core.models.valuetype import ValueType
-from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
-from noc.services.datastream.models.cfgalarm import DispositionRule
+from noc.fm.models.eventclass import EventClass
 from noc.models import get_model
+from noc.services.datastream.models.cfgalarm import DispositionRule
 
 
 @dataclass

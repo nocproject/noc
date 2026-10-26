@@ -5,9 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-import random
+# Python modules
 import datetime
+import random
 
 # Third-party modules
 from pymongo import InsertOne

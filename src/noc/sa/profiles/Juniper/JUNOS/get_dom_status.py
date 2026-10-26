@@ -9,9 +9,9 @@
 import re
 
 # NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

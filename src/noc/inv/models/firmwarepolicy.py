@@ -5,24 +5,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from threading import Lock
 from typing import Any
 
 # Third-party modules
 import bson
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, ListField, IntField, EmbeddedDocumentListField
-from mongoengine.queryset.visitor import Q
 import cachetools
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import EmbeddedDocumentListField, IntField, ListField, StringField
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_save, on_delete
-from noc.main.models.label import Label
 from noc.core.cache.base import cache
+from noc.core.model.decorator import on_delete, on_save
+from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.label import Label
+
 from .firmware import Firmware
 from .platform import Platform
 
@@ -113,6 +116,7 @@ class FirmwarePolicy(Document):
         return None
 
     def on_save(self):
+        # NOC modules
         from noc.sa.models.managedobject import CREDENTIAL_CACHE_VERSION
 
         access_change = hasattr(self, "_changed_fields") and (
@@ -221,6 +225,7 @@ class FirmwarePolicy(Document):
         ]
 
     def get_affected_managed_objects_ids(self) -> list[int]:
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         firmwares = self.get_affected_firmwares()
@@ -231,6 +236,7 @@ class FirmwarePolicy(Document):
         )
 
     def set_labels(self, labels: list[str] | None = None):
+        # Third-party modules
         from django.db import connection
 
         fws = [str(fw.id) for fw in self.get_affected_firmwares()]
@@ -245,6 +251,7 @@ class FirmwarePolicy(Document):
         cursor.execute(sql, [labels or self.labels, fws])
 
     def reset_labels(self):
+        # Third-party modules
         from django.db import connection
 
         fws = [str(fw.id) for fw in self.get_affected_firmwares()]

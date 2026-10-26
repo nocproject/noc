@@ -8,7 +8,6 @@
 # Python modules
 import re
 
-
 # Regular expressions
 
 # Cisco-like AABB.CCDD.EEFF

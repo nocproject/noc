@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.activator.service import ActivatorService
-
 
 if __name__ == "__main__":
     ActivatorService().start()

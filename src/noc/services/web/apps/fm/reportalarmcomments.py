@@ -6,30 +6,30 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 import csv
-import xlsxwriter
-import bson
+import datetime
 from io import BytesIO, TextIOWrapper
-from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
+import bson
+import xlsxwriter
 from django.http import HttpResponse
 
-# from pymongo import ReadPreference
-
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.interfaces.base import StringParameter
-from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
-from noc.sa.models.managedobject import ManagedObject
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.core.comp import smart_text
+
+# from pymongo import ReadPreference
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 def get_column_width(name):

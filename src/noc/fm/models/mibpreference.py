@@ -10,11 +10,11 @@ from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, IntField
+from mongoengine.fields import IntField, StringField, UUIDField
 
 # NOC modules
-from noc.core.prettyjson import to_json
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 
 class MIBPreference(Document):

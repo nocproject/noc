@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField, IntField
+from mongoengine.fields import DateTimeField, IntField, StringField
 
 
 class MACLog(Document):

@@ -7,12 +7,12 @@
 
 # Python modules
 import importlib
-import logging
 import inspect
-import threading
+import logging
 import os
-from importlib.resources import files
+import threading
 from collections.abc import Iterator
+from importlib.resources import files
 from typing import cast
 
 # NOC modules

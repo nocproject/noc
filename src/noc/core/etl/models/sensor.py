@@ -9,9 +9,10 @@
 
 # NOC modules
 from noc.core.models.sensorprotos import SensorProtocol
+
 from .base import BaseModel, Reference
-from .object import Object
 from .managedobject import ManagedObject
+from .object import Object
 from .pmagent import PMAgent
 
 

@@ -8,10 +8,9 @@
 # Python modules
 
 # Third-party modules
-from networkx import shortest_path, NetworkXNoPath
-from networkx import Graph
-from networkx.classes.graphviews import subgraph_view
+from networkx import Graph, NetworkXNoPath, shortest_path
 from networkx.classes.filters import hide_nodes
+from networkx.classes.graphviews import subgraph_view
 
 
 def iter_next_hops(G: "Graph", source: str, target: str) -> tuple[str, int]:

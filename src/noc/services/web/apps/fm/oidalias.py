@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.fm.models.oidalias import OIDAlias
 from noc.core.translation import ugettext as _
+from noc.fm.models.oidalias import OIDAlias
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class OIDAliasApplication(ExtDocApplication):

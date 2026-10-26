@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
 from .sources.base import MEDIA_SOURCES_SYNTAX
 from .streams.base import MEDIA_STREAMS_SYNTAX

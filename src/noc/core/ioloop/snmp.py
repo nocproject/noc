@@ -6,37 +6,37 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+import errno
 import logging
 import socket
-import errno
-import asyncio
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 # NOC modules
-from noc.core.snmp.version import SNMP_v2c
+from noc.core.comp import smart_text
+from noc.core.ioloop.udp import UDPSocket, UDPSocketContext
+from noc.core.ratelimit.asyncio import AsyncRateLimit
+from noc.core.snmp.error import (
+    BAD_VALUE,
+    BER_ERROR,
+    END_OID_TREE,
+    NO_ERROR,
+    NO_SUCH_NAME,
+    TIMED_OUT,
+    UNREACHABLE,
+    SNMPError,
+)
 from noc.core.snmp.get import (
-    get_pdu,
-    getnext_pdu,
-    getbulk_pdu,
     _ResponseParser,
+    get_pdu,
+    getbulk_pdu,
+    getnext_pdu,
     parse_get_response,
     parse_get_response_raw,
 )
 from noc.core.snmp.set import set_pdu
-from noc.core.snmp.error import (
-    NO_ERROR,
-    NO_SUCH_NAME,
-    SNMPError,
-    TIMED_OUT,
-    UNREACHABLE,
-    BER_ERROR,
-    END_OID_TREE,
-    BAD_VALUE,
-)
-from noc.core.ioloop.udp import UDPSocket, UDPSocketContext
-from noc.core.comp import smart_text
-from noc.core.ratelimit.asyncio import AsyncRateLimit
+from noc.core.snmp.version import SNMP_v2c
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 logger = logging.getLogger(__name__)

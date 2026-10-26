@@ -11,11 +11,11 @@ import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.main.models.label import Label
+from noc.core.text import alnum_key
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.text import alnum_key
+from noc.main.models.label import Label
 
 
 class Command(BaseCommand):

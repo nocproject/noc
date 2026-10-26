@@ -9,11 +9,12 @@
 from typing import Any
 
 # NOC modules
-from .base import BaseLoader
-from ..models.pmagent import PMAgent
+from noc.inv.models.capability import Capability
 from noc.pm.models.agent import Agent as AgentModel
 from noc.pm.models.agentprofile import AgentProfile
-from noc.inv.models.capability import Capability
+
+from ..models.pmagent import PMAgent
+from .base import BaseLoader
 
 
 class PMAgentLoader(BaseLoader):

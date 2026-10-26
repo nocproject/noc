@@ -5,21 +5,20 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from collections import namedtuple, defaultdict
 
-# Third-party modules
+# Python modules
+from collections import defaultdict, namedtuple
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.vc.models.vlan import VLAN
-from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ip import IP
-
+from noc.core.perf import metrics
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.vc.models.vlan import VLAN
 
 DiscoveredPrefix = namedtuple(
     "DiscoveredPrefix",

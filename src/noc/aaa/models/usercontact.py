@@ -10,8 +10,9 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.timepattern import TimePattern
+
 from .user import User
 
 

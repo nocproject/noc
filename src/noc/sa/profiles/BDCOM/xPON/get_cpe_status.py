@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
-from noc.core.text import parse_table
 from noc.core.mac import MAC
+from noc.core.script.base import BaseScript
+from noc.core.text import parse_table
+from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
 
 
 class Script(BaseScript):

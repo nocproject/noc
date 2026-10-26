@@ -6,68 +6,68 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
-import sys
-import logging
-import signal
-import uuid
 import argparse
-import threading
-import random
-from time import perf_counter
 import asyncio
-import cachetools
+import logging
+import os
+import random
+import signal
+import socket
+import sys
+import threading
+import uuid
+from collections.abc import Awaitable, Callable, Coroutine, Iterable
 from functools import partial
+from time import perf_counter
 from typing import (
     Any,
     Never,
 )
-from collections.abc import Callable, Awaitable, Coroutine, Iterable
-import socket
 
 # Third-party modules
+import cachetools
 import setproctitle
+from a2wsgi import WSGIMiddleware
+from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import HTTPException, RequestValidationError
 from granian.constants import Interfaces
 from granian.net import SocketSpec
 from granian.server.embed import Server
 from granian.utils.proxies import wrap_asgi_with_proxy_headers
-from starlette.responses import Response, JSONResponse
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError, HTTPException
-from fastapi.encoders import jsonable_encoder
-from a2wsgi import WSGIMiddleware
+from starlette.responses import JSONResponse, Response
 
 # NOC modules
 from noc.config import config
-from noc.core.affinity import AffinityController, AFF_NONE
-from noc.core.debug import excepthook, error_report
-from noc.core.perf import apply_metrics
+from noc.core.affinity import AFF_NONE, AffinityController
+from noc.core.dcs.loader import DEFAULT_DCS, get_dcs
+from noc.core.debug import error_report, excepthook
+from noc.core.error import NOCError
 from noc.core.hist.monitor import apply_hists
-from noc.core.quantile.monitor import apply_quantiles
-from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-from noc.core.threadpool import ThreadPoolExecutor
-from noc.core.span import get_spans, span_to_dict
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.ioloop.util import setup_asyncio
+from noc.core.log import PrefixLoggerAdapter
 from noc.core.msgstream.client import MessageStreamClient
+from noc.core.msgstream.error import MsgStreamError
+from noc.core.msgstream.message import Message
 from noc.core.msgstream.queue import MessageStreamQueue
 from noc.core.msgstream.queuebuffer import QBuffer
-from noc.core.msgstream.message import Message
-from noc.core.msgstream.error import MsgStreamError
+from noc.core.mx import MX_SPAN_CTX, MX_SPAN_ID, MX_STREAM, MessageType
+from noc.core.perf import apply_metrics
+from noc.core.quantile.monitor import apply_quantiles
 from noc.core.router.base import Router
 from noc.core.router.messagebuffer import MBuffer
-from noc.core.ioloop.util import setup_asyncio
-from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.error import NOCError
-from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID, MessageType
-from noc.core.span import Span
+from noc.core.span import Span, get_spans, span_to_dict
+from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.validators import is_ipv4
 from noc.core.version import version
-from noc.core.log import PrefixLoggerAdapter
-from .rpc import RPCProxy
+
+from ..router.datastream import RouteDataStreamClient
 from .loader import set_service
-from .paths.loader import loader, ServicePathLoader
 from .middleware.logging import LoggingMiddleware
 from .middleware.span import SpanMiddleware
-from ..router.datastream import RouteDataStreamClient
+from .paths.loader import ServicePathLoader, loader
+from .rpc import RPCProxy
 
 DCS_SLOTS_CACHE = {}  # PROCESS -> object cache
 dcs_slot_lock = threading.Lock()
@@ -241,10 +241,12 @@ class BaseService:
         self.logger = logging.getLogger(self.name)
 
     def setup_translation(self) -> None:
+        # NOC modules
         from noc.core.translation import set_translation, ugettext
 
         set_translation(self.name, config.language)
         if self.use_jinja:
+            # Third-party modules
             from jinja2.defaults import DEFAULT_NAMESPACE
 
             if "_" not in DEFAULT_NAMESPACE:
@@ -387,6 +389,7 @@ class BaseService:
         Returns:
             Resolved address.
         """
+        # Third-party modules
         import psutil
 
         if_addrs = psutil.net_if_addrs()
@@ -558,6 +561,7 @@ class BaseService:
         """Initialize services before run"""
         self.logger.warning("Activating service")
         if self.use_mongo:
+            # NOC modules
             from noc.core.mongo.connection import connect
 
             connect()
@@ -1074,6 +1078,7 @@ class BaseService:
         Args:
             slot_name:
         """
+        # NOC modules
         from noc.core.dcs.loader import get_dcs
         from noc.core.ioloop.util import run_sync
 

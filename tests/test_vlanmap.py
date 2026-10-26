@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.vlanmap import process_vlan_map, process_chain
+from noc.core.vlanmap import process_chain, process_vlan_map
 
 
 @pytest.mark.parametrize(

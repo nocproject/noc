@@ -12,10 +12,11 @@ import random
 from django.http import HttpRequest
 
 # NOC modules
-from .base import InvPlugin
-from noc.inv.models.object import Object
 from noc.core.facade.box import get_svg_for_box
 from noc.core.facade.response import svg_response
+from noc.inv.models.object import Object
+
+from .base import InvPlugin
 
 
 class FacadePlugin(InvPlugin):

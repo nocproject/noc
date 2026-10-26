@@ -7,11 +7,11 @@
 
 # Python modules
 import argparse
-import sys
-import re
-from collections import namedtuple
 import operator
+import re
+import sys
 import time
+from collections import namedtuple
 
 # NOC modules
 from noc.core.management.base import BaseCommand

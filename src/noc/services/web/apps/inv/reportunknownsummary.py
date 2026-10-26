@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn
-from noc.inv.models.unknownmodel import UnknownModel
 from noc.core.translation import ugettext as _
+from noc.inv.models.unknownmodel import UnknownModel
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 
 class ReportUnknownModelsSummary(SimpleReport):

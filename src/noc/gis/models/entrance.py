@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import IntField, StringField
 
 
 class Entrance(EmbeddedDocument):

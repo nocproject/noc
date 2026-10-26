@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.classifier.service import ClassifierService
-
 
 if __name__ == "__main__":
     ClassifierService().start()

@@ -9,7 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.cdag.node.window import WindowNode, NS
+from noc.core.cdag.node.window import NS, WindowNode
+
 from .util import NodeCDAG
 
 

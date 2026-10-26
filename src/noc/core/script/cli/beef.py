@@ -8,7 +8,6 @@
 # Python modules
 import asyncio
 
-# NOC modules
 from .cli import CLI
 from .stream import BaseStream
 from .telnet import TelnetStream

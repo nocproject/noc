@@ -8,8 +8,7 @@
 # Python modules
 from collections.abc import Callable
 
-# NOC modules
-from .base import BaseAction, ActionError
+from .base import ActionError, BaseAction
 
 
 class AssertCmpAction(BaseAction):

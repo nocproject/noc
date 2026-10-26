@@ -7,14 +7,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Thread
 import operator
 import time
+from threading import Thread
 
 # NOC modules
-from noc.core.service.base import BaseService
 from noc.core.debug import error_report
-from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.service.base import BaseService
+from noc.core.span import PARENT_SAMPLE, Span
 from noc.services.selfmon.collectors.base import collector_loader
 
 

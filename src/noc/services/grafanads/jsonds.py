@@ -5,14 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import operator
+from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
-from collections import defaultdict
 
 # Third-party modules
 import orjson
@@ -23,24 +25,25 @@ from pydantic import TypeAdapter
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.models import get_model
-from noc.core.service.deps.user import get_current_user
 from noc.core.clickhouse.connect import connection
 from noc.core.clickhouse.error import ClickhouseError
+from noc.core.service.deps.user import get_current_user
 from noc.core.service.loader import get_service
+from noc.models import get_model
 from noc.pm.models.metrictype import MetricType
+
 from .models.jsonds import (
-    QueryRequest,
-    TargetResponseItem,
-    SearchResponseItem,
+    Annotation,
     AnnotationRequest,
     AnnotationSection,
-    Annotation,
-    VariableRequest,
-    TagValueQuery,
+    MetricPayloadOptionsRequest,
     MetricsPayloadRequest,
     MetricsResponseItem,
-    MetricPayloadOptionsRequest,
+    QueryRequest,
+    SearchResponseItem,
+    TagValueQuery,
+    TargetResponseItem,
+    VariableRequest,
 )
 
 SQL = """

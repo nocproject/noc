@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match
-from noc.core.confdb.syntax.patterns import ANY, REST, INTEGER
+from noc.core.confdb.syntax.patterns import ANY, INTEGER, REST
 from noc.core.text import ranges_to_list
 
 

@@ -10,7 +10,8 @@ import asyncio
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from .base import BaseAction, ActionError
+
+from .base import ActionError, BaseAction
 
 
 class ScriptAction(BaseAction):

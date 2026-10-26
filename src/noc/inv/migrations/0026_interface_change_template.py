@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-
 NEW_PREFIXES_REPORT_SUBJECT = (
     "[{{managed_object.name}}] Interface {{name}}({{description}})"
     ' is {% if status %}"up"{% else %}"down" {% endif %}'

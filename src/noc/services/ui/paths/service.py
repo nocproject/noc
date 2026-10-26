@@ -9,10 +9,10 @@
 from fastapi import APIRouter
 
 # NOC modules
-from noc.sa.models.service import Service
 from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.service import ServiceProfile
+from noc.sa.models.service import Service, ServiceProfile
+
 from ..models.service import (
     DefaultServiceItem,
     FormServiceItem,

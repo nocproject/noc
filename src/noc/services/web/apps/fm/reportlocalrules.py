@@ -6,16 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.utils.html import escape
 from django.http import HttpRequest
+from django.utils.html import escape
 
 # NOC modules
-from noc.services.web.base.reportapplication import ReportApplication
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.core.text import indent
-from noc.core.translation import ugettext as _
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_text
+from noc.core.text import indent
+from noc.core.translation import ugettext as _
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.services.web.base.reportapplication import ReportApplication
 
 
 class ReportClassificationRules(ReportApplication):

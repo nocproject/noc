@@ -9,10 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.fm.models.ignorepattern import IgnorePattern
 from noc.core.fm.event import EventSource
 from noc.core.translation import ugettext as _
+from noc.fm.models.ignorepattern import IgnorePattern
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class IgnorePatternApplication(ExtDocApplication):

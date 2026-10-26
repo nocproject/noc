@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.ip import IP, IPv4, IPv6, PrefixDB
 from noc.core.comp import smart_text
+from noc.core.ip import IP, IPv4, IPv6, PrefixDB
 
 
 @pytest.mark.parametrize(

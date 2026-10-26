@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.ip import IPv4
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

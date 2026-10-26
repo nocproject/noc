@@ -6,25 +6,25 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
-from typing import Any
-from time import perf_counter_ns
 import functools
 import os
 import sys
 import warnings
+from collections import defaultdict
+from time import perf_counter_ns
+from typing import Any
 
 # Third-party modules
-import pytest
 import orjson
+import pytest
 from django.db import models
 from gufo.blob.sync import open_blob
 
 # NOC modules
 from noc.config import config
-from noc.models import get_model, is_document
-from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.management.base import command_loader
+from noc.core.model.fields import CachedForeignKey, DocumentReferenceField
+from noc.models import get_model, is_document
 
 IN_GITHUB_ACTIONS = bool(os.getenv("GITHUB_ACTIONS", ""))
 IS_COLLECT_ONLY = any("--collect-only" in arg for arg in sys.argv)
@@ -156,6 +156,7 @@ def db_postgres(request):
 def db_mongo(request):
     """Create and destroy mongo database."""
     if not IS_COLLECT_ONLY:
+        # NOC modules
         from noc.core.mongo.connection import connect
 
         connect()
@@ -189,6 +190,7 @@ def database(request, db_postgres, db_mongo, db_clickhouse, db_kafka):
 @with_timing("create_pg_db")
 def _create_pg_db():
     """Check postgres test database."""
+    # Third-party modules
     import psycopg2
     from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -214,6 +216,7 @@ def _create_pg_db():
 def _create_mongo_db():
     """Create mongodb test database."""
     # MongoDB creates database automatically on connect
+    # NOC modules
     from noc.core.mongo.connection import get_db
 
     db = get_db()
@@ -257,6 +260,7 @@ def _ensure_indexes():
 
 @with_timing("collection_sync")
 def _load_collections():
+    # NOC modules
     from noc.core.collection.base import Collection
 
     Collection.sync_all()

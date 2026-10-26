@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan
 

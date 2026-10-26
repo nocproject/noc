@@ -5,77 +5,80 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import logging
 import operator
 from collections import defaultdict
+from collections.abc import Iterable
+from hashlib import sha512
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
+import cachetools
 import orjson
-from hashlib import sha512
 from bson import ObjectId
+from jinja2 import Template
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
+    BooleanField,
     DateTimeField,
-    ReferenceField,
-    ListField,
     EmbeddedDocumentListField,
+    EnumField,
+    IntField,
+    ListField,
     LongField,
     ObjectIdField,
-    IntField,
-    EnumField,
-    BooleanField,
+    ReferenceField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
-from jinja2 import Template
-import cachetools
 
 # NOC modules
-from .serviceprofile import ServiceProfile, CalculatedStatusRule
-from noc.core.mongo.fields import PlainReferenceField
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save, on_delete_check, on_init, tree
-from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.wf.decorator import workflow
+from noc.core.caps.decorator import capabilities
 from noc.core.change.decorator import change
 from noc.core.change.policy import change_tracker
-from noc.core.service.loader import get_service
-from noc.core.models.servicestatus import Status, AffectedItem
-from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
-from noc.core.models.inputsources import InputSource
-from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
-from noc.core.caps.decorator import capabilities
-from noc.core.etl.remotemappings import mappings
-from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
-from noc.core.diagnostic.decorator import diagnostic
-from noc.core.validators import is_objectid
-from noc.core.watchers.types import ObjectEffect
-from noc.core.watchers.decorator import watchers
+from noc.core.checkers.base import CAPS_PROFILE_CHECK, Check, CheckResult
 from noc.core.defer import call_later, defer
+from noc.core.diagnostic.decorator import diagnostic
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
+from noc.core.etl.remotemappings import mappings
 from noc.core.hash import hash_int
-from noc.core.checkers.base import CheckResult, Check, CAPS_PROFILE_CHECK
+from noc.core.model.decorator import on_delete_check, on_init, on_save, tree
+from noc.core.models.inputsources import InputSource
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
+from noc.core.models.servicestatus import AffectedItem, Status
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.mx import MessageMeta, MessageType, get_subscription_id, send_message
+from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.service.loader import get_service
+from noc.core.validators import is_objectid
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import ObjectEffect
+from noc.core.wf.decorator import workflow
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.remotemappingsitem import RemoteMappingItem
-from noc.main.models.label import Label
-from noc.main.models.pool import Pool
-from noc.sla.models.slaprobe import SLAProbe
-from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.diagnosticitem import DiagnosticItem
-from noc.sa.models.serviceinstance import ServiceInstance
-from noc.sa.models.objectwatchersitem import WatchDocumentItem
-from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
+from noc.main.models.label import Label
+from noc.main.models.pool import Pool
+from noc.main.models.remotemappingsitem import RemoteMappingItem
+from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.agent import Agent
-from noc.config import config
+from noc.sa.models.diagnosticitem import DiagnosticItem
+from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
+from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sla.models.slaprobe import SLAProbe
+from noc.wf.models.state import State
+
+from .serviceprofile import CalculatedStatusRule, ServiceProfile
 
 logger = logging.getLogger(__name__)
 
@@ -453,6 +456,7 @@ class Service(Document):
     @classmethod
     def get_exposed_labels_for_object(cls, mo_id: int) -> Iterable[list[str]]:
         """Return exposed labels for Managed Object"""
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         coll = ServiceInstance._get_collection()
@@ -532,6 +536,7 @@ class Service(Document):
     @property
     def in_maintenance(self):
         """Check service in maintenance"""
+        # NOC modules
         from noc.maintenance.models.maintenance import Maintenance
 
         for w in self.watchers:
@@ -602,6 +607,7 @@ class Service(Document):
             )
 
     def _refresh_managed_object(self):
+        # NOC modules
         from noc.sa.models.servicesummary import ServiceSummary
 
         mo = self.get_effective_managed_object()
@@ -1011,6 +1017,7 @@ class Service(Document):
     def get_connected_my(self):
         """Get connected my services, Required for refresh service status"""
         # From Config
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         for cfg in self.dependency_services:
@@ -1053,6 +1060,7 @@ class Service(Document):
         7. Calculate affected alarm status: statuses -> calculate rules
         ? Default Managed Object status for Resource Group, get_status API ?
         """
+        # NOC modules
         from noc.fm.models.activealarm import ActiveAlarm
 
         if self.profile.alarm_affected_policy == "D":
@@ -1545,6 +1553,7 @@ def refresh_service_status(svc_ids: list[str]):
 
 def refresh_connected_services(svc_ids: list[str]):
     logger.info("Refresh connected services: %s", svc_ids)
+    # NOC modules
     from noc.sa.models.serviceinstance import ServiceInstance
 
     affected = set()
@@ -1572,8 +1581,10 @@ def refresh_exposed_caps(
     user: str | None = None,
 ):
     """Syncronize exposed caps"""
-    from .serviceinstance import ServiceInstance
+    # NOC modules
     from noc.sa.models.managedobject import ManagedObject
+
+    from .serviceinstance import ServiceInstance
 
     if svc_profile_ids and not svc_ids:
         for x in svc_profile_ids:

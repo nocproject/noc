@@ -11,12 +11,12 @@ from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, UUIDField, ListField, EmbeddedDocumentListField
+from mongoengine.fields import EmbeddedDocumentListField, ListField, StringField, UUIDField
 
 # NOC modules
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
 from noc.core.model.decorator import on_delete_check
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 
 class Context(EmbeddedDocument):

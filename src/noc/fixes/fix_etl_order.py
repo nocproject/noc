@@ -6,11 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
-import shutil
+import csv
 import glob
 import gzip
-import csv
+import os
+import shutil
+
+# NOC modules
 from noc.config import config
 
 PATTERNS = [

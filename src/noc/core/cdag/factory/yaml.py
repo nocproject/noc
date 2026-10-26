@@ -7,12 +7,11 @@
 
 # Python modules
 
-# Third-party modules
+# Python modules
 import yaml
 
-# NOC modules
 from .base import CDAG
-from .config import ConfigCDAGFactory, GraphConfig, FactoryCtx
+from .config import ConfigCDAGFactory, FactoryCtx, GraphConfig
 
 
 class YAMLCDAGFactory(ConfigCDAGFactory):

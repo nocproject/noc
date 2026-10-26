@@ -10,9 +10,8 @@ import struct
 from typing import Any
 
 # Third-party modules
-from siphash24 import siphash24
 from bson import ObjectId
-
+from siphash24 import siphash24
 
 # NOC modules
 from noc.core.comp import smart_text

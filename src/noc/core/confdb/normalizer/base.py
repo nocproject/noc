@@ -9,13 +9,14 @@
 import itertools
 from collections import defaultdict
 from functools import partial
+from typing import Any, cast
 
 # NOC modules
-from typing import Any, cast
 from noc.core.ip import IP, IPv4, IPv6
 from noc.core.validators import ValidationError
-from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
+
 from ..syntax.base import SYNTAX
+from ..syntax.patterns import ANY, BOOL, REST, BasePattern, Token
 
 _match_seq = itertools.count()
 

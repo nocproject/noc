@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.pm.models.measurementunits import MeasurementUnits
 from noc.sa.interfaces.base import ColorParameter
 from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.pm.models.measurementunits import MeasurementUnits
-from noc.core.translation import ugettext as _
 
 
 class MeasurementUnitsApplication(ExtDocApplication):

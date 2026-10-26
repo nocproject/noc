@@ -6,28 +6,29 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import codecs
+import logging
 from urllib.parse import quote
 
 # Third-party modules
-from fastapi import APIRouter, Request, Cookie, Header, Depends
-from fastapi.responses import JSONResponse
 import cachetools
+from fastapi import APIRouter, Cookie, Depends, Header, Request
+from fastapi.responses import JSONResponse
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.apikey import APIKey
+from noc.config import config
 from noc.core.comp import smart_bytes
-from ..auth import (
-    authenticate,
-    register_last_login,
-    set_jwt_cookie,
-    get_user_from_jwt,
-    get_user_from_cert_subject,
-)
 from noc.core.service.deps.service import get_service
 from noc.services.login.service import LoginService
+
+from ..auth import (
+    authenticate,
+    get_user_from_cert_subject,
+    get_user_from_jwt,
+    register_last_login,
+    set_jwt_cookie,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

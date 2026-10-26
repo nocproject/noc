@@ -8,8 +8,7 @@
 # Python modules
 from math import sqrt
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class SqrtNode(BaseCDAGNode):

@@ -10,21 +10,22 @@ import logging
 from datetime import datetime
 
 # NOC modules
+from noc.core.debug import error_report
+
+from .error import TemporaryTTError, TTError
 from .types import (
     DeescalationContext,
     EscalationContext,
-    TTActionContext,
-    TTInfo,
-    TTCommentRequest,
     EscalationItem,
-    EscalationStatus,
     EscalationResult,
-    TTChange,
+    EscalationStatus,
     TTAction,
+    TTActionContext,
+    TTChange,
+    TTCommentRequest,
+    TTInfo,
     TTUser,
 )
-from .error import TTError, TemporaryTTError
-from noc.core.debug import error_report
 
 
 class BaseTTSystem:

@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from noc.core.translation import ugettext as _
-
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 

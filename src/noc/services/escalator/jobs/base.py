@@ -10,8 +10,8 @@ import datetime
 import threading
 
 # NOC modules
-from noc.core.scheduler.job import Job
 from noc.config import config
+from noc.core.scheduler.job import Job
 
 RETRY_TIMEOUT = config.escalator.retry_timeout
 # @fixme have to be checked

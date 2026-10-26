@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from urllib.parse import urlparse
 from collections.abc import AsyncIterable
+from urllib.parse import urlparse
 
 # NOC modules
-from .base import BaseChecker, CheckResult, Check, CheckError
 from noc.core.http.aio import HttpClient
+
+from .base import BaseChecker, Check, CheckError, CheckResult
 
 HTTP_CHECK = "HTTP"
 HTTPS_CHECK = "HTTPS"

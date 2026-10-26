@@ -5,8 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import operator
 from threading import Lock
@@ -15,7 +17,7 @@ from threading import Lock
 import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, DateTimeField, EmbeddedDocumentListField
+from mongoengine.fields import BooleanField, DateTimeField, EmbeddedDocumentListField, StringField
 
 # NOC modules
 from noc.core.acl import match

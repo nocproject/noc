@@ -7,11 +7,11 @@
 
 # Python modules
 import re
-from functools import partial
-from dataclasses import dataclass
-from typing import Any
 from collections.abc import Callable
+from dataclasses import dataclass
+from functools import partial
 from types import CodeType
+from typing import Any
 
 # NOC modules
 from noc.core.fm.enum import EventSource

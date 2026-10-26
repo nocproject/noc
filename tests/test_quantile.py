@@ -13,11 +13,11 @@ import pytest
 
 # NOC modules
 from noc.core.quantile.base import (
-    Stream,
-    LowBiasedStream,
     HighBiasedStream,
-    TargetedStream,
+    LowBiasedStream,
+    Stream,
     Summary,
+    TargetedStream,
 )
 
 # Default quantiles

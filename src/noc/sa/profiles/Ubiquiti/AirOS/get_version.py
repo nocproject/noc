@@ -10,9 +10,9 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):

@@ -8,7 +8,6 @@
 # Python modules
 from collections.abc import Iterable, Iterator
 
-# NOC modules
 from .line import LineTokenizer
 
 

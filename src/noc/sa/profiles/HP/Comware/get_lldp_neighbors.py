@@ -10,27 +10,27 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.lldp import (
+    LLDP_CAP_NAMES,
     LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
-    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
     LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
     LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
-    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_CHASSIS_SUBTYPE_LOCAL,
     LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
     LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_COMPONENT,
-    LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
     LLDP_PORT_SUBTYPE_LOCAL,
-    LLDP_CAP_NAMES,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     lldp_caps_to_bits,
 )
 from noc.core.text import parse_kv
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

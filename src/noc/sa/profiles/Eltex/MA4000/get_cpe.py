@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.core.text import parse_kv
+from noc.sa.interfaces.igetcpe import IGetCPE
 
 
 class Script(BaseScript):

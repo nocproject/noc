@@ -6,18 +6,20 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import asyncio
-import operator
-import re
 import datetime
 import itertools
-from time import perf_counter
-from dataclasses import dataclass
-from typing import Any
-from collections.abc import Iterable
+import operator
+import re
 from collections import defaultdict
+from collections.abc import Iterable
+from dataclasses import dataclass
+from time import perf_counter
+from typing import Any
 
 # Third-party modules
 import cachetools
@@ -25,24 +27,24 @@ import orjson
 
 # NOC modules
 from noc.config import config
+from noc.core.checkers.base import register_checks
 from noc.core.error import NOCError
+from noc.core.fm.event import Event
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.jsonutils import iter_chunks
+from noc.core.mx import MX_ETL_LOADER, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEMS, MessageType
 from noc.core.perf import metrics
 from noc.core.service.base import BaseService
-from noc.core.jsonutils import iter_chunks
-from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
-from noc.core.mx import MessageType, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEMS, MX_ETL_LOADER
-from noc.core.fm.event import Event
-from noc.core.checkers.base import register_checks
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
-from noc.services.metricscollector.sourceconfig import (
-    SourceConfig,
-    RemoteSystemConfig,
-    SensorConfig,
-)
 from noc.services.metricscollector.models.channel import (
     RemoteSystemChannel,
     RemoteSystemEventChannel,
+)
+from noc.services.metricscollector.sourceconfig import (
+    RemoteSystemConfig,
+    SensorConfig,
+    SourceConfig,
 )
 
 NS = 1_000_000_000

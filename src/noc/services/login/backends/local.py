@@ -8,6 +8,7 @@
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.translation import ugettext as _
+
 from .base import BaseAuthBackend
 
 

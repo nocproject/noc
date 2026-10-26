@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.subscriber import Subscriber
-from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriber import Subscriber as SubscriberModel
+from noc.crm.models.subscriberprofile import SubscriberProfile
+
+from ..models.subscriber import Subscriber
+from .base import BaseLoader
 
 
 class SubscriberLoader(BaseLoader):

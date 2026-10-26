@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+
 from .base import BaseCard
 
 

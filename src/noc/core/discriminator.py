@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Union
 from collections.abc import Iterable
+from typing import Any, Union
 
 # NOC modules
 from noc.core.text import ranges_to_list
-
 
 SCOPE_SEPARATOR = "::"
 

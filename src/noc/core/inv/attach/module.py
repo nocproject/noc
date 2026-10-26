@@ -6,14 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
-from noc.inv.models.error import ConnectionError
 from noc.core.resource import from_resource
+from noc.inv.models.error import ConnectionError
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+
 from ..result import Result
 
 

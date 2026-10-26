@@ -9,8 +9,8 @@
 import os
 
 # NOC modules
-from noc.core.compressor.base import compressor_loader
 from noc.config import config
+from noc.core.compressor.base import compressor_loader
 
 ext_map = {
     cc.ext: cc

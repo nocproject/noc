@@ -10,6 +10,7 @@ Test:
 - NX-3408-DC
 """
 
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

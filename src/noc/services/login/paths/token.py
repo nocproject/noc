@@ -6,20 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from http import HTTPStatus
 import codecs
+from http import HTTPStatus
 
 # Third-party modules
-from fastapi import APIRouter, Request, Header, Depends
+from fastapi import APIRouter, Depends, Header, Request
+from pydantic import TypeAdapter, ValidationError
 from starlette.responses import JSONResponse
-from pydantic import ValidationError, TypeAdapter
 
 # NOC modules
 from noc.config import config
 from noc.core.comp import smart_bytes
 from noc.core.service.deps.service import get_service
+
+from ..auth import authenticate, get_jwt_token, get_user_from_jwt, register_last_login
 from ..models.token import TokenRequest, TokenResponse
-from ..auth import authenticate, register_last_login, get_jwt_token, get_user_from_jwt
 from ..service import LoginService
 
 router = APIRouter()

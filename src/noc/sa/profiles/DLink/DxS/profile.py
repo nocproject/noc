@@ -10,11 +10,11 @@
 import re
 
 # NOC modules
+from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
+from noc.core.mib import mib
 from noc.core.profile.base import BaseProfile
 from noc.core.script.error import CLIOperationError
-from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_PORT_SUBTYPE_NAME
 from noc.core.snmp.render import render_mac
-from noc.core.mib import mib
 
 
 class Profile(BaseProfile):

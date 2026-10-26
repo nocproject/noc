@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import sys
 import os
 import subprocess
+import sys
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

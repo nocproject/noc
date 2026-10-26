@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # Third-party modules
 from pymongo import UpdateOne
 
 # NOC modules
-from noc.models import is_document, get_model_id, get_model
-from noc.core.scheduler.job import Job
-from noc.core.defer import call_later
-from noc.core.wf.interaction import Interaction
-from noc.core.change.policy import change_tracker
-from noc.core.change.decorator import get_datastreams, get_domains, get_applied_rules
+from noc.core.change.decorator import get_applied_rules, get_datastreams, get_domains
 from noc.core.change.model import ChangeField
+from noc.core.change.policy import change_tracker
+from noc.core.defer import call_later
+from noc.core.scheduler.job import Job
 from noc.core.watchers.types import ObjectEffect
+from noc.core.wf.interaction import Interaction
+from noc.models import get_model, get_model_id, is_document
 
 logger = logging.getLogger(__name__)
 
@@ -390,6 +390,7 @@ def workflow(cls):
         cls.get_wiping_ttl = get_wiping_ttl
     if is_document(cls):
         # MongoEngine model
+        # Third-party modules
         from mongoengine import signals as mongo_signals
 
         cls.set_state = document_set_state
@@ -409,6 +410,7 @@ def workflow(cls):
         mongo_signals.post_save.connect(_on_document_post_save, sender=cls)
     else:
         # Django model
+        # Third-party modules
         from django.db.models import signals as django_signals
 
         cls.set_state = model_set_state
@@ -443,6 +445,7 @@ def wipe(model_id: str, oid):
     try:
         if model_id == "sa.ManagedObject":
             # Custom delete handler
+            # NOC modules
             from noc.sa.wipe.managedobject import wipe
 
             wipe(o)
@@ -456,6 +459,7 @@ def wipe(model_id: str, oid):
 def wipe_alarm(model_id: str, oid):
     """Wiping Active Alarm"""
     # Clear alarms
+    # NOC modules
     from noc.fm.models.activealarm import ActiveAlarm
 
     if model_id != "sa.ManagedObject":

@@ -11,6 +11,7 @@ from django.http import HttpRequest
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import UnicodeParameter
+
 from .base import InvPlugin
 
 

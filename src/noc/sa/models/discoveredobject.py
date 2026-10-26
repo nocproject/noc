@@ -5,59 +5,65 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
-import logging
 import itertools
+import logging
 from collections.abc import Iterable
 
 # Third-party modules
 from bson import ObjectId
 from django.db.models.query_utils import Q as d_Q
-from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    LongField,
-    ListField,
+    BooleanField,
     DateTimeField,
     DictField,
-    BooleanField,
-    ReferenceField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    LongField,
     ObjectIdField,
+    ReferenceField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.wf.decorator import workflow
-from noc.core.bi.decorator import bi_sync, bi_hash
+from noc.config import config
+from noc.core.bi.decorator import bi_hash, bi_sync
+from noc.core.ip import IP
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.purgatorium import (
+    ETL_SOURCE,
+    HOSTNAME_ASSET_CAPS,
+    HOSTNAME_FIELD_NAME,
+    SOURCES,
     ProtocolCheckResult,
     PurgatoriumData,
     iter_discovered_object,
-    SOURCES,
-    ETL_SOURCE,
-    HOSTNAME_FIELD_NAME,
-    HOSTNAME_ASSET_CAPS,
 )
-from noc.core.mongo.fields import PlainReferenceField
-from noc.config import config
-from noc.core.ip import IP
-from noc.main.models.pool import Pool
+from noc.core.wf.decorator import workflow
+from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.modeltemplate import (
-    ResourceItem,
-    DataItem as ResourceDataItem,
     CapsItem as ResourceCapsItem,
 )
-from noc.inv.models.capability import Capability
-from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
+from noc.main.models.modeltemplate import (
+    DataItem as ResourceDataItem,
+)
+from noc.main.models.modeltemplate import (
+    ResourceItem,
+)
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.wf.models.state import State
 
 # Data source, data: Dict[str, str], source -> MergeRule[field-> policy]
@@ -653,8 +659,11 @@ class DiscoveredObject(Document):
         managed_object: ManagedObject | None = None,
     ) -> list[DiscoveredObject]:
         """Check duplicate"""
-        from noc.inv.models.subinterface import SubInterface
+        # Third-party modules
         from mongoengine.queryset.visitor import Q
+
+        # NOC modules
+        from noc.inv.models.subinterface import SubInterface
 
         duplicate_keys = {self.address_bin}
         if address and address != self.address:
@@ -709,6 +718,7 @@ class DiscoveredObject(Document):
 
     def check_duplicates(self, mos: list[ManagedObject]) -> list[DiscoveredObject]:
         """Getting DiscoveredObject duplicates record by ManagedObjects"""
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         q = m_q()
@@ -795,6 +805,7 @@ class DiscoveredObject(Document):
             dry_run: Run with test
             template: Sync object template
         """
+        # NOC modules
         from noc.inv.models.discoveryid import DiscoveryID
 
         logger.debug("[%s] Sync Object", self)

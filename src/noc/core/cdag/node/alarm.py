@@ -6,18 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 from typing import Any
 
 # Third-party modules
-from pydantic import BaseModel
 import orjson
 from jinja2 import Template
+from pydantic import BaseModel
 
 # NOC modules
-from .base import BaseCDAGNode, ValueType, Category
 from noc.core.service.loader import get_service
+
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class AlarmNodeState(BaseModel):

@@ -9,11 +9,11 @@
 import re
 
 # NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.text import parse_table
 from noc.core.validators import is_int
-from noc.core.mib import mib
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):

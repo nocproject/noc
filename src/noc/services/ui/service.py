@@ -7,8 +7,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.base import BaseService
 from noc.config import config
+from noc.core.service.base import BaseService
 
 
 class UIService(BaseService):

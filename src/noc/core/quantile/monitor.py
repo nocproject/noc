@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.config import config
+
 from .base import Summary, TargetedStream
 
 DEFAULT_TARGETS = [

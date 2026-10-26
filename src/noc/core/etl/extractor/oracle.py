@@ -11,6 +11,7 @@ from threading import Condition
 
 # NOC modules
 from noc.core.threadpool import ThreadPoolExecutor
+
 from .sql import SQLExtractor
 
 
@@ -39,6 +40,7 @@ class ORACLEExtractor(SQLExtractor):
         self.connect = None
 
     def get_cursor(self):
+        # Third-party modules
         import cx_Oracle
 
         if not self.connect:

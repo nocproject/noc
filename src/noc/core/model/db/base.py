@@ -12,7 +12,6 @@ from django.db.backends.postgresql.base import DatabaseWrapper as PGDatabaseWrap
 from django.db.backends.postgresql.operations import DatabaseOperations as PGDatabaseOperations
 from django.db.backends.postgresql.psycopg_any import Jsonb
 
-# NOC modules
 from .monitor import SpanCursor
 
 

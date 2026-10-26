@@ -10,9 +10,9 @@ import pytest
 
 # NOC modules
 from noc.core.config.backends.base import BaseConfigBackend
+from noc.core.config.backends.consul import DEFAULT_CONSUL_PORT, ConsulBackend, ConsulParams
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import IntParameter, StringParameter
-from noc.core.config.backends.consul import ConsulParams, ConsulBackend, DEFAULT_CONSUL_PORT
 
 
 class MockConsulBackend(ConsulBackend):

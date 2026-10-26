@@ -6,20 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.scheduler.scheduler import Scheduler
-from noc.main.models.pool import Pool
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
-from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.profile import GENERIC_PROFILE, Profile
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 CODE_MAP = {
     "1": "Unknown error",

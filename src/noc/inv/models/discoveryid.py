@@ -5,32 +5,34 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import bisect
-from threading import Lock
+import operator
 from collections.abc import Iterable
+from threading import Lock
 
 # Third-party modules
 import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocumentListField
+from mongoengine.fields import EmbeddedDocumentListField, ListField, LongField, StringField
 from pymongo import ReadPreference, ReturnDocument
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField
-from noc.core.change.decorator import change
 from noc.config import config
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.macblacklist import MACBlacklist
-from noc.core.perf import metrics
 from noc.core.cache.base import cache
+from noc.core.change.decorator import change
 from noc.core.mac import MAC
 from noc.core.model.decorator import on_delete
+from noc.core.mongo.fields import ForeignKeyField
+from noc.core.perf import metrics
+from noc.inv.models.interface import Interface
+from noc.inv.models.macblacklist import MACBlacklist
+from noc.inv.models.subinterface import SubInterface
+from noc.sa.models.managedobject import ManagedObject
 
 id_lock = Lock()
 mac_lock = Lock()

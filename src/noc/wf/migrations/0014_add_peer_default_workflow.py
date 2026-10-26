@@ -5,8 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import uuid
+
+# Third-party modules
 from bson import ObjectId
 
 # NOC modules

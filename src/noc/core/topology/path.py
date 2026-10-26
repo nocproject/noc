@@ -6,22 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
+import itertools
 import operator
+from collections import defaultdict
+from collections.abc import Iterable
+from typing import NamedTuple
 
 # Third-party modules
-from typing import NamedTuple
-from collections.abc import Iterable
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.link import Link
+from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+
+from .constraint.base import BaseConstraint
 from .goal.base import BaseGoal
 from .goal.managedobject import ManagedObjectGoal
-from .constraint.base import BaseConstraint
-import itertools
 
 MAX_PATH_LENGTH = 0xFFFFFFFF
 

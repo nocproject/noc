@@ -10,8 +10,8 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_vlans import Script as BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
+from noc.sa.profiles.Generic.get_vlans import Script as BaseScript
 
 
 class Script(BaseScript):

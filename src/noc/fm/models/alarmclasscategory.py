@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ObjectIdField
+from mongoengine.fields import ObjectIdField, StringField
 
 
 class AlarmClassCategory(Document):

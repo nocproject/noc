@@ -5,17 +5,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
-from noc.core.timepattern import TimePattern as TP
-from noc.core.model.decorator import on_init
 from noc.core.change.decorator import change
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_init
+from noc.core.timepattern import TimePattern as TP
+
 from .timepattern import TimePattern
 
 
@@ -60,6 +61,7 @@ class TimePatternTerm(NOCModel):
         super().save(*args, **kwargs)
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         for mo in ManagedObject.objects.filter(time_pattern=self.time_pattern):

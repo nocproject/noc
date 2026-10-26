@@ -5,26 +5,30 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import datetime
+import logging
 import operator
-import threading
 import random
 import string
-import logging
-import datetime
-from typing import Any
+import threading
 from collections.abc import Callable
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, IntField
-import cachetools
+from mongoengine.fields import BooleanField, IntField, StringField
+
+# NOC modules
+from noc.core.lock.base import get_locked_items
 
 # NOC Modules
 from noc.core.lock.distributed import DistributedLock
-from noc.core.lock.base import get_locked_items
 from noc.core.model.decorator import on_delete_check
 from noc.core.perf import metrics
 from noc.models import get_model
@@ -259,6 +263,7 @@ class ResourcePool(Document):
     @property
     def usage(self) -> float | None:
         """Calculate pool resource usage"""
+        # NOC modules
         from noc.ip.models.prefix import Prefix
         from noc.vc.models.l2domain import L2Domain
 

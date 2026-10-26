@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from importlib.resources import files
 import os
+from importlib.resources import files
 from typing import Any
 
 # Third-party modules
@@ -19,9 +19,9 @@ from fastapi.responses import RedirectResponse
 # NOC modules
 from noc.config import config
 from noc.core.service.base import BaseService
-from noc.services.web.urls import set_url_patterns
 from noc.main.models.customfield import CustomField
 from noc.services.web.base.site import site
+from noc.services.web.urls import set_url_patterns
 
 
 class WebService(BaseService):
@@ -40,6 +40,7 @@ class WebService(BaseService):
 
     async def on_activate(self) -> None:
         # Initialize audit trail
+        # NOC modules
         from noc.main.models.audittrail import AuditTrail
 
         AuditTrail.install()

@@ -6,20 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import logging
+import os
 import random
 import signal
 import threading
-import os
-from urllib.parse import urlparse
 from time import perf_counter
-import asyncio
+from urllib.parse import urlparse
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
-from noc.core.ioloop.util import run_sync
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.ioloop.util import run_sync
+from noc.core.perf import metrics
+
 from .error import ResolutionError
 
 

@@ -14,6 +14,7 @@ import cachetools
 # NOC modules
 from noc.inv.models.link import Link
 from noc.inv.models.subinterface import SubInterface
+
 from .base import BaseConstraint
 
 

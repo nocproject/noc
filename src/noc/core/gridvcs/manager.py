@@ -8,7 +8,6 @@
 # Python modules
 import logging
 
-# NOC modules
 from .base import GridVCS
 
 logger = logging.getLogger(__name__)

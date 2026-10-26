@@ -5,38 +5,41 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
+import threading
 from typing import Any
 
 # Third-party modules
 import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    IntField,
-    ListField,
     EmbeddedDocumentListField,
     EnumField,
+    IntField,
+    ListField,
+    StringField,
 )
-from mongoengine.errors import ValidationError
 
 # NOC modules
-from noc.core.mx import MessageType, MESSAGE_HEADERS, MessageMeta
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField, PlainReferenceListField
+from noc.config import config
 from noc.core.change.decorator import change
-from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, PlainReferenceListField
+from noc.core.mx import MESSAGE_HEADERS, MessageMeta, MessageType
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.remotesystem import RemoteSystem
-from noc.config import config
+from noc.sa.models.administrativedomain import AdministrativeDomain
+
 from .handler import Handler
-from .template import Template
-from .notificationgroup import NotificationGroup
 from .label import Label
+from .notificationgroup import NotificationGroup
+from .template import Template
 
 id_lock = threading.Lock()
 

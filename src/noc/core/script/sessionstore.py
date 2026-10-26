@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
-from dataclasses import dataclass
 import asyncio
 from contextlib import suppress
+from dataclasses import dataclass
+from threading import Lock
 
 # NOC modules
 from noc.core.service.loader import get_service
+
 from .cli.base import BaseCLI
 
 

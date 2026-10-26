@@ -7,9 +7,9 @@
 
 # Python modules
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from gufo.loader import Loader

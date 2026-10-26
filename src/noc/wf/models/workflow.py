@@ -5,35 +5,37 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-import operator
+
+# Python modules
 import logging
-from typing import Any
+import operator
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    ReferenceField,
-    LongField,
     ListField,
+    LongField,
+    ReferenceField,
+    StringField,
     UUIDField,
 )
-import cachetools
 
 # NOC modules
-from noc.models import get_model
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.main.models.remotesystem import RemoteSystem
+from noc.core.model.decorator import on_delete_check
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
+from noc.main.models.remotesystem import RemoteSystem
+from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -146,6 +148,7 @@ class Workflow(Document):
 
     @classmethod
     def get_default_workflow(cls, model_id):
+        # NOC modules
         from noc.models import get_model
 
         workflow = Workflow.objects.filter(allowed_models__in=[model_id]).first()

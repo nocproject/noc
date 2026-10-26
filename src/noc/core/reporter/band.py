@@ -5,18 +5,20 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 import polars as pl
 from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from noc.core.reporter.types import BandOrientation, ROOT_BAND, ReportBand
+from noc.core.reporter.types import ROOT_BAND, BandOrientation, ReportBand
 
 
 @dataclass

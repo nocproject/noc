@@ -14,6 +14,7 @@ import numpy as np
 
 # NOC modules
 from noc.config import config
+
 from .base import LayoutBase
 
 

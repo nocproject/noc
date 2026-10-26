@@ -5,36 +5,36 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-from threading import Lock
 from pathlib import Path
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    UUIDField,
-    FloatField,
     EmbeddedDocumentListField,
+    FloatField,
+    IntField,
+    StringField,
+    UUIDField,
 )
-import cachetools
 
 # NOC modules
-from noc.main.models.template import Template
-from noc.main.models.handler import Handler
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.core.window import get_window_function, wf_choices
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.eventclass import EventClass
-from noc.core.model.decorator import on_delete_check
-from noc.core.window import wf_choices
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.window import get_window_function
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-
+from noc.main.models.handler import Handler
+from noc.main.models.template import Template
 
 id_lock = Lock()
 

@@ -5,8 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-from django.db import models
+# Python modules
 import uuid
+
+# Third-party modules
+from django.db import models
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

@@ -11,16 +11,16 @@ import datetime
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    EnumField,
-    DateTimeField,
     BooleanField,
+    DateTimeField,
     DictField,
     EmbeddedDocumentListField,
+    EnumField,
+    StringField,
 )
 
 # NOC modules
-from noc.core.diagnostic.types import DiagnosticState, DiagnosticValue, CheckStatus
+from noc.core.diagnostic.types import CheckStatus, DiagnosticState, DiagnosticValue
 from noc.core.models.inputsources import InputSource
 
 

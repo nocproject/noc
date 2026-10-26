@@ -7,8 +7,11 @@
 # ---------------------------------------------------------------------
 
 
-from noc.core.profile.base import BaseProfile
+# Python modules
 import re
+
+# NOC modules
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

@@ -9,10 +9,10 @@
 import datetime
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.bgp import BGPState
 from noc.peer.models.peer import Peer
 from noc.peer.models.peerprofile import PeerProfile
-from noc.core.bgp import BGPState
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class PeerStatusCheck(DiscoveryCheck):

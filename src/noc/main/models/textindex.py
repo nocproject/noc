@@ -6,17 +6,17 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 import re
 
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField, DateTimeField
+from mongoengine.fields import DateTimeField, ListField, StringField
 
 # NOC modules
-from noc.models import get_object, get_model_id
+from noc.models import get_model_id, get_object
 
 logger = logging.getLogger(__name__)
 

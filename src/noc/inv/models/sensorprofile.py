@@ -5,46 +5,47 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 import re
 from collections import defaultdict
-from threading import Lock
-from typing import Any
 from collections.abc import Callable
 from functools import partial
+from threading import Lock
+from typing import Any
 
 # Third-party modules
 import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
+    BooleanField,
+    EmbeddedDocumentListField,
+    IntField,
     ListField,
     LongField,
-    BooleanField,
     ObjectIdField,
-    IntField,
-    EmbeddedDocumentListField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
-from noc.main.models.style import Style
+from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.change.model import ChangeField
+from noc.core.matcher import build_matcher
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.style import Style
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
-from noc.core.change.decorator import change
-from noc.core.model.decorator import on_delete_check
-from noc.core.bi.decorator import bi_sync
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.matcher import build_matcher
-from noc.core.change.model import ChangeField
-from noc.config import config
-
 
 id_lock = Lock()
 rule_lock = Lock()
@@ -174,6 +175,7 @@ class SensorProfile(Document):
         return Label.get_effective_setting(label, setting="enable_sensorprofile")
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.inv.models.sensor import Sensor
 
         if not config.datastream.enable_cfgmetricstarget:

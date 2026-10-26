@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.core.translation import ugettext as _
 from noc.crm.models.subscriber import Subscriber
 from noc.services.web.base.decorators.state import state_handler
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 @state_handler

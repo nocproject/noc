@@ -11,11 +11,12 @@ from importlib.resources import as_file, files
 from pathlib import Path
 
 # Third-party modules
-from jinja2 import Environment, FileSystemLoader
 import demjson3
+from jinja2 import Environment, FileSystemLoader
 
 # NOC modules
 from noc.config import config
+
 from .base import BaseDashboard
 
 PM_TEMPLATES = files("noc.services.web.apps.pm.ddash").joinpath("templates")

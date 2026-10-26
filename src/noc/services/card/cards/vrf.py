@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
+
 from .base import BaseCard
 
 

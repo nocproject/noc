@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.core.files.storage import Storage
-from django.core.files.base import ContentFile
 import psycopg2
+from django.core.files.base import ContentFile
+from django.core.files.storage import Storage
 
 
 class DatabaseStorage(Storage):
@@ -37,6 +37,7 @@ class DatabaseStorage(Storage):
         self.mtime_field = option["mtime_field"]
 
     def get_cursor(self):
+        # Third-party modules
         from django.db import connection
 
         return connection.cursor()

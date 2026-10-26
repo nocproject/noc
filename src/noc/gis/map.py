@@ -8,14 +8,14 @@
 # Python modules
 
 # Third-party modules
-from pyproj import Transformer
 import geojson
+from pyproj import Transformer
 
 # NOC modules
+from noc.core.geo import distance, get_bbox
 from noc.gis.models.layer import Layer
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.core.geo import distance, get_bbox
 
 
 class Map:

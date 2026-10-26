@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Literal
 from dataclasses import dataclass, field
+from typing import Literal
 
 # NOC modules
 from noc.core.bi.decorator import bi_hash

@@ -7,10 +7,9 @@
 
 
 # NOC modules
+from noc.core.collection.base import Collection
 from noc.core.migration.base import BaseMigration
 from noc.core.model.fields import DocumentReferenceField
-from noc.core.collection.base import Collection
-
 
 DEFAULT_GLYPH = 0xF22C
 MISSED_GLYPH = DEFAULT_GLYPH

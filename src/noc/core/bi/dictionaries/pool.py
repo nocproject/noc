@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
+from noc.core.clickhouse.model import DictionaryModel
 from noc.main.models.pool import Pool as PoolModel
 
 

@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.inv.models.modelinterface import ModelInterface
 from noc.core.translation import ugettext as _
+from noc.inv.models.modelinterface import ModelInterface
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class ModelInterfaceApplication(ExtDocApplication):

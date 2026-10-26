@@ -10,15 +10,15 @@ import datetime
 import difflib
 
 # Third-party modules
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.main.models.language import Language
-from noc.main.models.label import Label
-from noc.services.web.apps.kb.parsers.base import kb_parser_loader
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
+from noc.main.models.language import Language
+from noc.services.web.apps.kb.parsers.base import kb_parser_loader
 
 
 @Label.model
@@ -68,6 +68,7 @@ class KBEntry(NOCModel):
         """
         save model, compute body's diff and save event history
         """
+        # NOC modules
         from noc.core.middleware.tls import get_user
         from noc.kb.models.kbentryhistory import KBEntryHistory
 
@@ -117,6 +118,7 @@ class KBEntry(NOCModel):
         """
         Returns a list of last modified KB Entries
         """
+        # Third-party modules
         from django.db import connection
 
         c = connection.cursor()
@@ -150,6 +152,7 @@ class KBEntry(NOCModel):
         """
         Returns most popular articles
         """
+        # Third-party modules
         from django.db import connection
 
         c = connection.cursor()

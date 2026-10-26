@@ -5,22 +5,24 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from collections.abc import Callable, Iterable
+from threading import Lock
+from typing import Any
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, EmbeddedDocumentListField
-from typing import Any
-from collections.abc import Iterable, Callable
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField
 
 # NOC modules
-from noc.main.models.handler import Handler
 from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.handler import Handler
 
 id_lock = Lock()
 

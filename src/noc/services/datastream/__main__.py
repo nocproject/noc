@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.datastream.service import DataStreamService
-
 
 if __name__ == "__main__":
     DataStreamService().start()

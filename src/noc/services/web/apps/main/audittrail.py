@@ -9,15 +9,15 @@
 import logging
 
 # Third-party modules
-from django.http import HttpRequest
 import orjson
+from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.core.translation import ugettext as _
 from noc.core.clickhouse.connect import connection
-from noc.models import get_object, get_model
 from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
+from noc.models import get_model, get_object
+from noc.services.web.base.extapplication import ExtApplication, api
 
 logger = logging.getLogger(__name__)
 

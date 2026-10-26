@@ -6,16 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import codecs
+import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
-from noc.core.text import parse_table_header
-from noc.core.mib import mib
-from noc.core.snmp.render import render_bin
 from noc.core.comp import smart_text
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_bin
+from noc.core.text import parse_table_header
+from noc.sa.interfaces.igetcpestatus import IGetCPEStatus
 
 
 class Script(BaseScript):

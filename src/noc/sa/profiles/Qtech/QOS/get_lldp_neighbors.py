@@ -9,17 +9,17 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_COMPONENT,
     LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
 )
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

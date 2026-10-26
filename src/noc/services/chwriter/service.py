@@ -7,20 +7,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from time import perf_counter
 import asyncio
 from collections.abc import AsyncIterable
-
-# Third-party modules
+from time import perf_counter
 
 # NOC modules
-from noc.core.service.base import BaseService
-from noc.core.http.aio import HttpClient, DEFLATE, GZIP
 from noc.config import config
-from noc.core.perf import metrics
-from noc.services.chwriter.channel import Channel
+from noc.core.http.aio import DEFLATE, GZIP, HttpClient
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.msgstream.client import MessageStreamClient
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
+from noc.services.chwriter.channel import Channel
 
 
 class CHWriterService(BaseService):

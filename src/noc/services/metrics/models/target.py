@@ -8,7 +8,7 @@
 # Python modules
 import sys
 from dataclasses import dataclass
-from typing import Any, Union, ClassVar
+from typing import Any, ClassVar, Union
 
 MetricKey = tuple[str, tuple[tuple[str, int], ...], tuple[str, ...]]
 

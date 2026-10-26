@@ -6,23 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import asyncio
 import argparse
+import asyncio
 import time
 from collections import defaultdict
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import connect
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.networksegment import NetworkSegment
-from noc.core.scheduler.scheduler import Scheduler
-from noc.core.scheduler.job import Job
 from noc.core.cache.base import cache
-from noc.core.span import Span, get_spans
-from noc.core.service.pub import publish
 from noc.core.comp import smart_bytes
 from noc.core.ioloop.util import get_loop_factory
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
+from noc.core.scheduler.job import Job
+from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.pub import publish
+from noc.core.span import Span, get_spans
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.services.discovery.jobs.base import get_discovery_job
 
 
@@ -189,7 +189,8 @@ class ServiceStub:
         Get slot count
         :return:
         """
-        from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
+        # NOC modules
+        from noc.core.dcs.loader import DEFAULT_DCS, get_dcs
 
         dcs = get_dcs(DEFAULT_DCS)
         return asyncio.run(dcs.get_slot_limit(slot_name), loop_factory=get_loop_factory())

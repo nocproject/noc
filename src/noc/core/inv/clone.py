@@ -13,7 +13,6 @@ from bson import ObjectId
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
 
-
 # interface, attr to clean from clone
 _SKIPPED_ATTRS = {
     ("stack", "member"),

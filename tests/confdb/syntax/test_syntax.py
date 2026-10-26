@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import pytest
 import cachetools
+import pytest
 
 # NOC modules
 from noc.core.confdb.syntax.base import SYNTAX

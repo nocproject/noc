@@ -6,23 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 import socket
 import struct
+import threading
+from collections.abc import AsyncIterable, Callable
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
-from collections.abc import AsyncIterable, Callable
-import threading
 
 # Third-party modules
 import orjson
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.service.loader import get_service
-from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 from noc.core.models.inputsources import InputSource
+from noc.core.script.scheme import CLICredential, HTTPCredential, SNMPCredential, SNMPv3Credential
+from noc.core.service.loader import get_service
 from noc.core.threadpool import ThreadPoolExecutor
 
 TCP_CHECK = "TCP"
@@ -321,6 +321,7 @@ def register_checks(
     service: int | None = None,
 ):
     """Push check result to history"""
+    # NOC modules
     from noc.main.models.remotesystem import RemoteSystem
 
     if isinstance(source, str):

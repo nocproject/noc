@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
+from bson import Int64, ObjectId
 from pymongo import InsertOne, UpdateMany
-from bson import ObjectId, Int64
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

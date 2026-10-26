@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
-import datetime
-import asyncio
-import gzip
-import time
-import random
 import argparse
+import asyncio
+import datetime
+import gzip
+import os
+import random
+import time
 from gc import collect
 
 # Third-party modules
@@ -20,17 +20,17 @@ import orjson
 from pymongo.errors import OperationFailure
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import get_db, connect
-from noc.core.etl.bi.extractor.reboots import RebootsExtractor
-from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
-from noc.core.etl.bi.extractor.alarmlogs import AlarmLogsExtractor
-from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
+from noc.config import config
 from noc.core.bi.dictionaries.loader import loader
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.msgstream.client import MessageStreamClient
-from noc.config import config
+from noc.core.etl.bi.extractor.alarmlogs import AlarmLogsExtractor
+from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
+from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
+from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.ioloop.util import get_loop_factory
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect, get_db
+from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model, is_document
 
 BATCH_SIZE = 10000

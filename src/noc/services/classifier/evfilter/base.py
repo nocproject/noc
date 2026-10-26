@@ -7,7 +7,7 @@
 
 # Python modules
 import time
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from typing import Any
 
 # Third-party modules

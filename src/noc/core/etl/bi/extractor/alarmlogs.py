@@ -6,11 +6,12 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmclass import AlarmClass
-from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarmlogs import AlarmLogs
 from noc.core.etl.bi.stream import Stream
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.sa.models.managedobject import ManagedObject
+
 from .base import BaseExtractor
 
 

@@ -7,8 +7,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import Parameter, NoneParameter, StringParameter
+
+from .base import NoneParameter, Parameter, StringParameter
 
 
 class IInterfaceClassification(BaseInterface):

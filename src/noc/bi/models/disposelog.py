@@ -6,20 +6,20 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.alarmclass import AlarmClass
+from noc.core.bi.dictionaries.eventclass import EventClass
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
     DateField,
     DateTimeField,
-    StringField,
+    MapField,
     ReferenceField,
+    StringField,
     UInt32Field,
     UInt64Field,
-    MapField,
 )
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.eventclass import EventClass
-from noc.core.bi.dictionaries.alarmclass import AlarmClass
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
 from pymongo import ReadPreference
@@ -16,7 +16,8 @@ from pymongo import ReadPreference
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from .base import FieldInfo, FieldType, BaseDataSource
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 class ManagedObjectDPDS(BaseDataSource):

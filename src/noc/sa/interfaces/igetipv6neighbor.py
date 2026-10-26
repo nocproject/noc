@@ -6,14 +6,16 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    ListOfParameter,
-    StringParameter,
     DictParameter,
     InterfaceNameParameter,
     IPv6Parameter,
+    ListOfParameter,
     MACAddressParameter,
+    StringParameter,
 )
 
 

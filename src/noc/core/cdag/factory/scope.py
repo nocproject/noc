@@ -13,11 +13,11 @@ from threading import Lock
 # NOC modules
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from .base import BaseCDAGFactory, FactoryCtx
+
 from ..graph import CDAG
 from ..node.metrics import MetricsNodeConfig
 from ..node.probe import ProbeNodeConfig
-
+from .base import BaseCDAGFactory, FactoryCtx
 
 cfg_lock = Lock()
 

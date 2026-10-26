@@ -9,12 +9,12 @@
 import logging
 
 # NOC modules
-from noc.maintenance.models.maintenance import Maintenance
-from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.ttsystem import TTSystem
+from noc.core.perf import metrics
 from noc.core.tt.base import TTSystemCtx
 from noc.core.tt.types import EscalationItem as ECtxItem
-from noc.core.perf import metrics
+from noc.fm.models.ttsystem import TTSystem
+from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
 
 logger = logging.getLogger(__name__)
 

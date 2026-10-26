@@ -1,10 +1,10 @@
-# NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
-
 # Python modules
 import re
 from xml.dom.minidom import parseString
+
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):

@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.text import parse_kv
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.sa.profiles.Generic.get_metrics import metrics
 
 
 class Script(GetMetricsScript):

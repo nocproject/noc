@@ -9,10 +9,10 @@
 import ast
 import bisect
 import datetime
-from operator import itemgetter
 import re
-from typing import Any
 from collections.abc import AsyncIterable, Iterable
+from operator import itemgetter
+from typing import Any
 
 # NOC modules
 from noc.config import config
@@ -23,7 +23,8 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.macvendor import MACVendor
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
-from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 MULTICAST_MACS = [
     ("01:00:5E:00:00:00", "01:00:5E:FF:FF:FF"),

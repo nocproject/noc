@@ -5,33 +5,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
-from typing import Any
-from threading import Lock
+
+# Python modules
 import operator
+from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
+    DynamicField,
     EmbeddedDocumentListField,
     ListField,
-    UUIDField,
     ObjectIdField,
-    DynamicField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.main.models.doccategory import category
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.doccategory import category
+
 from .facade import Facade
 
 id_lock = Lock()

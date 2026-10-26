@@ -6,15 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Response
+from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
-from noc.core.service.deps.user import get_current_user
-from noc.main.models.avatar import Avatar
+from noc.config import config
 from noc.core.ioloop.util import run_sync
 from noc.core.mime import ContentType
+from noc.core.service.deps.user import get_current_user
+from noc.main.models.avatar import Avatar
+
 from ..models.status import StatusResponse
 
 router = APIRouter()

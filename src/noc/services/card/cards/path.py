@@ -9,10 +9,11 @@
 import orjson
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.topology.path import get_shortest_path
 from noc.config import config
+from noc.core.topology.path import get_shortest_path
+from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseCard
 
 
 class PathCard(BaseCard):

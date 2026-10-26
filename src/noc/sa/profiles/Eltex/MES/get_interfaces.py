@@ -10,12 +10,12 @@ import re
 import time
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.text import parse_table
-from noc.core.mib import mib
 from noc.core.comp import smart_text
+from noc.core.mib import mib
+from noc.core.text import parse_table
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class Script(BaseScript):

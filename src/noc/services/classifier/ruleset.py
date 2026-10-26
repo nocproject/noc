@@ -7,34 +7,35 @@
 
 # Python modules
 import logging
-from itertools import chain
 from collections import defaultdict
+from itertools import chain
 from typing import Any
 
 # NOC modules
-from .rule import Rule
-from .exception import InvalidPatternException, EventProcessingFailed
-from .rulelookup import RuleLookup
-from .eventconfig import EventConfig, VarItem
-from noc.models import get_model
 from noc.config import config
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.enumeration import Enumeration
-from noc.sa.models.profile import GENERIC_PROFILE
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.perf import metrics
-from noc.core.fm.event import Event
 from noc.core.fm.enum import EventSource
+from noc.core.fm.event import Event
+from noc.core.perf import metrics
+from noc.core.profile.loader import loader as profile_loader
+from noc.fm.models.enumeration import Enumeration
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.models import get_model
 from noc.sa.interfaces.base import (
-    IPv4Parameter,
-    IPv6Parameter,
-    IPParameter,
-    IPv4PrefixParameter,
-    IPv6PrefixParameter,
-    PrefixParameter,
-    MACAddressParameter,
     InterfaceTypeError,
+    IPParameter,
+    IPv4Parameter,
+    IPv4PrefixParameter,
+    IPv6Parameter,
+    IPv6PrefixParameter,
+    MACAddressParameter,
+    PrefixParameter,
 )
+from noc.sa.models.profile import GENERIC_PROFILE
+
+from .eventconfig import EventConfig, VarItem
+from .exception import EventProcessingFailed, InvalidPatternException
+from .rule import Rule
+from .rulelookup import RuleLookup
 
 logger = logging.getLogger(__name__)
 

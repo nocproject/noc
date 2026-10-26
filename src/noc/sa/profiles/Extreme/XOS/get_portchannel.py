@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python module
+# Python modules
 import re
 
+# NOC modules
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel

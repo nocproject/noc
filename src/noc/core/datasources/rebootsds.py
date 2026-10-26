@@ -6,15 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import datetime
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from django.db import connection
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.fm.models.reboot import Reboot
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 
 class RebootsDS(BaseDataSource):

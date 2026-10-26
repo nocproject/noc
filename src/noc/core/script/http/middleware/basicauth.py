@@ -8,7 +8,6 @@
 # Python modules
 import codecs
 
-# NOC modules
 from .base import BaseMiddleware
 
 

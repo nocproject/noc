@@ -11,20 +11,20 @@ import datetime
 from collections import defaultdict
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
-from noc.core.mongo.connection import connect
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.biosegtrial import BioSegTrial
-from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
 from noc.core.bioseg.moderator.base import moderate_trial
 from noc.core.change.policy import change_tracker
-from noc.core.text import alnum_key
 from noc.core.clickhouse.connect import connection
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
+from noc.core.text import alnum_key
+from noc.inv.models.biosegtrial import BioSegTrial
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):

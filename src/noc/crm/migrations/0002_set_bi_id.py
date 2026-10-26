@@ -5,15 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import bson
-
 # Third-party modules
+import bson
 from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
 
 MONGO_CHUNK = 500
 

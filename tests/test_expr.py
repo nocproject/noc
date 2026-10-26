@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.expr import get_vars, get_fn
+from noc.core.expr import get_fn, get_vars
 
 
 @pytest.mark.parametrize(

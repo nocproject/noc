@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.models import get_model, iter_model_id, is_document
+from noc.config import config
 from noc.core.datastream.base import data_stream_loader
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect, get_db
-from noc.config import config
+from noc.models import get_model, is_document, iter_model_id
 
 
 class Command(BaseCommand):
@@ -106,6 +106,7 @@ class Command(BaseCommand):
             GridVCS(repo).ensure_collection()
 
     def index_cache(self):
+        # NOC modules
         from noc.core.cache.base import cache
 
         if not hasattr(cache, "ensure_indexes"):
@@ -114,6 +115,7 @@ class Command(BaseCommand):
         cache.ensure_indexes()
 
     def index_rca_lock(self):
+        # NOC modules
         from noc.services.correlator.rcalock import RCALock
 
         self.print("[RCA Lock] Indexing")

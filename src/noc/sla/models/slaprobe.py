@@ -5,50 +5,53 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import re
-import operator
+
+# Python modules
 import datetime
-from typing import Any
+import operator
+import re
 from collections.abc import Iterable
 from threading import Lock
+from typing import Any
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    ListField,
     DateTimeField,
-    LongField,
-    IntField,
     DictField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    LongField,
+    StringField,
 )
 from pymongo import ReadPreference
 
 # NOC modules
-from .slaprofile import SLAProfile
-from noc.wf.models.state import State
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
-from noc.pm.models.agent import Agent
-from noc.pm.models.metricrule import MetricRule
-from noc.main.models.label import Label
-from noc.inv.models.capsitem import CapsItem
+from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.caps.decorator import capabilities
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.sql import SQL
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.validators import is_ipv4
-from noc.core.change.decorator import change
-from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
-from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
-from noc.core.model.sql import SQL
-from noc.core.model.decorator import on_delete_check
-from noc.core.caps.decorator import capabilities
-from noc.config import config
+from noc.inv.models.capsitem import CapsItem
+from noc.main.models.label import Label
+from noc.pm.models.agent import Agent
+from noc.pm.models.metricrule import MetricRule
+from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
+from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
+
+from .slaprofile import SLAProfile
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 
@@ -123,6 +126,7 @@ class SLAProbe(Document):
 
     @property
     def service(self):
+        # NOC modules
         from noc.sa.models.service import Service
 
         return Service.objects.filter(sla_probe=self).first()
@@ -141,6 +145,7 @@ class SLAProbe(Document):
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self) -> ManagedObject | None:
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         address = self.target

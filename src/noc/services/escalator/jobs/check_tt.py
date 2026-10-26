@@ -5,24 +5,26 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import threading
 from collections import defaultdict
 
 # NOC modules
-from noc.core.scheduler.job import Job
-from noc.core.tt.types import TTAction, TTChange
-from noc.core.lock.process import ProcessLock
-from noc.core.fm.request import ActionConfig
-from noc.core.fm.enum import AlarmAction
 from noc.aaa.models.user import User
-from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
-from noc.services.correlator.alarmjob import AlarmJob
 from noc.config import config
+from noc.core.fm.enum import AlarmAction
+from noc.core.fm.request import ActionConfig
+from noc.core.lock.process import ProcessLock
+from noc.core.scheduler.job import Job
 from noc.core.text import alnum_key
+from noc.core.tt.types import TTAction, TTChange
+from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
+from noc.fm.models.ttsystem import TTSystem
+from noc.services.correlator.alarmjob import AlarmJob
 
 RETRY_TIMEOUT = config.escalator.retry_timeout
 # @fixme have to be checked

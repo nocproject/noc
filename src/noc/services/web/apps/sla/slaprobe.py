@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.services.web.base.decorators.state import state_handler
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sla.models.slaprobe import SLAProbe
-from noc.services.web.base.decorators.state import state_handler
-from noc.core.translation import ugettext as _
 
 
 @state_handler

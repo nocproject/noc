@@ -7,16 +7,16 @@
 
 # Python modules
 import logging
+from io import BytesIO
 
 # Third-party modules
 import pytest
-from io import BytesIO
 
 # NOC modules
+from noc.core.ioloop.util import IOLoopContext
 from noc.core.script.base import BaseScript
 from noc.core.script.cli.base import BaseCLI
 from noc.core.script.cli.telnet import TelnetStream
-from noc.core.ioloop.util import IOLoopContext
 
 
 class ScriptStub(BaseScript):

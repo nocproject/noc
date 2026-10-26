@@ -8,6 +8,7 @@
 # Third-party modules
 import pytest
 
+# NOC modules
 # NOC files
 from noc.services.web.base.site import site
 

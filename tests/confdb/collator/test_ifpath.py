@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 
+# Python modules
+from collections import namedtuple
+
 # Third-party modules
 import pytest
-from collections import namedtuple
 
 # NOC modules
 from noc.core.handler import get_handler
-
 
 PREFIX = ("tests", "confdb", "profiles")
 

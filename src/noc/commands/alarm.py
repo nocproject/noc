@@ -6,31 +6,31 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-import datetime
 import argparse
+import datetime
+import time
 import yaml
 from typing import Any
 
 # Third-party modules
 import orjson
-from pymongo import DeleteMany
 from pydantic import BaseModel
+from pymongo import DeleteMany
 
 # NOC modules
+from noc.core.fm.request import ActionConfig, ActionItem, AlarmActionRequest
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.core.fm.request import AlarmActionRequest, ActionItem, ActionConfig
-from noc.fm.models.alarmclass import AlarmClass
+from noc.core.service.loader import get_service
+from noc.core.validators import is_ipv4
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.escalationprofile import EscalationProfile
 from noc.fm.models.utils import get_alarm
-from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
 from noc.services.correlator.alarmjob import AlarmJob
-from noc.core.service.loader import get_service
-from noc.core.validators import is_ipv4
 
 DEFAULT_CLEAN = datetime.timedelta(weeks=4)
 CLEAN_WINDOW = datetime.timedelta(weeks=1)

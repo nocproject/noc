@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
+import asyncio
+import datetime
 from collections.abc import Iterator
 from logging import getLogger
-import asyncio
 from time import perf_counter_ns
-import datetime
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
@@ -19,11 +19,11 @@ from bson import ObjectId
 # NOC modules
 from noc.core.debug import error_report
 from noc.sa.models.job import JobStatus
-from .models.jobreq import JobRequest
+
+from .actions.base import ActionError
 from .job import Job
 from .lock import LockManager
-from .actions.base import ActionError
-
+from .models.jobreq import JobRequest
 
 logger = getLogger(__name__)
 

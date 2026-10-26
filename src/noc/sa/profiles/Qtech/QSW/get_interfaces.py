@@ -9,10 +9,9 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+from noc.core.ip import IPv4, IPv6
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-from noc.core.ip import IPv6
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class Script(BaseScript):

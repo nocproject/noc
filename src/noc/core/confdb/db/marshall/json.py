@@ -9,9 +9,10 @@
 import orjson
 
 # NOC modules
-from .base import BaseMarshaller
 from noc.core.comp import smart_text
 from noc.core.jsonutils import orjson_defaults
+
+from .base import BaseMarshaller
 
 
 class JSONMarshaller(BaseMarshaller):

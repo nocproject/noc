@@ -15,6 +15,7 @@ from pymongo import ReadPreference
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
+
 from .base import BaseReportColumn
 
 

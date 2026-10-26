@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.worker.service import WorkerService
-
 
 if __name__ == "__main__":
     WorkerService().start()

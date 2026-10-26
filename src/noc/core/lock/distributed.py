@@ -7,19 +7,20 @@
 
 # Python modules
 import datetime
-import time
 import random
+import time
 from logging import getLogger
 
 # Third-party modules
 import pymongo
-from pymongo.collection import Collection
 from bson import ObjectId
+from pymongo.collection import Collection
 
 # NOC modules
 from noc.core.mongo.connection import get_db
 from noc.core.perf import metrics
-from .base import BaseLock, DEFAULT_TTL
+
+from .base import DEFAULT_TTL, BaseLock
 
 DEFAULT_LOCK_WAIT = 1.0
 DEFAULT_LOCK_WAIT_JITTER = 0.1

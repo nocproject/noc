@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.core.error import NOCError
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.main.models.extstorage import ExtStorage
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class ConfigCheck(DiscoveryCheck):

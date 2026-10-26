@@ -15,14 +15,14 @@ from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.connection import get_db
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.profile import Profile
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.sa.models.authprofile import AuthProfile
 from noc.inv.models.capability import Capability
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.objectstatus import ObjectStatus
+from noc.sa.models.profile import Profile
 
 
 class IsolatorClass:

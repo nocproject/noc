@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.topo.service import TopoService
-
 
 if __name__ == "__main__":
     TopoService().start()

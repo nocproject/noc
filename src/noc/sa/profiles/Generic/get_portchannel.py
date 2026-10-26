@@ -9,9 +9,9 @@
 from collections import defaultdict
 
 # NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

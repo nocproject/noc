@@ -5,17 +5,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 import datetime
 
-# Python modules
-from pydantic import BaseModel
-from fastapi import status, Request, Header, HTTPException
+# Third-party modules
+from fastapi import Header, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 
 # NOC modules
 from noc.inv.models.resourcepool import ResourcePool
 from noc.wf.models.state import State
+
 from .base import BaseCard
 
 

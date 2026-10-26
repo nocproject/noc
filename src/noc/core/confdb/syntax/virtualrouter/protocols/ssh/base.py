@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
 
 SSH_SYNTAX = DEF("ssh", gen="make_protocols_ssh")

@@ -5,13 +5,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from typing import Any
 
 # NOC modules
-from .base import BaseLoader
-from ..models.label import Label
 from noc.main.models.label import Label as LabelModel
+
+from ..models.label import Label
+from .base import BaseLoader
 
 
 class LabelLoader(BaseLoader):

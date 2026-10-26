@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.ip.models.vrfgroup import VRFGroup
 from noc.core.translation import ugettext as _
+from noc.ip.models.vrfgroup import VRFGroup
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class VRFGroupApplication(ExtModelApplication):

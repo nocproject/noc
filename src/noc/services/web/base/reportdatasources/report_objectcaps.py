@@ -14,6 +14,7 @@ from pymongo import ReadPreference
 # NOC modules
 from noc.core.mongo.connection import get_db
 from noc.inv.models.capability import Capability
+
 from .base import BaseReportColumn
 
 

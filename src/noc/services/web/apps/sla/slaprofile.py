@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sla.models.slaprofile import SLAProfile
-from noc.core.translation import ugettext as _
 
 
 class SLAProfileApplication(ExtDocApplication):

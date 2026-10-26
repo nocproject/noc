@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.pm.models.metricrule import MetricRule
-from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
+from noc.pm.models.metricrule import MetricRule
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class MetricRuleApplication(ExtDocApplication):

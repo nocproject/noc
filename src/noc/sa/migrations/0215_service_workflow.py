@@ -7,8 +7,8 @@
 
 
 # Third-party modules
-from pymongo import UpdateMany
 from bson import ObjectId
+from pymongo import UpdateMany
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

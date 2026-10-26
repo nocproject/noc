@@ -11,7 +11,7 @@ import logging
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import IntField, DateTimeField
+from mongoengine.fields import DateTimeField, IntField
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject

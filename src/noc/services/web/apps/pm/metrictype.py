@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.pm.models.metrictype import MetricType
-from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _
+from noc.main.models.doccategory import DocCategory
+from noc.pm.models.metrictype import MetricType
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class MetricTypeApplication(ExtDocApplication):

@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from ..vim import VIMScript
+# NOC modules
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

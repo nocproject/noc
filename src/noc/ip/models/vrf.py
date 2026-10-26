@@ -5,35 +5,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from threading import Lock
 
 # Third-party modules
-from noc.core.translation import ugettext as _
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
 import cachetools
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
-from noc.project.models.project import Project
-from noc.core.validators import check_rd
-from noc.core.model.fields import DocumentReferenceField
-from noc.main.models.textindex import full_text_search
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.decorator import on_delete_check, on_init
-from noc.vc.models.vpnprofile import VPNProfile
-from noc.wf.models.state import State
-from .vrfgroup import VRFGroup
-from noc.core.wf.decorator import workflow
-from noc.core.vpn import get_vpn_id
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.model.fields import DocumentReferenceField
+from noc.core.translation import ugettext as _
+from noc.core.validators import check_rd
+from noc.core.vpn import get_vpn_id
+from noc.core.wf.decorator import workflow
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.textindex import full_text_search
+from noc.project.models.project import Project
+from noc.vc.models.vpnprofile import VPNProfile
+from noc.wf.models.state import State
 
+from .vrfgroup import VRFGroup
 
 id_lock = Lock()
 

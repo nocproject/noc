@@ -5,6 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
 from django.db import models
 
 # NOC modules

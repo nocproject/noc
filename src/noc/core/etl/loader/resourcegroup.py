@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.resourcegroup import ResourceGroup
 from noc.inv.models.resourcegroup import ResourceGroup as ResourceGroupModel
 from noc.inv.models.technology import Technology
+
+from ..models.resourcegroup import ResourceGroup
+from .base import BaseLoader
 
 
 class ResourceGroupLoader(BaseLoader):

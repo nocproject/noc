@@ -12,9 +12,9 @@ import datetime
 import pytest
 
 # NOC modules
-from noc.core.clickhouse.model import Model, NestedModel
-from noc.core.clickhouse.fields import StringField, Int8Field, NestedField, DateField
+from noc.core.clickhouse.fields import DateField, Int8Field, NestedField, StringField
 from noc.core.clickhouse.info import TableInfo
+from noc.core.clickhouse.model import Model, NestedModel
 
 
 class Pair(NestedModel):

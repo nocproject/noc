@@ -12,12 +12,12 @@ from http.cookies import SimpleCookie
 import orjson
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.http.sync import HttpClient
-from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
+from noc.core.error import ERR_HTTP_UNKNOWN, NOCError
 from noc.core.handler import get_handler
-from .middleware.base import BaseMiddleware
-from .middleware.base import middleware_loader
+from noc.core.http.sync import HttpClient
+from noc.core.log import PrefixLoggerAdapter
+
+from .middleware.base import BaseMiddleware, middleware_loader
 
 
 class HTTPError(NOCError):

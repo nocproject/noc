@@ -8,31 +8,31 @@
 # Python modules
 import datetime
 import operator
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
 import bson
 import cachetools
 from pymongo import ReadPreference
 
-
 # NOC modules
-from .base import BaseDataSource, FieldInfo, ParamInfo, FieldType
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.object import Object
-from noc.inv.models.networksegment import NetworkSegment
-from noc.project.models.project import Project
-from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 
 class ReportDsAlarms(BaseDataSource):

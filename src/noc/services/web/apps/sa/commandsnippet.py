@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.sa.models.commandsnippet import CommandSnippet
 from noc.core.translation import ugettext as _
+from noc.sa.models.commandsnippet import CommandSnippet
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class CommandSnippetApplication(ExtModelApplication):

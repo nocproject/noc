@@ -5,12 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
-from .lldp.hints import HINTS_PROTOCOLS_LLDP
 from .cdp.hints import HINTS_PROTOCOLS_CDP
-from .spanningtree.hints import HINTS_PROTOCOLS_SPANNING_TREE
+from .lldp.hints import HINTS_PROTOCOLS_LLDP
 from .loopdetect.hints import HINTS_PROTOCOLS_LOOP_DETECT
+from .spanningtree.hints import HINTS_PROTOCOLS_SPANNING_TREE
 
 PROTOCOLS_HINTS_SYNTAX = DEF(
     "protocols",

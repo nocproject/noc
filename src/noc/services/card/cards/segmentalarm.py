@@ -9,10 +9,11 @@
 from collections import defaultdict
 
 # NOC modules
-from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.servicesummary import SummaryItem
+
+from .base import BaseCard
 
 
 class SegmentAlarmCard(BaseCard):

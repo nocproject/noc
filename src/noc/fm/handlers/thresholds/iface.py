@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 import time
 
 # NOC modules
-from noc.inv.models.interface import Interface
-from noc.core.validators import is_float
 from noc.core.pm.utils import get_interface_metrics
+from noc.core.validators import is_float
+from noc.inv.models.interface import Interface
 
 logger = logging.getLogger(__name__)
 

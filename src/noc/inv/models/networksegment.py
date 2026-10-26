@@ -5,44 +5,47 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-import cachetools
 from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
+from django.db.models.aggregates import Count
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    DictField,
-    ReferenceField,
-    ListField,
     BooleanField,
-    IntField,
-    LongField,
+    DictField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    LongField,
+    ReferenceField,
+    StringField,
 )
-from django.db.models.aggregates import Count
 from pymongo.errors import OperationFailure
 
 # NOC modules
+from noc.core.bi.decorator import bi_sync
+from noc.core.cache.base import cache
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.scheduler.job import Job
 from noc.core.topology.types import TopologyNode, TopologyNodeType
 from noc.main.models.remotesystem import RemoteSystem
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.model.decorator import on_delete_check, on_save, tree
-from noc.core.change.decorator import change
-from noc.core.bi.decorator import bi_sync
-from noc.core.scheduler.job import Job
-from noc.core.cache.base import cache
-from noc.vc.models.vlanfilter import VLANFilter
-from noc.vc.models.vlan import VLAN
+from noc.sa.models.servicesummary import ObjectSummaryItem, ServiceSummary, SummaryItem
 from noc.vc.models.l2domain import L2Domain
-from .networksegmentprofile import NetworkSegmentProfile
+from noc.vc.models.vlan import VLAN
+from noc.vc.models.vlanfilter import VLANFilter
+
 from .allocationgroup import AllocationGroup
 from .link import Link
+from .networksegmentprofile import NetworkSegmentProfile
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -240,6 +243,7 @@ class NetworkSegment(Document):
 
     @property
     def managed_objects(self):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         siblings = self.get_siblings()
@@ -351,6 +355,7 @@ class NetworkSegment(Document):
             NetworkSegment._get_collection().update_one({"_id": ns.id}, {"$set": r}, upsert=True)
 
     def update_access(self):
+        # NOC modules
         from noc.sa.models.administrativedomain import AdministrativeDomain
 
         # Get all own administrative domains
@@ -435,6 +440,7 @@ class NetworkSegment(Document):
             Job.remove("scheduler", self.DISCOVERY_JOB, key=self.id)
 
     def on_save(self):
+        # NOC modules
         from noc.sa.models.managedobject import MANAGEDOBJECT_CACHE_VERSION
 
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
@@ -444,6 +450,7 @@ class NetworkSegment(Document):
             and self.vlan_border
             and "vlan_translation" in self._changed_fields
         ):
+            # NOC modules
             from noc.vc.models.vlan import VLAN
 
             for vlan in VLAN.objects.filter(segment=self.id):
@@ -510,6 +517,7 @@ class NetworkSegment(Document):
         same VLAN domain
         :return:
         """
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         return ManagedObject.objects.filter(

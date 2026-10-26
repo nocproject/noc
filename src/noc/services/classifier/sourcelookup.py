@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 # NOC modules
 from noc.core.fm.event import Target

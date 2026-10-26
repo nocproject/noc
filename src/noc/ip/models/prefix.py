@@ -5,45 +5,48 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from collections import defaultdict
+
+# Python modules
 import operator
+from collections import defaultdict
+from collections.abc import Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
-from django.db import models, connection
-from django.contrib.postgres.fields import ArrayField
-from django.db.models.query_utils import Q
-from pydantic import RootModel, BaseModel
 import cachetools
+from django.contrib.postgres.fields import ArrayField
+from django.db import connection, models
+from django.db.models.query_utils import Q
+from pydantic import BaseModel, RootModel
 
 # NOC modules
-from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
-from noc.project.models.project import Project
-from noc.peer.models.asn import AS
-from noc.vc.models.vlan import VLAN
-from noc.core.model.fields import CIDRField, DocumentReferenceField, CachedForeignKey, PydanticField
-from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
-from noc.core.ip import IP, IPv4
-from noc.main.models.textindex import full_text_search
-from noc.main.models.label import Label
-from noc.main.models.remotesystem import RemoteSystem
-from noc.inv.models.resourcepool import ResourcePool
-from noc.core.translation import ugettext as _
-from noc.core.wf.decorator import workflow
-from noc.core.model.decorator import on_delete_check
-from noc.wf.models.state import State
+from noc.config import config
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from .vrf import VRF
+from noc.core.ip import IP, IPv4
+from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import CachedForeignKey, CIDRField, DocumentReferenceField, PydanticField
+from noc.core.translation import ugettext as _
+from noc.core.validators import ValidationError, check_ipv4_prefix, check_ipv6_prefix
+from noc.core.wf.decorator import workflow
+from noc.inv.models.resourcepool import ResourcePool
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.textindex import full_text_search
+from noc.peer.models.asn import AS
+from noc.project.models.project import Project
+from noc.vc.models.vlan import VLAN
+from noc.wf.models.state import State
+
+from .addressprofile import AddressProfile
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
-from .addressprofile import AddressProfile
+from .vrf import VRF
 
 id_lock = Lock()
 
@@ -819,5 +822,5 @@ class Prefix(NOCModel):
 
 # Avoid circular references
 from .address import Address
-from .prefixaccess import PrefixAccess
 from .addressrange import AddressRange
+from .prefixaccess import PrefixAccess

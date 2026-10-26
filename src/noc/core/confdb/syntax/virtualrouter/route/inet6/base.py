@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import IPv6_PREFIX, IPv6_ADDRESS
+from ....patterns import IPv6_ADDRESS, IPv6_PREFIX
 
 VR_ROUTE_INET6_SYNTAX = DEF(
     "inet6",

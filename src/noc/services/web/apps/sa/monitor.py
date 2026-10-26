@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python module
+# Python modules
 import re
 import zlib
 
@@ -13,15 +14,15 @@ import zlib
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.apps.sa.objectlist import ObjectListApplication, api
-from noc.core.scheduler.scheduler import Scheduler
-from noc.core.scheduler.job import Job
+from noc.core.comp import smart_bytes
 from noc.core.mongo.connection import get_db
+from noc.core.scheduler.job import Job
+from noc.core.scheduler.scheduler import Scheduler
+from noc.core.translation import ugettext as _
+from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.main.models.pool import Pool
-from noc.core.translation import ugettext as _
-from noc.core.comp import smart_bytes
+from noc.services.web.apps.sa.objectlist import ObjectListApplication, api
 
 
 class MonitorApplication(ObjectListApplication):

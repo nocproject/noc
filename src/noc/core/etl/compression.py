@@ -9,8 +9,6 @@
 
 # NOC modules
 from noc.config import config
-from noc.core.compressor.base import BaseCompressor
-from noc.core.compressor.base import compressor_loader
-
+from noc.core.compressor.base import BaseCompressor, compressor_loader
 
 compressor: type[BaseCompressor] = compressor_loader.get(config.etl.compression)

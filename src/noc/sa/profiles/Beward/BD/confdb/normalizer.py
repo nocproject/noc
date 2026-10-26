@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, match
+from noc.core.validators import is_ipv4
 from noc.core.video.resolution import (
+    RES_CIF,
+    RES_QCIF,
+    RES_QUADVGA,
+    RES_QVGA,
+    RES_SIF,
+    RES_SXGA,
+    RES_VGA,
     RES_480i,
     RES_576p,
     RES_720p,
     RES_1080p,
-    RES_QCIF,
-    RES_CIF,
-    RES_SIF,
-    RES_VGA,
-    RES_QVGA,
-    RES_SXGA,
-    RES_QUADVGA,
 )
-from noc.core.validators import is_ipv4
 
 RESOLUTION_ALIASES = {
     # "2048x2048": "2048x2048",

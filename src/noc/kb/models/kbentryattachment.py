@@ -10,8 +10,8 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.main.models.databasestorage import database_storage
 from noc.kb.models.kbentry import KBEntry
+from noc.main.models.databasestorage import database_storage
 
 
 class KBEntryAttachment(NOCModel):

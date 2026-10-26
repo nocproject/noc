@@ -9,15 +9,15 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import IntParameter, MACAddressParameter, InterfaceTypeError
 from noc.core.lldp import (
     LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_LOCAL,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_LOCAL,
 )
+from noc.sa.interfaces.base import InterfaceTypeError, IntParameter, MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

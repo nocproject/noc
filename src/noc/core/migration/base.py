@@ -13,8 +13,9 @@ from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-from noc.core.mongo.connection import get_db, Database
+from noc.core.mongo.connection import Database, get_db
 from noc.settings import INSTALLED_APPS
+
 from .db import db
 
 

@@ -5,49 +5,52 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import logging
-from threading import Lock
-from typing import Any
+import operator
 from collections.abc import Iterable
 from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    ListField,
-    ReferenceField,
-    LongField,
-    IntField,
-    MapField,
     EmbeddedDocumentField,
+    IntField,
+    ListField,
+    LongField,
+    MapField,
+    ReferenceField,
+    StringField,
     UUIDField,
 )
-import cachetools
 
 # NOC modules
-from .workflow import Workflow
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.bi.decorator import bi_sync
-from noc.core.handler import get_handler
-from noc.core.defer import defer
-from noc.core.hash import hash_int
-from noc.core.change.decorator import change
-from noc.core.wf.interaction import Interaction
-from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
-from noc.core.diagnostic.hub import SA_DIAG, ALARM_DIAG
 from noc.config import config
-from noc.models import get_model_id, get_model, is_document
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
+from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.defer import defer
+from noc.core.diagnostic.hub import ALARM_DIAG, SA_DIAG
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
+from noc.core.handler import get_handler
+from noc.core.hash import hash_int
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
+from noc.core.wf.interaction import Interaction
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.models import get_model, get_model_id, is_document
+
+from .workflow import Workflow
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -245,6 +248,7 @@ class State(Document):
             self.sync_referred_labels()
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         if not changed_fields or "sa.ManagedObject" not in self.workflow.allowed_models:
@@ -429,6 +433,7 @@ class State(Document):
         * sync resource_group
         :return:
         """
+        # NOC modules
         from noc.inv.models.resourcegroup import ResourceGroup
 
         for model_id in self.workflow.allowed_models:

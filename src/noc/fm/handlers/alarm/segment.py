@@ -9,8 +9,8 @@
 import logging
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.sa.models.managedobject import ManagedObject
 
 logger = logging.getLogger(__name__)
 

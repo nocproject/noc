@@ -7,22 +7,22 @@
 
 # Python modules
 import operator
-from threading import Lock
 from collections import namedtuple
 from pathlib import Path
+from threading import Lock
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, UUIDField, EmbeddedDocumentListField
 import cachetools
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, StringField, UUIDField
 
 # NOC modules
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
 from noc.core.mac import MAC
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
 
 _list_lock = Lock()
 ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated", "is_ignored"])

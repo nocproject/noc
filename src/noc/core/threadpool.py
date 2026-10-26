@@ -11,25 +11,22 @@ delivered through :class:`asyncio.Future` instances.
 """
 
 # Python modules
-import threading
-import logging
+import _thread
+import asyncio
 import itertools
+import logging
+import threading
 import time
 from collections import deque
-import _thread
-from time import perf_counter
-import asyncio
-
-# Third-party modules
-from typing import Any, NamedTuple, Self
 from collections.abc import Callable
+from time import perf_counter
 from types import TracebackType
+from typing import Any, NamedTuple, Self
 
 # NOC modules
 from noc.config import config
-from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError
-
+from noc.core.span import Span, get_current_span
 
 logger = logging.getLogger(__name__)
 

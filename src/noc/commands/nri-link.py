@@ -9,16 +9,16 @@
 import argparse
 
 # Third-party modules
-from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
+from pymongo.errors import BulkWriteError
 
 # NOC modules
+from noc.core.etl.portmapper.base import portmapper_loader
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.extnrilink import ExtNRILink
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
-from noc.core.etl.portmapper.base import portmapper_loader
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):

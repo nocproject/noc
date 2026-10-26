@@ -5,24 +5,27 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 import threading
 from collections.abc import Iterable
-import operator
 
 # Third-party modules
-from bson import ObjectId
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, DictField, EmbeddedDocumentListField
-from jinja2 import Template
 import cachetools
+from bson import ObjectId
+from jinja2 import Template
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import BooleanField, DictField, EmbeddedDocumentListField, StringField
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
-from noc.fm.models.alarmclass import AlarmClass
 from noc.core.models.problem import ProblemItem
+from noc.core.mongo.fields import PlainReferenceField
+from noc.fm.models.alarmclass import AlarmClass
+
 from .confdbquery import ConfDBQuery
 
 id_lock = threading.Lock()

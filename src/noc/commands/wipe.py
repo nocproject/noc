@@ -11,13 +11,13 @@ import sys
 from contextlib import contextmanager
 
 # NOC modules
+from noc.aaa.models.user import User
+from noc.core.change.policy import change_tracker
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
 from noc.core.validators import is_int
-from noc.core.change.policy import change_tracker
 from noc.models import get_model
 from noc.sa.models.managedobject import ManagedObject
-from noc.aaa.models.user import User
 
 
 class Command(BaseCommand):
@@ -62,6 +62,7 @@ class Command(BaseCommand):
             self.print(f"Wiping {len(objects)} objects")
             return
         # Wipe objects
+        # NOC modules
         from noc.core.debug import error_report
 
         with change_tracker.bulk_changes():
@@ -111,6 +112,7 @@ class Command(BaseCommand):
                 raise CommandError(f"Object '{o_id}' is not found")
             objects.append(o)
         # Wipe objects
+        # NOC modules
         from noc.core.debug import error_report
 
         with change_tracker.bulk_changes():
@@ -172,6 +174,7 @@ class Command(BaseCommand):
         :type o: Managed Object
         :return: None
         """
+        # NOC modules
         from noc.sa.wipe.managedobject import wipe
 
         wipe(o)
@@ -211,20 +214,21 @@ class Command(BaseCommand):
         :type o: User
         :return: None
         """
-        from noc.main.models.notificationgroup import NotificationGroupUserSettings
-        from noc.main.models.audittrail import AuditTrail
-        from noc.aaa.models.usercontact import UserContact
+        # NOC modules
         from noc.aaa.models.permission import Permission
-        from noc.main.models.userstate import UserState
-        from noc.main.models.favorites import Favorites
-        from noc.sa.models.useraccess import UserAccess
+        from noc.aaa.models.usercontact import UserContact
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.fm.models.alarmwatch import Effect
         from noc.ip.models.prefixaccess import PrefixAccess
         from noc.ip.models.prefixbookmark import PrefixBookmark
-        from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
         from noc.kb.models.kbentryhistory import KBEntryHistory
+        from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
         from noc.kb.models.kbuserbookmark import KBUserBookmark
+        from noc.main.models.audittrail import AuditTrail
+        from noc.main.models.favorites import Favorites
+        from noc.main.models.notificationgroup import NotificationGroupUserSettings
+        from noc.main.models.userstate import UserState
+        from noc.sa.models.useraccess import UserAccess
 
         # Clean UserState
         with self.log("Cleaning user preferences"):

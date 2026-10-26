@@ -7,9 +7,10 @@
 
 # NOC modules
 from noc.core.fm.event import Event
-from noc.core.hash import hash_int, dict_hash_int
-from .base import BaseEvFilter
+from noc.core.hash import dict_hash_int, hash_int
+
 from ..eventconfig import EventConfig
+from .base import BaseEvFilter
 
 
 class SuppressFilter(BaseEvFilter):

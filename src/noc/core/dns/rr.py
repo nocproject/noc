@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # python modules
+# Python modules
 import string
 
-# NOC modules
 from .encoding import to_idna
 
 TYPE_PREF = {"NS": 0, "MX": 10}

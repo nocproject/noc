@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.collection.base import Collection
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 
 class ReportRulesetSummary(SimpleReport):

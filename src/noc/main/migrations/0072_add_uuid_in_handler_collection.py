@@ -5,10 +5,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import uuid
+
+# Third-party modules
+from pymongo import UpdateOne
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from pymongo import UpdateOne
-import uuid
 
 
 class Migration(BaseMigration):

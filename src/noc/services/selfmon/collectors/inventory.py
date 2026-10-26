@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseCollector
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.subinterface import SubInterface
+
+from .base import BaseCollector
 
 
 class InventoryObjectCollector(BaseCollector):

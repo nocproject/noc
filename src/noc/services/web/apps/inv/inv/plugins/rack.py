@@ -9,10 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.inv.models.object import Object
-from noc.sa.interfaces.base import ObjectIdParameter, IntParameter
 from noc.core.facade.rack import get_svg_for_rack
 from noc.core.facade.response import svg_response
+from noc.inv.models.object import Object
+from noc.sa.interfaces.base import IntParameter, ObjectIdParameter
+
 from .base import InvPlugin
 
 

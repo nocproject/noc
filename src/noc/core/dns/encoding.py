@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_bytes, smart_text
 
 IDNA_PREFIX = "xn--"
 

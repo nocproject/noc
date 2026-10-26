@@ -7,10 +7,10 @@
 
 # NOC modules
 from noc.config import config
-from noc.core.validators import is_asn
 from noc.core.ip import IP
-from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.core.mongo.connection import get_db
+from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxlen
+from noc.core.validators import is_asn
 
 
 class WhoisCache:

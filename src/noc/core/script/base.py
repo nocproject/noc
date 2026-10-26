@@ -6,44 +6,45 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, cast
-import re
-import logging
 import itertools
+import logging
 import operator
-from functools import reduce
+import re
 from collections import defaultdict
+from functools import reduce
 from time import perf_counter
+from typing import Any, cast
 
 # Third-party modules
 from atomicl import AtomicLong
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.validators import is_int
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.handler import get_handler
-from noc.core.mac import MAC
 from noc.config import config
-from noc.core.span import Span
-from noc.core.matcher import match
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.handler import get_handler
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.mac import MAC
+from noc.core.matcher import match
+from noc.core.profile.loader import loader as profile_loader
+from noc.core.span import Span
+from noc.core.validators import is_int
+
 from .context import (
-    ConfigurationContextManager,
     CacheContextManager,
+    ConfigurationContextManager,
     IgnoredExceptionsContextManager,
 )
 from .error import (
-    ScriptError,
-    CLISyntaxError,
     CLIOperationError,
+    CLISyntaxError,
     NotSupportedError,
+    ScriptError,
     UnexpectedResultError,
 )
-from .snmp.base import SNMP
-from .snmp.beef import BeefSNMP
 from .http.base import HTTP
 from .sessionstore import SessionStore
+from .snmp.base import SNMP
+from .snmp.beef import BeefSNMP
 
 
 class BaseScriptMetaclass(type):

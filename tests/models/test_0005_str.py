@@ -8,8 +8,7 @@
 # Third-party modules
 import pytest
 
-# NOC modules
-from .util import get_models, get_documents
+from .util import get_documents, get_models
 
 
 @pytest.mark.parametrize("model", get_models())

@@ -5,33 +5,36 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
-from dataclasses import dataclass, field
-from io import BytesIO, StringIO
-from typing import Any
-from collections.abc import Iterable, Callable
-import time
-import re
 import heapq
 import itertools
 import logging
+import re
+import time
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
+from io import BytesIO, StringIO
+from typing import Any
 
 # Third-party modules
-from gufo.loader import Loader
 import orjson
 from django.db.models import Q as d_Q
+from gufo.loader import Loader
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
+from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
+
 from .report_objectstat import (
     AttributeIsolator,
     CapabilitiesIsolator,
-    StatusIsolator,
     ProblemIsolator,
+    StatusIsolator,
 )
 
 logger = logging.getLogger(__name__)
@@ -432,11 +435,13 @@ class ReportDataSource:
         raise NotImplementedError
 
     def report_json(self, fmt: Callable | None = None):
+        # Third-party modules
         import orjson
 
         return orjson.dumps(list(self.extract()))
 
     def report_csv(self, fmt: Callable | None = None) -> bytes:
+        # Python modules
         import csv
 
         response = StringIO()
@@ -451,6 +456,7 @@ class ReportDataSource:
         return response.getvalue().encode()
 
     def report_xlsx(self, fmt: Callable | None = None) -> bytes:
+        # Third-party modules
         import xlsxwriter
 
         response = BytesIO()
@@ -502,6 +508,7 @@ class CHTableReportDataSource(ReportDataSource):
 
     def get_client(self):
         if not hasattr(self, "_client"):
+            # NOC modules
             from noc.core.clickhouse.connect import connection
 
             self._client = connection()

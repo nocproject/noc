@@ -5,23 +5,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 import threading
 import time
-import operator
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, LongField
-import cachetools
+from mongoengine.fields import IntField, LongField, StringField
+
+# NOC modules
+from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check
 
 # NOC Modules
 from noc.main.models.label import Label
-from noc.core.model.decorator import on_delete_check
-from noc.core.change.decorator import change
-from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
 

@@ -8,7 +8,6 @@
 # Python modules
 import random
 
-# NOC modules
 from .ber import BEREncoder
 from .consts import PDU_SET_REQUEST
 from .version import SNMP_v1, SNMP_v2c

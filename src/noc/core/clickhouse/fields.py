@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from ast import literal_eval
-from datetime import datetime
 import itertools
 import socket
 import struct
+from ast import literal_eval
 from collections import defaultdict
+from datetime import datetime
 
 
 class BaseField:

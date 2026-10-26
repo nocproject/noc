@@ -9,10 +9,11 @@
 from collections import defaultdict
 
 # NOC modules
-from .base import BaseCard
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
+
+from .base import BaseCard
 
 
 class VLANCard(BaseCard):

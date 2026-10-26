@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.aaa.models.apikey import APIKey
 from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class APIKeyApplication(ExtDocApplication):

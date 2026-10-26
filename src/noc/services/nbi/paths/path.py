@@ -7,31 +7,32 @@
 
 # Python modules
 from collections import defaultdict
+from collections.abc import Iterable
 from time import perf_counter
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field, conint
 
 # NOC modules
-from noc.main.models.remotesystem import RemoteSystem
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.span import Span
+from noc.core.text import alnum_key
+from noc.core.topology.constraint.any import AnyConstraint
+from noc.core.topology.constraint.base import BaseConstraint
+from noc.core.topology.constraint.upwards import UpwardsConstraint
+from noc.core.topology.constraint.vlan import VLANConstraint
+from noc.core.topology.goal.base import BaseGoal
+from noc.core.topology.goal.level import ManagedObjectLevelGoal
+from noc.core.topology.goal.managedobject import ManagedObjectGoal
+from noc.core.topology.path import KSPFinder
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service
-from noc.core.span import Span
-from noc.core.topology.path import KSPFinder
-from noc.core.topology.constraint.base import BaseConstraint
-from noc.core.topology.constraint.vlan import VLANConstraint
-from noc.core.topology.constraint.upwards import UpwardsConstraint
-from noc.core.topology.constraint.any import AnyConstraint
-from noc.core.topology.goal.base import BaseGoal
-from noc.core.topology.goal.managedobject import ManagedObjectGoal
-from noc.core.topology.goal.level import ManagedObjectLevelGoal
-from noc.core.text import alnum_key
-from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
+
+from ..base import API_ACCESS_HEADER, FORBIDDEN_MESSAGE, NBIAPI
 
 # Constants
 MAX_DEPTH_DEFAULT = 20

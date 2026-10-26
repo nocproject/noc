@@ -11,9 +11,9 @@ import time
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
-from noc.core.ioloop.udpserver import UDPServer
 from noc.core.comp import smart_text
+from noc.core.ioloop.udpserver import UDPServer
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 

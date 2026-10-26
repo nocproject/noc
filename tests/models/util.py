@@ -8,9 +8,8 @@
 # Python modules
 from functools import cache
 
-
 # NOC modules
-from noc.models import get_model, iter_model_id, is_document, DB_MODEL_TYPE
+from noc.models import DB_MODEL_TYPE, get_model, is_document, iter_model_id
 
 
 @cache

@@ -7,13 +7,14 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    DictParameter,
     DictListParameter,
-    StringParameter,
+    DictParameter,
     IntParameter,
     OIDParameter,
     StringListParameter,
+    StringParameter,
 )
 
 Q_TYPES = [

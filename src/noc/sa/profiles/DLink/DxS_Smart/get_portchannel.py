@@ -9,8 +9,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetportchannel import IGetPortchannel
 from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):

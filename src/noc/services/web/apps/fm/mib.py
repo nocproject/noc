@@ -10,13 +10,13 @@ import networkx as nx
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.fm.models.mib import MIB
-from noc.fm.models.mibdata import MIBData
-from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.translation import ugettext as _
+from noc.fm.models.mib import MIB
+from noc.fm.models.mibdata import MIBData
+from noc.fm.models.syntaxalias import SyntaxAlias
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class MIBApplication(ExtDocApplication):

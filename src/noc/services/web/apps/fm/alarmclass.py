@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.core.translation import ugettext as _
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmclasscategory import AlarmClassCategory
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class AlarmClassApplication(ExtDocApplication):

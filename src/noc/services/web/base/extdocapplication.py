@@ -12,51 +12,52 @@ from pathlib import Path
 
 # Third-party modules
 from django.http import HttpResponse
+from mongoengine.errors import NotUniqueError, ValidationError
 from mongoengine.fields import (
-    StringField,
-    BooleanField,
-    ListField,
-    EmbeddedDocumentField,
-    ReferenceField,
     BinaryField,
+    BooleanField,
     DynamicField,
-    GeoPointField,
-    EnumField,
+    EmbeddedDocumentField,
     EmbeddedDocumentListField,
+    EnumField,
+    GeoPointField,
+    ListField,
     ObjectIdField,
+    ReferenceField,
+    StringField,
 )
-from mongoengine.errors import ValidationError, NotUniqueError
 from mongoengine.queryset import Q
 
 # NOC modules
+from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
+from noc.aaa.models.permission import Permission
+from noc.core.collection.base import Collection
+from noc.core.comp import smart_text
+from noc.core.middleware.tls import get_user
 from noc.core.mongo.fields import (
     DateField,
     ForeignKeyField,
-    PlainReferenceField,
     ForeignKeyListField,
+    PlainReferenceField,
     PlainReferenceListField,
-)
-from noc.sa.interfaces.base import (
-    BooleanParameter,
-    GeoPointParameter,
-    ModelParameter,
-    ListOfParameter,
-    EmbeddedDocumentParameter,
-    DictParameter,
-    InterfaceTypeError,
-    DocumentParameter,
-    ObjectIdParameter,
 )
 from noc.core.protocols.get_css_class import GetCssClass
 from noc.core.validators import is_int, is_uuid
-from noc.aaa.models.permission import Permission
-from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
-from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.label import Label
-from noc.core.collection.base import Collection
-from noc.core.comp import smart_text
 from noc.models import get_model_id
+from noc.sa.interfaces.base import (
+    BooleanParameter,
+    DictParameter,
+    DocumentParameter,
+    EmbeddedDocumentParameter,
+    GeoPointParameter,
+    InterfaceTypeError,
+    ListOfParameter,
+    ModelParameter,
+    ObjectIdParameter,
+)
+
 from .api import api, view
 from .extapplication import ExtApplication
 
@@ -187,6 +188,7 @@ class ExtDocApplication(ExtApplication):
         return p
 
     def get_custom_fields(self):
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         return list(CustomField.table_fields(self.model._get_collection_name()))

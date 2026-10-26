@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import datetime
+import re
 import time
 
 # NOC modules

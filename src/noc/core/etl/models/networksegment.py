@@ -7,10 +7,9 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference
 from .networksegmentprofile import NetworkSegmentProfile
+from .typing import Reference
 
 
 class NetworkSegment(BaseModel):

@@ -6,16 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.views.generic.list import ListView
-from django.shortcuts import get_object_or_404
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
+from django.views.generic.list import ListView
 
 # NOC modules
-from noc.services.web.base.application import Application, view, api
 from noc.aaa.models.permission import Permission
+from noc.core.translation import ugettext as _
 from noc.main.models.refbook import RefBook
 from noc.main.models.refbookdata import RefBookData
-from noc.core.translation import ugettext as _
+from noc.services.web.base.application import Application, api, view
 
 
 class RefBookList(ListView):

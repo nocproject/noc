@@ -6,13 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import random
 import asyncio
 import math
-from typing import Any
-
-# Third-party modules
+import random
 from collections.abc import Coroutine
+from typing import Any
 
 
 class PeriodicCallback:

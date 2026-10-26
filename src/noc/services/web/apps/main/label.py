@@ -13,11 +13,11 @@ from collections import defaultdict
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
+from noc.models import LABEL_MODELS
 from noc.sa.interfaces.base import ColorParameter
 from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.label import Label
-from noc.core.translation import ugettext as _
-from noc.models import LABEL_MODELS
 
 
 class LabelApplication(ExtDocApplication):

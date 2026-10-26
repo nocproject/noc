@@ -9,10 +9,10 @@
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
+from noc.core.validators import is_ipv4, is_mac
 from noc.inv.models.interface import Interface
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.validators import is_ipv4, is_mac
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class CDPCheck(TopologyDiscoveryCheck):

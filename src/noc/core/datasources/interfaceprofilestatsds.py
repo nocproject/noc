@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
-# Third-party modules
+# NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
-# NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 class InterfaceProfileStatsDS(BaseDataSource):

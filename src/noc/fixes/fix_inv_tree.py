@@ -9,9 +9,9 @@
 import logging
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-from noc.core.comp import smart_text
 
 
 def fix():

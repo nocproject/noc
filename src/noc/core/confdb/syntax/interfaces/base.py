@@ -4,10 +4,9 @@
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-# NOC modules
 from ..defs import DEF
-from ..patterns import ANY, CHOICES, IF_NAME, INTEGER, BOOL, FLOAT, ETHER_MODE
 from ..meta.interfaces import INTERFACES_META_SYNTAX
+from ..patterns import ANY, BOOL, CHOICES, ETHER_MODE, FLOAT, IF_NAME, INTEGER
 
 INTERFACES_SYNTAX = DEF(
     "interfaces",

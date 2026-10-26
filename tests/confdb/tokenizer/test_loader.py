@@ -9,8 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.confdb.tokenizer.base import tokenizer_loader
-from noc.core.confdb.tokenizer.base import BaseTokenizer
+from noc.core.confdb.tokenizer.base import BaseTokenizer, tokenizer_loader
 
 
 @pytest.mark.parametrize("name", ["ini", "line", "context", "indent", "curly", "routeros"])

@@ -8,53 +8,62 @@
 # Python modules
 import operator
 import threading
-from typing import Any
-from collections.abc import Iterable
 from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import cachetools
-from mongoengine import ValidationError
 from django.http import HttpRequest
+from mongoengine import ValidationError
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.inv.models.object import Object
-from noc.inv.models.error import ConnectionError
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.configuredmap import ConfiguredMap
-from noc.inv.models.sensor import Sensor
-from noc.core.validators import is_objectid
-from noc.core.inv.result import Result
 from noc.core.inv.attach.container import attach as attach_to_container
-from noc.core.inv.attach.rack import (
-    attach as attach_to_rack,
-    RackPosition,
-    RackSide,
-    iter_choices as iter_rack_choices,
+from noc.core.inv.attach.module import (
+    ModulePosition,
 )
 from noc.core.inv.attach.module import (
     attach as attach_module,
-    ModulePosition,
+)
+from noc.core.inv.attach.module import (
     get_free as get_free_for_module,
 )
-from noc.core.inv.info import info
+from noc.core.inv.attach.rack import (
+    RackPosition,
+    RackSide,
+)
+from noc.core.inv.attach.rack import (
+    attach as attach_to_rack,
+)
+from noc.core.inv.attach.rack import (
+    iter_choices as iter_rack_choices,
+)
 from noc.core.inv.clone import clone
-from noc.core.inv.remove import remote_all, remove_root, remove_connections
+from noc.core.inv.info import info
+from noc.core.inv.remove import remote_all, remove_connections, remove_root
+from noc.core.inv.result import Result
+from noc.core.text import alnum_key
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_objectid
+from noc.fm.models.activealarm import HAS_FGALARMS, ActiveAlarm
+from noc.inv.models.configuredmap import ConfiguredMap
+from noc.inv.models.error import ConnectionError
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.sensor import Sensor
 from noc.sa.interfaces.base import (
-    StringParameter,
-    ObjectIdParameter,
-    UnicodeParameter,
-    ListOfParameter,
     BooleanParameter,
     DictListParameter,
     DictParameter,
     FloatParameter,
+    ListOfParameter,
+    ObjectIdParameter,
     StringListParameter,
+    StringParameter,
+    UnicodeParameter,
 )
-from noc.core.translation import ugettext as _
-from noc.core.text import alnum_key
-from noc.fm.models.activealarm import ActiveAlarm, HAS_FGALARMS
+from noc.services.web.base.extapplication import ExtApplication, api
+
 from .pbuilder import CrossingProposalsBuilder
 
 id_lock = threading.Lock()

@@ -5,25 +5,26 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable, Callable
 
 # Third-party modules
 from jinja2 import Template
 
 # NOC modules
-from noc.core.matcher import build_matcher
+from noc.core.fm.enum import AlarmAction, GroupType
 from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction
+from noc.core.matcher import build_matcher
 from noc.core.span import get_current_span
-from noc.core.fm.enum import GroupType, AlarmAction
-from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
-from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmwatch import Effect
-
 
 DEFAULT_GROUP_CLASS = "Group"
 

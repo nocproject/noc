@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.config import config
+from noc.core.change.policy import change_tracker
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.core.topology.uplink import update_uplinks
-from noc.core.change.policy import change_tracker
-from noc.config import config
 
 
 class TopologyUplinksJob(PeriodicJob):

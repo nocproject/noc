@@ -9,9 +9,10 @@
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import BaseReportColumn
 from noc.core.mongo.connection import get_db
 from noc.inv.models.discoveryid import DiscoveryID
+
+from .base import BaseReportColumn
 
 
 class ReportObjectsHostname1(BaseReportColumn):

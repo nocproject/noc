@@ -5,34 +5,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import logging
+import operator
 import re
 import time
-import logging
 from threading import Lock
-import operator
 
 # Third-party modules
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
 import cachetools
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
-from noc.core.model.decorator import on_init
 from noc.config import config
+from noc.core.change.decorator import change
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.ip import IPv6
 from noc.core.model.base import NOCModel
+from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.rpsl import rpsl_format
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_ipv4, is_ipv6
+from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.systemnotification import SystemNotification
-from noc.main.models.label import Label
 from noc.project.models.project import Project
-from noc.core.ip import IPv6
-from noc.core.validators import is_ipv4, is_ipv6
-from noc.core.rpsl import rpsl_format
-from noc.core.gridvcs.manager import GridVCSField
-from noc.core.change.decorator import change
-from noc.core.model.decorator import on_delete_check
-from noc.core.translation import ugettext as _
+
 from .dnszoneprofile import DNSZoneProfile
 
 logger = logging.getLogger(__name__)

@@ -6,40 +6,40 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import datetime
+import functools
 import importlib
 import logging
 import os
-import datetime
-import functools
 from collections import OrderedDict
-from typing import Any, cast
 from http import HTTPStatus
+from typing import Any, cast
 
 # Third-party modules
+import jinja2
+import orjson
+from django import forms
+from django.db import connection
 from django.http import (
+    Http404,
     HttpRequest,
     HttpResponse,
-    HttpResponseRedirect,
     HttpResponseForbidden,
     HttpResponseNotFound,
+    HttpResponseRedirect,
 )
-from django.shortcuts import render
-from django.db import connection
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template import loader
-from django import forms
 from django.utils.timezone import get_current_timezone
-from django.http import Http404
-import orjson
-import jinja2
 
 # NOC modules
-from noc.core.forms import NOCForm
 from noc import settings
 from noc.core.feature import Feature
+from noc.core.forms import NOCForm
 from noc.models import is_document
+
 from .access import HasPerm
-from .api import view, api
+from .api import api, view
 from .site import site
 
 __all__ = ["Application", "api", "view"]
@@ -183,6 +183,7 @@ class Application(metaclass=ApplicationBase):
         """
         Return desktop launch information
         """
+        # NOC modules
         from noc.aaa.models.permission import Permission
 
         user = request.user
@@ -437,6 +438,7 @@ class Application(metaclass=ApplicationBase):
         """
         Add custom fields to django form class
         """
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         fields = []
@@ -477,6 +479,7 @@ class Application(metaclass=ApplicationBase):
         :param table: table
         :return:
         """
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         for f in CustomField.table_fields(table):
@@ -493,6 +496,7 @@ class Application(metaclass=ApplicationBase):
         :param table: table
         :return:
         """
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         for f in CustomField.table_fields(table):

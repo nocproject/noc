@@ -13,12 +13,12 @@ import sys
 from django.apps import apps
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject  # noqa
-from noc.core.management.base import BaseCommand, CommandError
+from noc.core.csvutils import IR_FAIL, IR_SKIP, IR_UPDATE, csv_import
 from noc.core.debug import error_report
-from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
-from noc.models import load_models
+from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
+from noc.models import load_models
+from noc.sa.models.managedobject import ManagedObject  # noqa
 
 
 class Command(BaseCommand):

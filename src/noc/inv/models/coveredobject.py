@@ -10,9 +10,10 @@ from mongoengine.document import Document
 from mongoengine.fields import IntField
 
 # NOC modules
-from .coverage import Coverage
-from noc.inv.models.object import Object
 from noc.core.mongo.fields import PlainReferenceField
+from noc.inv.models.object import Object
+
+from .coverage import Coverage
 
 
 class CoveredObject(Document):

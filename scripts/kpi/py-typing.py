@@ -6,17 +6,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
-import sys
+# Python modules
 import ast
 import csv
+import sys
+from collections.abc import Iterable
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TextIO
-from collections.abc import Iterable
 
 
 @dataclass(slots=True)

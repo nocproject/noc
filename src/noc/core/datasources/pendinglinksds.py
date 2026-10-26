@@ -6,25 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import ast
-from collections import defaultdict
 import re
+from collections import defaultdict
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import BaseDataSource, FieldInfo, ParamInfo
 from noc.core.mongo.connection import get_db
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
+from .base import BaseDataSource, FieldInfo, ParamInfo
 
 DISCOVERY_JOB_PREFIX = "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-"
 JOBS_LIMIT = 10000

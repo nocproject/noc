@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from pickle import loads, dumps, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, dumps, loads
 
 # Third-party modules
 import redis
@@ -14,6 +14,7 @@ import redis
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
+
 from .base import BaseCache
 
 ignorable_redis_errors = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError)

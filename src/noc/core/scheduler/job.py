@@ -6,21 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+import datetime
 import logging
 import time
-import datetime
 from time import perf_counter
-import asyncio
-
-# Third-party modules
 from typing import Any
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.debug import error_report
-from .error import RetryAfter
-from noc.core.span import Span
 from noc.core.comp import smart_text
+from noc.core.debug import error_report
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.span import Span
+
+from .error import RetryAfter
 
 logger = logging.getLogger(__name__)
 

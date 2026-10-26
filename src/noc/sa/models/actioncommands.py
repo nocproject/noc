@@ -6,30 +6,30 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from pathlib import Path
 import re
-from typing import Any
 from collections.abc import Iterable
+from pathlib import Path
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
+    BooleanField,
+    DictField,
+    EmbeddedDocumentListField,
+    IntField,
+    ReferenceField,
     StringField,
     UUIDField,
-    BooleanField,
-    IntField,
-    EmbeddedDocumentListField,
-    DictField,
-    ReferenceField,
 )
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.models.cfgactioncommands import ActionCommandConfig, ScopeConfig
-from noc.sa.models.profile import Profile
-from noc.sa.models.action import Action
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
+from noc.sa.models.action import Action
+from noc.sa.models.profile import Profile
 
 
 class PlatformMatch(EmbeddedDocument):

@@ -7,10 +7,11 @@
 
 # Python modules
 import time
-from collections import namedtuple, OrderedDict
+from collections import OrderedDict, namedtuple
 
 # NOC modules
 from noc.core.clickhouse.connect import connection
+
 from .base import BaseReportColumn
 
 

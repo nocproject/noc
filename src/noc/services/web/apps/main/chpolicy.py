@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from dataclasses import dataclass
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.main.models.chpolicy import CHPolicy
-from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.clickhouse.connect import connection
+from noc.core.translation import ugettext as _
+from noc.main.models.chpolicy import CHPolicy
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 @dataclass

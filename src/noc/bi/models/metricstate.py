@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.clickhouse.fields import (
     DateField,
     DateTimeField,
     Int16Field,
     StringField,
 )
-from noc.core.clickhouse.engines import ReplacingMergeTree
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

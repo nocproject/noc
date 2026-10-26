@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.script.metrics import invert0, scale
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.core.script.metrics import scale, invert0
 
 
 class Script(GetMetricsScript):

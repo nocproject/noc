@@ -15,11 +15,11 @@ import bson
 from pymongo import DESCENDING
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import connect
+from noc.core.fileutils import safe_rewrite
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
-from noc.core.fileutils import safe_rewrite
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
 from noc.core.validators import is_objectid
 
 MBYTE_MULTIPLIER = 1024 * 1024
@@ -162,6 +162,7 @@ class Command(BaseCommand):
             ):
                 o = self.clean_id(t["_id"])
                 if self.repo == "config":
+                    # NOC modules
                     from noc.sa.models.managedobject import ManagedObject
 
                     o = ManagedObject.objects.get(id=o)
@@ -178,6 +179,7 @@ class Command(BaseCommand):
             if detail:
                 for o in bucket["objects"]:
                     if self.repo == "config":
+                        # NOC modules
                         from noc.sa.models.managedobject import ManagedObject
 
                         o = ManagedObject.objects.get(id=o)
@@ -201,8 +203,9 @@ class Command(BaseCommand):
         )
 
     def handle_mirror(self, split=False, path=None, *args, **options):
-        from noc.sa.models.managedobject import ManagedObject
+        # NOC modules
         from noc.main.models.pool import Pool
+        from noc.sa.models.managedobject import ManagedObject
 
         mirror = os.path.realpath(path)
         self.print(f"Mirroring to {path}")
@@ -268,6 +271,7 @@ class Command(BaseCommand):
         *args,
         **options,
     ):
+        # NOC modules
         from noc.inv.models.resourcegroup import ResourceGroup
 
         if not before_days and not before_revision:

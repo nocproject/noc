@@ -9,8 +9,8 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_ntp_status import Script as BaseScript
 from noc.sa.interfaces.igetntpstatus import IGetNTPStatus
+from noc.sa.profiles.Generic.get_ntp_status import Script as BaseScript
 
 
 class Script(BaseScript):

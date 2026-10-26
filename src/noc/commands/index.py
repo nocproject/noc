@@ -49,10 +49,12 @@ class Command(BaseCommand):
             if qr.tags:
                 r[-1]["tags"] = [str(x) for x in qr.tags]
         if format == "yaml":
+            # Python modules
             import yaml
 
             yaml.dump(r, stream=self.stdout)
         else:
+            # Python modules
             import json
 
             json.dump(r, self.stdout)

@@ -7,22 +7,23 @@
 
 # Python modules
 import logging
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from collections.abc import Iterator, Iterable
 
 # Third-party modules
-from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q as m_q
+from pymongo import ReadPreference
 
 # NOC modules
-from .scheme import Protocol
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
-from noc.sa.models.profile import Profile
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.core.mib import mib
+from noc.sa.models.profile import Profile
+
+from .scheme import Protocol
 
 CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
 # mib["SNMPv2-MIB::sysUpTime.0"]

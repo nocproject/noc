@@ -11,8 +11,6 @@ import asyncio
 from time import perf_counter
 from urllib.parse import quote as urllib_quote
 
-# Third-party modules
-
 # NOC modules
 from noc.config import config
 from noc.core.msgstream.message import Message

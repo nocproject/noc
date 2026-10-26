@@ -8,7 +8,6 @@
 # Python modules
 from time import sleep
 
-# NOC modules
 from .base import BaseRateLimit
 
 

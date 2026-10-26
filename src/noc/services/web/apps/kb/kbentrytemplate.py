@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.kb.models.kbentrytemplate import KBEntryTemplate
 from noc.core.translation import ugettext as _
+from noc.kb.models.kbentrytemplate import KBEntryTemplate
+from noc.services.web.base.extmodelapplication import ExtModelApplication
 
 
 class KBEntryApplication(ExtModelApplication):

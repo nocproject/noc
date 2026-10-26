@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 # NOC modules
-from noc.core.path import safe_path, _clean_component, safe_json_path
+from noc.core.path import _clean_component, safe_json_path, safe_path
 
 
 @pytest.mark.parametrize(

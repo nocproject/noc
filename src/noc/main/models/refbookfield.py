@@ -13,6 +13,7 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
+
 from .refbook import RefBook
 
 

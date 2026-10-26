@@ -5,23 +5,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
-from noc.core.translation import ugettext as _
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.template import Template, Context
+from django.db import models
+from django.template import Context, Template
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.config import config
-from noc.core.model.fields import CIDRField
-from noc.core.ip import IP
-from noc.core.validators import check_ipv4, check_ipv6
 from noc.core.change.decorator import change
+from noc.core.ip import IP
+from noc.core.model.base import NOCModel
+from noc.core.model.fields import CIDRField
+from noc.core.translation import ugettext as _
+from noc.core.validators import check_ipv4, check_ipv6
 from noc.main.models.label import Label
+
 from .afi import AFI_CHOICES
 from .vrf import VRF
 
@@ -98,6 +99,7 @@ class AddressRange(NOCModel):
         if not config.datastream.enable_dnszone:
             return
 
+        # NOC modules
         from noc.dns.models.dnszone import DNSZone
 
         if self.action == "D":

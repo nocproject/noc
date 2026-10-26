@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.inv.models.technology import Technology
+
 from .base import BaseCard
 
 

@@ -6,24 +6,25 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
-from collections import defaultdict
 import logging
+from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import bson
-from pymongo.errors import BulkWriteError, OperationFailure
-from pymongo import UpdateOne, DeleteOne, InsertOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import IntField, ObjectIdField, EmbeddedDocumentListField
+from mongoengine.fields import EmbeddedDocumentListField, IntField, ObjectIdField
+from pymongo import DeleteOne, InsertOne, ReadPreference, UpdateOne
+from pymongo.errors import BulkWriteError, OperationFailure
 
 # NOC modules
 from noc.core.defer import call_later
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
 from .serviceprofile import ServiceProfile
 
 logger = logging.getLogger(__name__)
@@ -87,6 +88,7 @@ class ServiceSummary(Document):
         states: list[str] | None = None,
     ) -> Iterable[tuple[str, list[dict[str, Any]], str, str | None, str | None]]:
         """Build service from ServiceInstance"""
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         coll = ServiceInstance._get_collection().with_options(
@@ -142,6 +144,7 @@ class ServiceSummary(Document):
         :return: dict of interface id -> {service: ..., subscriber: ....}
             interface None means unbound or box-wise services
         """
+        # NOC modules
         from noc.wf.models.workflow import Workflow
 
         def add_dict(d1, d2):
@@ -215,8 +218,9 @@ class ServiceSummary(Document):
 
     @classmethod
     def _refresh_object(cls, managed_object):
-        from noc.sa.models.managedobject import ManagedObject
+        # NOC modules
         from noc.inv.models.networksegment import NetworkSegment
+        from noc.sa.models.managedobject import ManagedObject
 
         def to_dict(v):
             return {r["profile"]: r["summary"] for r in v}
@@ -384,6 +388,7 @@ class ServiceSummary(Document):
         """
         Convert result of *get_object_summary* to alarm severity
         """
+        # NOC modules
         from noc.fm.models.alarmseverity import AlarmSeverity
 
         return AlarmSeverity.severity_for_weight(cls.get_weight(summary))

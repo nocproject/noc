@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.wf.models.workflow import Workflow
-from noc.wf.models.state import State, InteractionSetting
 from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
+from noc.wf.models.state import InteractionSetting, State
+from noc.wf.models.workflow import Workflow
 
 
 class StateApplication(ExtDocApplication):

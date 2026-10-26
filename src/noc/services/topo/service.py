@@ -12,9 +12,9 @@ import threading
 
 # NOC modules
 from noc.config import config
-from noc.core.error import NOCError
-from noc.core.debug import ErrorReport
 from noc.core.change.policy import change_tracker
+from noc.core.debug import ErrorReport
+from noc.core.error import NOCError
 from noc.core.service.base import BaseService
 from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
 from noc.services.topo.datastream import TopoDataStreamClient

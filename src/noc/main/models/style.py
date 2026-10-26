@@ -5,16 +5,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import operator
 from threading import Lock
 from typing import Any
-import operator
 
 # Third-party modules
-from django.db import models
 import cachetools
+from django.db import models
 
+# NOC modules
 # NOC models
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check

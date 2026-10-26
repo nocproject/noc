@@ -5,46 +5,48 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
-import re
-from threading import Lock
+
+# Python modules
 import operator
-from typing import Any
+import re
 from collections.abc import Callable
+from pathlib import Path
+from threading import Lock
+from typing import Any
 
 # Third-party modules
-from bson import ObjectId
-from mongoengine.document import Document
-from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    UUIDField,
-    BooleanField,
-    ListField,
-    IntField,
-    FloatField,
-    LongField,
-    ObjectIdField,
-    EmbeddedDocumentListField,
-)
-from mongoengine.errors import ValidationError
 import cachetools
 import jinja2
+from bson import ObjectId
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    FloatField,
+    IntField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    StringField,
+    UUIDField,
+)
 
 # NOC modules
-from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
-from noc.core.prettyjson import to_json
+from noc.core.handler import get_handler
+from noc.core.model.decorator import on_delete_check
 from noc.core.path import safe_json_path
-from .datasource import DataSource
-from .alarmrootcausecondition import AlarmRootCauseCondition
+from noc.core.prettyjson import to_json
+
 from .alarmclasscategory import AlarmClassCategory
 from .alarmplugin import AlarmPlugin
+from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmseverity import AlarmSeverity
+from .datasource import DataSource
 
 id_lock = Lock()
 handlers_lock = Lock()
@@ -450,6 +452,7 @@ class AlarmClass(Document):
     @classmethod
     def get_config(cls, alarm_class: AlarmClass) -> dict[str, Any]:
         """Alarm Class configuration"""
+        # NOC modules
         from noc.fm.models.alarmrule import AlarmRule
 
         r = {

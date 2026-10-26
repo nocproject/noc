@@ -5,55 +5,58 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 import logging
 import operator
 import re
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    IntField,
     BooleanField,
-    ListField,
     DateTimeField,
-    ObjectIdField,
     DictField,
     EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    ObjectIdField,
+    StringField,
 )
 from mongoengine.queryset.visitor import Q
 from pymongo import ReadPreference
 
+# NOC modules
 # NOC Modules
 from noc.config import config
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID
-from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
-from noc.core.caps.decorator import capabilities
-from noc.core.model.decorator import on_delete, on_delete_check
-from noc.core.change.decorator import change
-from noc.core.wf.decorator import workflow
-from noc.core.diagnostic.hub import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
+from noc.core.caps.decorator import capabilities
+from noc.core.change.decorator import change
+from noc.core.diagnostic.hub import DIAGNOCSTIC_LABEL_SCOPE
+from noc.core.model.decorator import on_delete, on_delete_check
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.mx import MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID, MessageType, send_message
+from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.validators import is_ipv4, is_mac
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.wf.decorator import workflow
+from noc.inv.models.capsitem import CapsItem
 from noc.main.models.label import Label
 from noc.project.models.project import Project
-from noc.inv.models.capsitem import CapsItem
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
-from .interfaceprofile import InterfaceProfile
-from .coverage import Coverage
 
+from .coverage import Coverage
+from .interfaceprofile import InterfaceProfile
 
 INTERFACE_TYPES = IGetInterfaces.returns.element.attrs["interfaces"].element.attrs["type"].choices
 INTERFACE_PROTOCOLS = (
@@ -177,6 +180,7 @@ class Interface(Document):
 
     @property
     def service(self):
+        # NOC modules
         from noc.sa.models.serviceinstance import ServiceInstance
 
         si = ServiceInstance.objects.filter(resources=self.as_resource()).first()
@@ -189,6 +193,7 @@ class Interface(Document):
     def get_component(
         cls, managed_object: ManagedObject, interface=None, ifindex=None, **kwargs
     ) -> Interface | None:
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         q = {}
@@ -237,9 +242,11 @@ class Interface(Document):
             raise ValueError(f"{e.__doc__}: {e!s}")
 
     def on_delete(self):
-        from .macdb import MACDB
+        # NOC modules
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.sa.models.serviceinstance import ServiceInstance
+
+        from .macdb import MACDB
 
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
@@ -518,6 +525,7 @@ class Interface(Document):
         :param query: Query from __query request field
         :return: Django Q filter (Use it: ManagedObject.objects.filter(q))
         """
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         query = query.strip()
@@ -545,6 +553,7 @@ class Interface(Document):
 
     @classmethod
     def iter_effective_labels(cls, instance: Interface) -> Iterable[list[str]]:
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
 
         yield list(instance.labels or [])
@@ -586,6 +595,7 @@ class Interface(Document):
         Return metric settings
         :return:
         """
+        # NOC modules
         from noc.inv.models.subinterface import SubInterface
         from noc.sa.models.serviceinstance import ServiceInstance
 

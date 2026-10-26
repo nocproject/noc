@@ -6,15 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 
 class ManagedObjectLocationDS(BaseDataSource):

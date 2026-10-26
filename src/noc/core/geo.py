@@ -10,9 +10,11 @@ import math
 
 # Third-party modules
 import geojson
+from geopy.distance import ELLIPSOIDS
+from geopy.distance import distance as _distance
 from geopy.point import Point as GPoint
-from geopy.distance import distance as _distance, ELLIPSOIDS
 
+# NOC modules
 # NOC settings
 from noc.config import config
 

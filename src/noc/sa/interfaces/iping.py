@@ -4,14 +4,16 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    IPParameter,
-    DictParameter,
-    IntParameter,
     BooleanParameter,
-    StringParameter,
+    DictParameter,
     FloatParameter,
+    IntParameter,
+    IPParameter,
+    StringParameter,
 )
 
 

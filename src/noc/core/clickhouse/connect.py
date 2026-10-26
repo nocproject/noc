@@ -7,12 +7,13 @@
 
 # Python modules
 import random
-from typing import overload, Literal, Any
+from typing import Any, Literal, overload
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
-from noc.core.http.sync import HttpClient
 from noc.config import config
+from noc.core.http.sync import HttpClient
+
 from .error import ClickhouseError
 
 

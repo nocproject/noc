@@ -6,25 +6,26 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 import os
 import re
+from typing import Any
 
 # Third-party modules
-from django.http import HttpResponse
-from django.db.models.query import QuerySet
-from cachetools import TTLCache, cached
 import orjson
+from cachetools import TTLCache, cached
+from django.db.models.query import QuerySet
+from django.http import HttpResponse
 
 # NOC modules
+from noc.aaa.models.user import User
+from noc.config import config
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
-from noc.config import config
 from noc.models import is_document
-from noc.aaa.models.user import User
+
+from .access import HasPerm, PermitLogged
 from .api import api, view
 from .application import Application
-from .access import HasPerm, PermitLogged
 
 __all__ = ["ExtApplication", "api", "view"]
 
@@ -138,6 +139,7 @@ class ExtApplication(Application):
     @staticmethod
     @cached(TTLCache(maxsize=12, ttl=900))
     def get_exclude_states():
+        # NOC modules
         from noc.wf.models.state import State
 
         return list(State.objects.filter(hide_with_state=True).scalar("id"))

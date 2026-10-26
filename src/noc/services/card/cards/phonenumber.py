@@ -7,8 +7,9 @@
 
 # NOC modules
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.phone.models.phonerange import PhoneRange
 from noc.phone.models.phonenumber import PhoneNumber
+from noc.phone.models.phonerange import PhoneRange
+
 from .base import BaseCard
 
 

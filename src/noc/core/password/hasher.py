@@ -15,9 +15,9 @@ flaw and all scanner's complains are suppressed.
 """
 
 # Python modules
-import hashlib
 import base64
-from secrets import compare_digest, choice
+import hashlib
+from secrets import choice, compare_digest
 
 SALT_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 UNUSABLE_PASSWORD = "!unusable"

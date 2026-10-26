@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import importlib
 import ast
+import importlib
 from collections.abc import Iterable
 from pathlib import Path
 
 # Third-party modules
-import pytest
 import cachetools
+import pytest
 
 # NOC modules
 from noc.config import config

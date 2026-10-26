@@ -9,9 +9,9 @@
 import re
 
 # NOC modules
+from noc.core.mac import MAC
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):

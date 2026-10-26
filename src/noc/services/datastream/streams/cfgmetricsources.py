@@ -10,8 +10,8 @@ from typing import Any
 
 # NOC modules
 from noc.core.datastream.base import DataStream
-from noc.sa.models.managedobject import ManagedObject
 from noc.models import get_model
+from noc.sa.models.managedobject import ManagedObject
 
 
 class CfgMetricSourcesDataStream(DataStream):

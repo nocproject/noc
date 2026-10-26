@@ -6,23 +6,24 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.project.models.project import Project
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
+from noc.crm.models.subscriber import Subscriber
+from noc.crm.models.supplier import Supplier
 from noc.dns.models.dnszone import DNSZone
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.peer.models.asset import ASSet
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
 from noc.peer.models.asn import AS
+from noc.peer.models.asset import ASSet
 from noc.peer.models.peer import Peer
-from noc.phone.models.phonerange import PhoneRange
 from noc.phone.models.phonenumber import PhoneNumber
-from noc.vc.models.vpn import VPN
-from noc.vc.models.vlan import VLAN
-from noc.crm.models.subscriber import Subscriber
-from noc.crm.models.supplier import Supplier
+from noc.phone.models.phonerange import PhoneRange
+from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
+from noc.vc.models.vlan import VLAN
+from noc.vc.models.vpn import VPN
+
 from .base import BaseCard
 
 

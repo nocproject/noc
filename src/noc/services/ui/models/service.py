@@ -11,9 +11,8 @@ import datetime
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from .utils import Reference
 from ..models.label import LabelItem
+from .utils import Reference
 
 
 class DefaultServiceItem(BaseModel):

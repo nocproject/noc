@@ -7,19 +7,19 @@
 
 # Python modules
 import datetime
-
-# Third-party modules
 from collections import defaultdict
-from pydantic import BaseModel
 from typing import Any
 
+# Third-party modules
+from pydantic import BaseModel
+
 # NOC modules
-from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 from noc.core.ip import IP
 from noc.core.perf import metrics
-from noc.sa.interfaces.igetbgppeer import IGetBGPPeer
 from noc.peer.models.asn import AS
 from noc.peer.models.peer import Peer
+from noc.sa.interfaces.igetbgppeer import IGetBGPPeer
+from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
 
 
 class DiscoveredPeer(BaseModel):

@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.authprofile import AuthProfile
 from noc.sa.models.authprofile import AuthProfile as AuthProfileModel
+
+from ..models.authprofile import AuthProfile
+from .base import BaseLoader
 
 
 class AuthProfileLoader(BaseLoader):

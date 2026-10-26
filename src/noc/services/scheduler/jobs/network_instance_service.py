@@ -13,17 +13,17 @@ from typing import Any
 import orjson
 
 # NOC modules
-from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.core.clickhouse.connect import connection
-from noc.core.models.serviceinstanceconfig import InstanceType
 from noc.core.models.inputsources import InputSource
+from noc.core.models.serviceinstanceconfig import InstanceType
 from noc.core.models.valuetype import ValueType
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.serviceinstance import ServiceInstance
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.sa.models.serviceprofile import ServiceProfile
+from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.sa.models.servicesummary import ServiceSummary
 
 # bitTest(mac, 41) filter locally administered
 # AND NOT bitTest(mac, 41)

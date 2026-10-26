@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from noc.core.mib import mib
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class SuggestSNMPCheck(DiscoveryCheck):

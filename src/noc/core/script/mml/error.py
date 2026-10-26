@@ -7,11 +7,12 @@
 
 # NOC modules
 from noc.core.error import (
-    ERR_MML_UNKNOWN,
-    ERR_MML_CONNECTION_REFUSED,
     ERR_MML_AUTH_FAILED,
     ERR_MML_BAD_RESPONSE,
+    ERR_MML_CONNECTION_REFUSED,
+    ERR_MML_UNKNOWN,
 )
+
 from ..cli.error import CLIError
 
 

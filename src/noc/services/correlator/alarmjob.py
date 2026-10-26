@@ -5,39 +5,42 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import logging
+
+# Python modules
 import datetime
+import logging
 import operator
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
+from noc.aaa.models.user import User
+from noc.core.change.policy import change_tracker
+from noc.core.debug import error_report
+from noc.core.fm.enum import ActionStatus, AlarmAction, GroupType, ItemStatus
+from noc.core.fm.request import ActionConfig, AlarmActionRequest, WhenCondition
+from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus, GroupType
-from noc.core.fm.request import AlarmActionRequest, ActionConfig, WhenCondition
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.models.servicestatus import Status as ServiceStatus
-from noc.core.debug import error_report
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.periodicjob import PeriodicJob
-from noc.core.lock.process import ProcessLock
-from noc.core.change.policy import change_tracker
-from noc.core.span import Span, PARENT_SAMPLE
-from noc.aaa.models.user import User
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.service import Service
+from noc.core.span import PARENT_SAMPLE, Span
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmwatch import Effect, WatchItem
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
+
 from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
 
@@ -190,6 +193,7 @@ class AlarmJob:
 
     @classmethod
     def get_by_id(cls, oid: str, is_dirty: bool = False) -> AlarmJob | None:
+        # NOC modules
         from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
 
         state = AlarmJobState.objects.filter(id=oid).as_pymongo()
@@ -291,8 +295,9 @@ class AlarmJob:
     @classmethod
     def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> AlarmJob:
         """Ensure escalation Job"""
-        from noc.fm.models.escalationprofile import EscalationProfile
+        # NOC modules
         from noc.fm.models.alarmwatch import Effect
+        from noc.fm.models.escalationprofile import EscalationProfile
 
         profile = EscalationProfile.get_by_id(pid)
         if not profile:
@@ -642,11 +647,16 @@ class AlarmJob:
         )
 
     def save_state(self, dry_run: bool = False, is_completed: bool = False, is_dirty: bool = False):
+        # NOC modules
+        from noc.fm.models.alarmjob import (
+            ActionLog,
+            AlarmItem,
+            JobStatus,
+        )
         from noc.fm.models.alarmjob import (
             AlarmJob as AlarmJobState,
-            AlarmItem,
-            ActionLog,
-            JobStatus,
+        )
+        from noc.fm.models.alarmjob import (
             ServiceItem as ServiceItemState,
         )
 
@@ -827,6 +837,7 @@ class AlarmJob:
         timestamp: datetime.datetime | None = None,
     ):
         """Run action on Job"""
+        # NOC modules
         from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
 
         if not self.is_allowed_action(action.action, user):

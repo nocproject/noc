@@ -12,8 +12,7 @@ from time import time_ns
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from ..typing import ValueType, StrictValueType
+from ..typing import StrictValueType, ValueType
 from .base import BaseCDAGNode, Category
 
 NS = 1_000_000_000

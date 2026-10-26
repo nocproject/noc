@@ -10,13 +10,13 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport
-from noc.sa.models.managedobject import ManagedObject
-from noc.main.models.pool import Pool
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interface import Interface
-from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.simplereport import SimpleReport
 
 
 class ReportDiscoveryCapsApplication(SimpleReport):

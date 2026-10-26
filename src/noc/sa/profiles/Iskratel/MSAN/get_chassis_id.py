@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):

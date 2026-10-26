@@ -6,22 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
 import uuid
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 # Third-party modules
-from django.http import HttpRequest
 import orjson
+from django.http import HttpRequest
 
 # NOC modules
 from noc.inv.models.object import Object
+from noc.main.models.extstorage import ExtStorage
 from noc.sa.interfaces.base import StringParameter
 from noc.sa.models.managedobject import ManagedObject
-from noc.main.models.extstorage import ExtStorage
+
 from .base import InvPlugin
 
 HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")

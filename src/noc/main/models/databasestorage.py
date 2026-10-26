@@ -6,12 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Third-party models
+# Third-party modules
 from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.core.model.fields import BinaryField
 from noc.core.model.databasestorage import DatabaseStorage as DBS
+from noc.core.model.fields import BinaryField
 
 
 class DatabaseStorage(NOCModel):

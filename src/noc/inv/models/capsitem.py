@@ -10,12 +10,13 @@ from typing import Any
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, DynamicField, BooleanField
+from mongoengine.fields import BooleanField, DynamicField, StringField
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.caps.types import CapsConfig
+from noc.core.mongo.fields import PlainReferenceField
+
 from .capability import Capability
 
 

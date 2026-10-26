@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from xml.etree import ElementTree
 from copy import copy
+from xml.etree import ElementTree
 
 # NOC modules
 from noc.core.script.base import BaseScript

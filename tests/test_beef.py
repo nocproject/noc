@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import re
 import bz2
+import re
 
 # Third-party modules
-import pytest
 import orjson
+import pytest
 from gufo.blob.sync import open_blob
 
 # NOC modules
 from noc.config import config
-from noc.core.script.loader import loader
 from noc.core.ioloop.util import setup_asyncio
+from noc.core.script.loader import loader
 
 rx_tc = re.compile(r"^.+/\d\d\d\d\.\S+\.json\.bz2")
 

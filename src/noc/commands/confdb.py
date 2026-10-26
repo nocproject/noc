@@ -10,8 +10,8 @@ import argparse
 import os
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.config import config
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.profile.loader import loader
 from noc.core.text import format_table
@@ -81,6 +81,7 @@ class Command(BaseCommand):
                     dump_node(cc, level, recursive=False)
                     return find_root(cc.children, rest_path[1:], level=level + 1)
 
+        # NOC modules
         from noc.core.confdb.syntax.base import SYNTAX
         from noc.core.handler import get_handler
 
@@ -107,6 +108,7 @@ class Command(BaseCommand):
                 cfg = f.read()
         if object:
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.objects.get(name=object)
@@ -120,6 +122,7 @@ class Command(BaseCommand):
                 self.die("Specify config file with --config option")
             # Mock up tokenizer
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.mock_object(profile=profile)
@@ -139,6 +142,7 @@ class Command(BaseCommand):
             with open(config) as f:
                 cfg = f.read()
         if object:
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             connect()
@@ -153,6 +157,7 @@ class Command(BaseCommand):
                 self.die("Specify config file with --config option")
             # Mock up tokenizer
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.mock_object(profile=profile)
@@ -174,6 +179,7 @@ class Command(BaseCommand):
                 cfg = f.read()
         if object:
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.objects.get(name=object)
@@ -187,6 +193,7 @@ class Command(BaseCommand):
                 self.die("Specify config file with --config option")
             # Mock up tokenizer
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.mock_object(profile=profile)
@@ -212,6 +219,7 @@ class Command(BaseCommand):
     def handle_dump(self, object=None, show_hints=False, *args, **kwargs):
         if object:
             connect()
+            # NOC modules
             from noc.sa.models.managedobject import ManagedObject
 
             mo = ManagedObject.objects.get(name=object)

@@ -8,21 +8,20 @@
 # Python modules
 from collections import defaultdict
 
-
 # Third-party modules
+from django.http import HttpRequest, HttpResponse
 from mongoengine.queryset import Q
-from django.http import HttpResponse, HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.doccategory import DocCategory
-from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem, ContainerType
-from noc.inv.models.modelinterface import ModelInterface
-from noc.inv.models.protocol import ProtocolVariant
-from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
+from noc.core.facade.template import get_facade_template, is_valid_model_for_template
 from noc.core.prettyjson import to_json
 from noc.core.translation import ugettext as _
-from noc.core.facade.template import get_facade_template, is_valid_model_for_template
+from noc.inv.models.modelinterface import ModelInterface
+from noc.inv.models.objectmodel import ContainerType, ObjectModel, ProtocolVariantItem
+from noc.inv.models.protocol import ProtocolVariant
+from noc.main.models.doccategory import DocCategory
+from noc.sa.interfaces.base import DocumentParameter, ListOfParameter
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ObjectModelApplication(ExtDocApplication):

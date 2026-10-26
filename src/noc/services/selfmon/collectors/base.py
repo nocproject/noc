@@ -8,17 +8,17 @@
 # Python modules
 import logging
 import time
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from django.db import connection
 from gufo.loader import Loader
 
 # NOC modules
-from noc.core.perf import metrics
 from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 

@@ -10,8 +10,7 @@
 # Third-party modules
 from pydantic import BaseModel, Field
 
-# NOC modules
-from .utils import StateItem, ProjectItem
+from .utils import ProjectItem, StateItem
 
 
 class PrefixProfileItem(BaseModel):

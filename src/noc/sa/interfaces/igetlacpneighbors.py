@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import IntParameter, InterfaceNameParameter, MACAddressParameter, DictListParameter
+
+from .base import DictListParameter, InterfaceNameParameter, IntParameter, MACAddressParameter
 
 
 class IGetLACPNeighbors(BaseInterface):

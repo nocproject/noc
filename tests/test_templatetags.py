@@ -9,7 +9,6 @@
 import django.template
 import pytest
 
-
 PYTHON1_TPL = """
 {% load python %}
 Before:

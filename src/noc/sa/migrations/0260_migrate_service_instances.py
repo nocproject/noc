@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Third-pary modules
+# Third-party modules
 from pymongo import InsertOne
 
 # NOC modules

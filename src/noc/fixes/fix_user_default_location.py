@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
+from noc.config import config
 
 
 def fix():

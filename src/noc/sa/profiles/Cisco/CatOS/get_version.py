@@ -6,9 +6,12 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 rx_platform = re.compile(
     r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$",

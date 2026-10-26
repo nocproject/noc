@@ -6,31 +6,32 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from enum import Enum
 from collections.abc import Iterable
+from enum import Enum
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
+    BinaryField,
     BooleanField,
-    ObjectIdField,
-    EmbeddedDocumentListField,
-    EnumField,
     DateTimeField,
     DictField,
-    LongField,
+    EmbeddedDocumentListField,
+    EnumField,
     FloatField,
-    ListField,
-    BinaryField,
     IntField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    StringField,
 )
 
+# NOC modules
 # NOC models
-from noc.core.fm.enum import AlarmAction, ActionStatus, ItemStatus
+from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus
 from noc.core.models.servicestatus import Status
-from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.fm.models.alarmwatch import Effect
+from noc.sa.models.servicesummary import ObjectSummaryItem, SummaryItem
 
 
 class JobStatus(Enum):

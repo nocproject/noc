@@ -12,8 +12,8 @@ from time import perf_counter
 from typing import Any
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.event import Event
+from noc.core.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
 FM_EVENT_EXTRACTOR = "fmevent"
@@ -82,6 +82,7 @@ class BaseRemoteSystem:
         self.logger = PrefixLoggerAdapter(logger, self.name)
 
     def get_loader_chain(self):
+        # NOC modules
         from noc.core.etl.loader.chain import LoaderChain
 
         chain = LoaderChain(self)

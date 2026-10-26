@@ -9,12 +9,12 @@
 import datetime
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.fm.models.uptime import Uptime
-from noc.core.mx import send_message, MessageType
 from noc.config import config
-from noc.core.hash import hash_int
 from noc.core.diagnostic.hub import SNMP_DIAG
+from noc.core.hash import hash_int
+from noc.core.mx import MessageType, send_message
+from noc.fm.models.uptime import Uptime
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 SNMP_FAILED_WINDOW = 600
 

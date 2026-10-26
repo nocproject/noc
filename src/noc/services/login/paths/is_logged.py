@@ -8,9 +8,9 @@
 # Python modules
 
 # Third-party modules
+import jwt
 from fastapi import APIRouter, Cookie
 from fastapi.responses import JSONResponse
-import jwt
 from jwt import InvalidTokenError
 
 # NOC modules

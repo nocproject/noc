@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
 import argparse
 import asyncio
+from collections.abc import Iterable
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.core.msgstream.config import STREAMS
-from noc.core.msgstream.client import MessageStreamClient
-from noc.core.mongo.connection import connect
-from noc.core.ioloop.util import get_loop_factory
-from noc.core.clickhouse.loader import loader as bi_loader
 from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
+from noc.core.clickhouse.loader import loader as bi_loader
 from noc.core.datasources.base import data_source_loader
-from noc.pm.models.metricscope import MetricScope
+from noc.core.ioloop.util import get_loop_factory
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
+from noc.core.msgstream.client import MessageStreamClient
+from noc.core.msgstream.config import STREAMS
 from noc.main.models.pool import Pool
+from noc.pm.models.metricscope import MetricScope
 
 
 class Command(BaseCommand):

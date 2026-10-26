@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.apps.sa.objectlist import ObjectListApplication
 from noc.core.dateutils import humanize_distance
 from noc.core.scheduler.job import Job
 from noc.core.translation import ugettext as _
+from noc.services.web.apps.sa.objectlist import ObjectListApplication
 
 
 class GetNowApplication(ObjectListApplication):

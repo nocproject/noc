@@ -8,8 +8,7 @@
 # Python modules
 
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 from .eq import CompConfig
 
 

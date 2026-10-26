@@ -9,9 +9,9 @@
 import string
 
 # NOC modules
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

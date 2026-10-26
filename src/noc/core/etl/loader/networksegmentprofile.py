@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.networksegmentprofile import NetworkSegmentProfile
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile as NetworkSegmentProfileModel
+
+from ..models.networksegmentprofile import NetworkSegmentProfile
+from .base import BaseLoader
 
 
 class NetworkSegmentProfileLoader(BaseLoader):

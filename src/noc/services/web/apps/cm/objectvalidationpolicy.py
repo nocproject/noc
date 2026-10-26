@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class ObjectValidationPolicyApplication(ExtDocApplication):

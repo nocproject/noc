@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-
 NEW_PREFIXES_REPORT_SUBJECT = "{{ count }} new prefixes discovered"
 NEW_PREFIXES_REPORT_BODY = """{{ count }} new prefixes discovered
 

@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.ipaddressprofile import IPAddressProfile
 from noc.ip.models.addressprofile import AddressProfile
 from noc.wf.models.workflow import Workflow
+
+from ..models.ipaddressprofile import IPAddressProfile
+from .base import BaseLoader
 
 DEFAULT_WORKFLOW_NAME = "Default Resource"
 

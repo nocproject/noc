@@ -9,8 +9,8 @@
 from noc.core.datastream.base import DataStream
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
-from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
+from noc.wf.models.state import State
 
 
 class CfgPingDataStream(DataStream):

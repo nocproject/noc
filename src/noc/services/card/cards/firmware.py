@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.inv.models.firmware import Firmware
+
 from .base import BaseCard
 
 

@@ -10,11 +10,9 @@ import bson
 import bson.int64
 
 # NOC modules
-from noc.core.model.fields import DocumentReferenceField
 from noc.core.bi.decorator import bi_hash
-
-# NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration(BaseMigration):

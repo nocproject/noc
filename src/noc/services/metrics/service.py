@@ -7,47 +7,47 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
-from typing import Any
-from collections.abc import Iterable
-from dataclasses import dataclass
-from time import perf_counter
-import sys
 import asyncio
 import codecs
 import hashlib
+import sys
+from collections import defaultdict
+from collections.abc import Iterable
+from dataclasses import dataclass
+from time import perf_counter
+from typing import Any
 
 # Third-party modules
-import orjson
 import cachetools
+import orjson
 from pydantic import ValidationError
 
 # NOC modules
-from noc.core.service.base import BaseService
+from noc.config import config as global_config
+from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+from noc.core.cdag.graph import CDAG
+from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
+from noc.core.cdag.node.probe import ProbeNodeConfig
+from noc.core.error import NOCError
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.mongo.connection_async import connect_async
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
-from noc.core.error import NOCError
-from noc.core.mongo.connection_async import connect_async
-from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.service.base import BaseService
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.core.cdag.node.probe import ProbeNodeConfig
-from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.graph import CDAG
-from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.services.datastream.models.cfgmetricrules import CfgMetricRule
 from noc.services.metrics.changelog import ChangeLog
-from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
-from noc.services.metrics.models.card import Card, ScopeInfo, MetricsItem
+from noc.services.metrics.datastream import MetricRulesDataStreamClient, MetricsDataStreamClient
+from noc.services.metrics.models.card import Card, MetricsItem, ScopeInfo
 from noc.services.metrics.models.rule import Rule
 from noc.services.metrics.models.target import (
+    ManagedObjectTarget,
     MetricKey,
     MetricTarget,
-    ManagedObjectTarget,
-    SLAProbeTarget,
     SensorComponentTarget,
+    SLAProbeTarget,
 )
-from noc.config import config as global_config
 
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
 ObjectTarget = ManagedObjectTarget | SLAProbeTarget

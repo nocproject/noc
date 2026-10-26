@@ -5,12 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.facade import Facade
 from noc.core.svg import SVG
+from noc.inv.models.facade import Facade
 
 
 def get_svg_for_facade(facade: Facade, /, cache: dict[ObjectId, SVG] | None = None) -> SVG:

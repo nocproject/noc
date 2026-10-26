@@ -8,8 +8,8 @@
 # NOC modules
 from noc.config import config
 from noc.core.mac import MAC
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.discoveryid import DiscoveryID, MACRange
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class IDCheck(DiscoveryCheck):

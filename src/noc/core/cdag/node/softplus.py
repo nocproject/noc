@@ -6,13 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from math import log1p, exp
+from math import exp, log1p
 
 # Third-party modules
 from pydantic import BaseModel
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class SoftPlusConfig(BaseModel):

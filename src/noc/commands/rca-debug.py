@@ -6,18 +6,17 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
-from collections import namedtuple
-import operator
 import argparse
+import datetime
+import operator
+from collections import namedtuple
 
 # NOC modules
+from noc.config import config
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.config import config
-
+from noc.sa.models.managedobject import ManagedObject
 
 Record = namedtuple(
     "Record",

@@ -9,11 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.modelinterface import ModelInterface
-from noc.inv.models.connectiontype import ConnectionType
-from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _
+from noc.inv.models.connectiontype import ConnectionType
+from noc.inv.models.modelinterface import ModelInterface
+from noc.main.models.doccategory import DocCategory
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ConnectionTypeApplication(ExtDocApplication):

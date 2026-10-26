@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.profile.base import BaseProfile
 from noc.core.lldp import LLDP_PORT_SUBTYPE_MAC
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

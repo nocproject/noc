@@ -5,15 +5,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 from collections.abc import Iterable
+
+# Third-party modules
 from django.db import models
+
+# NOC modules
+from noc.core.ip import IP
 
 # NOC Modules
 from noc.core.model.base import NOCModel
-from noc.core.ip import IP
-from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import CIDRField
 from noc.core.translation import ugettext as _
 
 

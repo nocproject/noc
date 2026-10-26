@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.text import list_to_ranges
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+
 from .base import BaseApplicator
-from noc.core.text import list_to_ranges
 
 
 class InterfaceDiscoveryApplicator(BaseApplicator):

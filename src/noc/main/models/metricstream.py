@@ -6,14 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Any
+# Python modules
 from collections.abc import Callable
 from threading import Lock
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, ReferenceField, EmbeddedDocumentListField
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, ReferenceField, StringField
 
+# NOC modules
 # NOC Modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.pm.models.metricscope import MetricScope

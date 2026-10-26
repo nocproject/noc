@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import xml.etree.ElementTree as ET
 import tempfile
+import xml.etree.ElementTree as ET
 
 # Third-party modules
 import pytest

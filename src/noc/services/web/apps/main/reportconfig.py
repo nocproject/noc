@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from urllib.parse import quote
 from collections import defaultdict
+from urllib.parse import quote
 
 # Third-party modules
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from pydantic import ValidationError
-from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.report import Report
-from noc.core.reporter.reportengine import ReportEngine
-from noc.core.reporter.types import RunParams, OutputType
-from noc.core.translation import ugettext as _
-from noc.models import get_model
 from noc.config import config
+from noc.core.reporter.reportengine import ReportEngine
+from noc.core.reporter.types import OutputType, RunParams
+from noc.core.translation import ugettext as _
+from noc.main.models.report import Report
+from noc.models import get_model
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ReportConfigApplication(ExtDocApplication):

@@ -6,19 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
 import struct
-from dataclasses import dataclass
 from collections import defaultdict
-
+from collections.abc import Iterable
+from dataclasses import dataclass
 
 # Third-party modules
 from aiokafka import AIOKafkaClient, AIOKafkaConsumer, TopicPartition
 
 # NOC modules
-from .base import BaseCollector, Metric
-from noc.core.ioloop.util import run_sync
 from noc.config import config
+from noc.core.ioloop.util import run_sync
+
+from .base import BaseCollector, Metric
 
 # Primitive data parsers
 UINT16 = struct.Struct("!H")

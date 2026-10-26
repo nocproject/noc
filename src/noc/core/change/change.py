@@ -9,19 +9,19 @@
 import datetime
 import time
 import uuid
+from collections import defaultdict
 from logging import getLogger
 from typing import Any
-from collections import defaultdict
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.models import get_model, get_object
-from noc.core.service.loader import get_service
-from noc.core.change.model import ChangeItem
-from noc.core.change.policy import change_tracker, REACTION_MODELS
 from noc.config import config
+from noc.core.change.model import ChangeItem
+from noc.core.change.policy import REACTION_MODELS, change_tracker
+from noc.core.service.loader import get_service
+from noc.models import get_model, get_object
 
 logger = getLogger(__name__)
 
@@ -109,6 +109,7 @@ def apply_datastream(ds_changes: dict[str, set[str]] | None = None) -> None:
     :param ds_changes: Changes Items
     :return:
     """
+    # NOC modules
     from noc.core.datastream.base import data_stream_loader
 
     ds_changes = ds_changes or {}
@@ -122,6 +123,7 @@ def apply_datastream(ds_changes: dict[str, set[str]] | None = None) -> None:
 
 def apply_ch_dictionary(changes: list[dict[str, Any]]) -> None:
     """Apply Clickhouse BI Dictionary"""
+    # NOC modules
     from noc.core.bi.dictionaries.loader import loader
     from noc.core.clickhouse.model import DictionaryModel
 
@@ -160,6 +162,7 @@ def apply_ch_dictionary(changes: list[dict[str, Any]]) -> None:
 
 def apply_sync_sensors(changes: list[dict[str, Any]]) -> None:
     """Apply sync sensor if ObjectModel changed"""
+    # NOC modules
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
 
@@ -192,6 +195,7 @@ def apply_sync_sensors(changes: list[dict[str, Any]]) -> None:
 
 def apply_reactions(changes: list[dict[str, Any]]) -> None:
     """Apply reactions"""
+    # NOC modules
     from noc.sa.models.reactionrule import ReactionRule
 
     with change_tracker.bulk_changes(suppress_reaction=True):

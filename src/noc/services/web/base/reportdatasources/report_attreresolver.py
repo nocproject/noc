@@ -9,11 +9,12 @@
 from django.db import connection
 
 # NOC modules
-from .base import BaseReportColumn
-from noc.sa.models.profile import Profile
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.sa.models.profile import Profile
+
+from .base import BaseReportColumn
 
 
 class ReportAttrResolver(BaseReportColumn):

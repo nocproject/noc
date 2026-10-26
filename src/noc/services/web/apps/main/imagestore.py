@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.main.models.imagestore import ImageStore
-from noc.core.translation import ugettext as _
 from noc.core.mime import _R_CONTENT_TYPE
+from noc.core.translation import ugettext as _
+from noc.main.models.imagestore import ImageStore
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ImageStoreApplication(ExtDocApplication):

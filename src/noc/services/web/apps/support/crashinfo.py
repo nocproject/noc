@@ -12,9 +12,9 @@ import uuid
 from django.http import HttpRequest
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.services.web.base.extdocapplication import ExtDocApplication, api
 from noc.support.models.crashinfo import Crashinfo
-from noc.core.translation import ugettext as _
 
 
 class CrashinfoApplication(ExtDocApplication):

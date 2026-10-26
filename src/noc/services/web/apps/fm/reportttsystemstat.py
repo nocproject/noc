@@ -15,12 +15,12 @@ from django.forms import widgets
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.clickhouse.connect import connection
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
-from noc.core.translation import ugettext as _
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.simplereport import PredefinedReport, SectionRow, SimpleReport
 
 
 class ReportForm(forms.Form):

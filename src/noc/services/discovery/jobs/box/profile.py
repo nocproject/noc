@@ -7,13 +7,15 @@
 
 # Python modules
 import threading
+
+# Third-party modules
 import cachetools
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.profile.checker import ProfileChecker
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.sa.models.profile import Profile
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 rules_lock = threading.Lock()
 

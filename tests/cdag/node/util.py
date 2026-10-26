@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from contextlib import contextmanager
 from dataclasses import dataclass
+from typing import Any
 
 # Third-party modules
 import orjson
@@ -16,8 +16,8 @@ import orjson
 # NOC modules
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.node.base import BaseCDAGNode
-from noc.core.cdag.typing import ValueType
 from noc.core.cdag.tx import Transaction
+from noc.core.cdag.typing import ValueType
 from noc.core.service.loader import get_service, set_service
 from noc.core.service.stub import ServiceStub
 

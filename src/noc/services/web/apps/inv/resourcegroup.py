@@ -9,11 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.comp import smart_text
-from noc.main.models.label import MATCH_BADGES, MATCH_OPS
 from noc.core.translation import ugettext as _
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.label import MATCH_BADGES, MATCH_OPS
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 def clean_label(label: str) -> tuple[str, str, list[str]]:

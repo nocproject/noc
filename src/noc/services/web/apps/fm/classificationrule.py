@@ -9,21 +9,21 @@
 import re
 
 # Third-party modules
-from django.template import Template, Context
 from django.http import HttpRequest
+from django.template import Context, Template
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.core.fm.event import Event, EventSource
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_objectid
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventclassificationrule import (
     EventClassificationRule,
     EventClassificationRuleCategory,
 )
-from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.core.validators import is_objectid
-from noc.core.fm.event import Event, EventSource
 from noc.fm.models.utils import get_event
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class EventClassificationRuleApplication(ExtDocApplication):

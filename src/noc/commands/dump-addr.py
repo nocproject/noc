@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import argparse
 import csv
 import sys
-import argparse
 
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError

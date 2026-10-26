@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, match
 from noc.core.video.resolution import get_resolution
 
 

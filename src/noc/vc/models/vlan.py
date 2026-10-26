@@ -5,41 +5,44 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
+import datetime
 import operator
 import random
-import datetime
+from collections.abc import Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
+from mongoengine.errors import NotUniqueError, ValidationError
 from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
-    IntField,
     DateTimeField,
+    IntField,
+    ListField,
+    LongField,
+    StringField,
 )
-from mongoengine.errors import ValidationError, NotUniqueError
-import cachetools
 
 # NOC modules
-from .vlanprofile import VLANProfile
-from .l2domain import L2Domain
-from .vlanfilter import VLANFilter
-from noc.wf.models.state import State
-from noc.project.models.project import Project
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-from noc.core.model.decorator import on_save, on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.wf.decorator import workflow
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.project.models.project import Project
+from noc.wf.models.state import State
+
+from .l2domain import L2Domain
+from .vlanfilter import VLANFilter
+from .vlanprofile import VLANProfile
 
 id_lock = Lock()
 

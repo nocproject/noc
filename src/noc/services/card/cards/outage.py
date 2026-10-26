@@ -11,9 +11,10 @@ import logging
 
 # NOC modules
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
+
 from .base import BaseCard
 
 logger = logging.getLogger(__name__)

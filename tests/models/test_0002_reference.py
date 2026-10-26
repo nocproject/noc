@@ -9,14 +9,14 @@
 from collections import defaultdict
 
 # Third-party modules
+import pytest
 from django.db.models import ForeignKey
 from mongoengine.fields import ReferenceField
-import pytest
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.model.fields import DocumentReferenceField
-from noc.models import is_document, iter_model_id, get_model
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.models import get_model, is_document, iter_model_id
 
 
 def iter_references():

@@ -11,6 +11,7 @@ import pytest
 # NOC modules
 from noc.aaa.models.user import User
 from noc.fm.models.alarmwatch import Effect
+
 from .utils import get_alarm_mock
 
 

@@ -8,14 +8,14 @@
 # Python modules
 import re
 from collections import defaultdict
-from xml.etree import ElementTree
 from io import StringIO
+from xml.etree import ElementTree
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.validators import is_int
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.validators import is_int
 
 
 class Script(BaseScript):

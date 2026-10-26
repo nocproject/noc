@@ -7,22 +7,22 @@
 
 # Python modules
 import re
+from collections import defaultdict
+from collections.abc import Callable, Iterable, Iterator
+from itertools import chain
 from typing import (
     Any,
 )
-from collections.abc import Iterable, Callable, Iterator
-from collections import defaultdict
-from itertools import chain
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.mib import mib
-from noc.core.ip import IPv4
-from noc.core.snmp.render import render_bin
 from noc.core.comp import smart_text
+from noc.core.ip import IPv4
 from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_bin
 from noc.core.validators import is_mac, is_vlan
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

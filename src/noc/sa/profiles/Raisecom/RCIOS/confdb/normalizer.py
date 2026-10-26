@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY
-from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
+from noc.core.confdb.normalizer.base import ANY, BaseNormalizer, match
+from noc.core.confdb.syntax.patterns import INTEGER, IP_ADDRESS
 
 
 class RCIOSNormalizer(BaseNormalizer):

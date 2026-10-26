@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.snmp.ber import BEREncoder, BERDecoder
+from noc.core.snmp.ber import BERDecoder, BEREncoder
 
 
 @pytest.mark.parametrize(("raw", "value"), [(b"\x00", False), (b"\x01", True), (b"", False)])

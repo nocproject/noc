@@ -4,9 +4,9 @@ import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interfaceprofile import InterfaceProfile
 
 
 class Command(BaseCommand):

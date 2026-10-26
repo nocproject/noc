@@ -5,10 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# NOC modules
+from noc.config import config
 from noc.core.bi.dictionaries.loader import loader
 from noc.models import get_model
-from noc.config import config
 
 
 class OP:

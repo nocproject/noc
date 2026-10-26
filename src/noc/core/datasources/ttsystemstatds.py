@@ -6,16 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import datetime
 import time
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import FieldInfo, FieldType, BaseDataSource
 from noc.core.clickhouse.connect import connection
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType
 
 SQL = """
     SELECT ts, server, service, duration, error_code, error_text, in_label as tt_id

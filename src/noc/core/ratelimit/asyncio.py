@@ -8,7 +8,6 @@
 # Python modules
 from asyncio import sleep
 
-# NOC modules
 from .base import BaseRateLimit
 
 

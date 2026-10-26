@@ -5,48 +5,51 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
-from threading import Lock, RLock
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
+from threading import Lock, RLock
 from typing import Any
-from collections.abc import Callable
 
 # Third-party modules
+import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    LongField,
-    ReferenceField,
-    ListField,
     EmbeddedDocumentListField,
-    ObjectIdField,
     IntField,
+    ListField,
+    LongField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
 )
 from pymongo import ReadPreference
-from bson import ObjectId
-import cachetools
 
 # NOC modules
+from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
+from noc.config import config
+from noc.core.bi.decorator import bi_sync
+from noc.core.caps.types import CapsConfig
+from noc.core.change.decorator import change
+from noc.core.matcher import build_matcher
+from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.main.models.style import Style
-from noc.main.models.remotesystem import RemoteSystem
+from noc.inv.models.capsitem import CapsSettings
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
-from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
-from noc.core.bi.decorator import bi_sync
-from noc.core.change.decorator import change
-from noc.core.model.decorator import on_delete_check, on_init
-from noc.core.matcher import build_matcher
-from noc.core.caps.types import CapsConfig
-from noc.inv.models.capsitem import CapsSettings
 from noc.wf.models.workflow import Workflow
-from noc.config import config
+
 from .ifdescpatterns import IfDescPatterns
 
 id_lock = Lock()
@@ -253,6 +256,7 @@ class InterfaceProfile(Document):
     DEFAULT_PROFILE_NAME = "default"
 
     def iter_changed_datastream(self, changed_fields=None):
+        # NOC modules
         from noc.inv.models.interface import Interface
         from noc.sa.models.managedobject import ManagedObject
 

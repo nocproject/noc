@@ -7,16 +7,16 @@
 
 # Python modules
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
-from collections.abc import Iterable
 
 # Third-party modules
 from jinja2 import Template
 
 # NOC modules
-from noc.models import is_document
 from noc.core.models.inputsources import InputSource
+from noc.models import is_document
 
 logger = logging.getLogger(__name__)
 DEFAULT_SOURCE = InputSource.UNKNOWN.value
@@ -95,6 +95,7 @@ class RemoteMappingValue:
 
 def iter_model_mappings(self) -> Iterable[RemoteMappingValue]:
     """Iterate mapping over Django Model"""
+    # NOC modules
     from noc.main.models.remotesystem import RemoteSystem
 
     remote_system = getattr(self, "remote_system", None)
@@ -155,6 +156,7 @@ def iter_document_mappings(self) -> Iterable[RemoteMappingValue]:
 
 def save_document_mappings(self, mappings: list[RemoteMappingValue], dry_run: bool = False):
     """"""
+    # NOC modules
     from noc.main.models.remotemappingsitem import RemoteMappingItem
 
     self.mappings = [

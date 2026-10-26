@@ -13,10 +13,10 @@ from collections import defaultdict
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.core.translation import ugettext as _
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import DocCategory
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class CapabilityApplication(ExtDocApplication):

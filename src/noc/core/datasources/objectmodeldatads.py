@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import FieldInfo, BaseDataSource, FieldType
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
+from noc.inv.models.objectmodel import ObjectModel
 
+from .base import BaseDataSource, FieldInfo, FieldType
 
 attrs_dtype_map = {
     "bool": FieldType.BOOL,

@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.video.resolution import VideoResolution, get_resolution
 from noc.core.video.codecs import H264Profile, get_h264_profile_by_id, get_h264_profile_by_name
+from noc.core.video.resolution import VideoResolution, get_resolution
 
 
 @pytest.mark.parametrize(

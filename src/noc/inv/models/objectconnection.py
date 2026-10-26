@@ -5,28 +5,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
 # Third-party modules
+import geojson
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     DictField,
+    EmbeddedDocumentListField,
     LineStringField,
     ReferenceField,
-    EmbeddedDocumentListField,
+    StringField,
 )
-import geojson
 
 # NOC modules
-from noc.inv.models.object import Object
+from noc.config import config
+from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete, on_save
 from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
-from noc.core.change.decorator import change
-from noc.core.model.decorator import on_save, on_delete
-from noc.config import config
+from noc.inv.models.object import Object
 
 
 class ObjectConnectionItem(EmbeddedDocument):

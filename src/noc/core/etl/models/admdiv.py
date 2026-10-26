@@ -7,7 +7,6 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseModel
 from .typing import Reference
 

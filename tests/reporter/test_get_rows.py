@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import pytest
 import orjson
 import polars as pl
+import pytest
 from polars.testing import assert_frame_equal
 
 # NOC modules

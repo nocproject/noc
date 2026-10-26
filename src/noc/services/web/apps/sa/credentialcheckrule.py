@@ -8,10 +8,10 @@
 # Python modules
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.main.models.label import MATCH_OPS, MATCH_BADGES
 from noc.core.translation import ugettext as _
+from noc.main.models.label import MATCH_BADGES, MATCH_OPS
+from noc.sa.models.credentialcheckrule import CredentialCheckRule
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 def clean_label(label: str) -> tuple[str, str, list[str]]:
@@ -102,6 +102,7 @@ class CredentialCheckRuleApplication(ExtDocApplication):
         ]
 
     def cleaned_query(self, q):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         mo = q.pop("managed_object", None)

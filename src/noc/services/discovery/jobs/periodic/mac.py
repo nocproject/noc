@@ -7,14 +7,14 @@
 
 # Python modules
 import time
-from functools import reduce
 from collections import defaultdict
+from functools import reduce
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.perf import metrics
 from noc.core.mac import MAC
+from noc.core.perf import metrics
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class MACCheck(DiscoveryCheck):

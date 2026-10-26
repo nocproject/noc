@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
-from ..patterns import ANY, CHOICES, INTEGER, VR_NAME, FI_NAME
+from ..patterns import ANY, CHOICES, FI_NAME, INTEGER, VR_NAME
 from .interfaces.base import VR_INTERFACES_SYNTAX
 from .protocols.base import VR_PROTOCOLS_SYNTAX
 from .route.base import VR_ROUTE_SYNTAX

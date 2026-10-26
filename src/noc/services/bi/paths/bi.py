@@ -7,35 +7,34 @@
 
 # Python modules
 import datetime
-import zlib
-import threading
 import operator
+import threading
+import uuid
+import zlib
 from collections import defaultdict
 
 # Third-party modules
 import bson
-from fastapi import APIRouter
-import orjson
-import uuid
-from mongoengine.queryset import Q
 import cachetools
+import orjson
+from fastapi import APIRouter
+from mongoengine.queryset import Q
 
 # NOC modules
-from noc.core.clickhouse.model import Model
-from noc.core.clickhouse.loader import loader
-from noc.core.bi.dictionaries.loader import loader as dict_loader
-from noc.core.service.jsonrpcapi import JSONRPCAPI, api, executor, APIError
-from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
+from noc.aaa.models.user import User
+from noc.bi.models.dashboard import DAL_ADMIN, DAL_RO, Dashboard, DashboardAccess
+from noc.config import config
+from noc.core.bi.dictionaries.loader import loader as dict_loader
+from noc.core.clickhouse.loader import loader
+from noc.core.clickhouse.model import Model
+from noc.core.comp import smart_bytes
+from noc.core.perf import metrics
+from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api, executor
+from noc.core.translation import ugettext as _
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.sa.interfaces.base import DictListParameter, DictParameter, IntParameter, StringParameter
-from noc.core.perf import metrics
-from noc.core.comp import smart_bytes
-from noc.core.translation import ugettext as _
-from noc.config import config
-
 
 router = APIRouter()
 

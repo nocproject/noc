@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import operator
+import os
 
 # Third-party modules
 from django.apps import apps
@@ -15,25 +15,25 @@ from django.http import HttpRequest
 from mongoengine.base.common import _document_registry
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.services.web.base.site import site
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.script.loader import loader as script_loader
+from noc import settings
 from noc.core.checkers.loader import loader as checker_loader
-from noc.core.window import wf_choices
-from noc.core.topology.base import loader as topo_loader
-from noc.core.mx import MessageType, MESSAGE_HEADERS
 from noc.core.datasources.base import data_source_loader
+from noc.core.mx import MESSAGE_HEADERS, MessageType
+from noc.core.profile.loader import loader as profile_loader
 from noc.core.protodcsources.base import discriminator_source_loader
 from noc.core.reporter.formatter.base import data_formatter_loader
+from noc.core.script.loader import loader as script_loader
+from noc.core.topology.base import loader as topo_loader
 from noc.core.vlanroles import VLANRole
-from noc.main.reportsources.loader import loader as rds_loader
-from noc.main.models.messageroute import MessageRoute
-from noc.models import iter_model_id
-from noc import settings
-from noc.services.web.apps.kb.parsers.base import kb_parser_loader
-from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.core.window import wf_choices
 from noc.inv.models.objectmodel import ContainerType
+from noc.main.models.messageroute import MessageRoute
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.reportsources.loader import loader as rds_loader
+from noc.models import iter_model_id
+from noc.services.web.apps.kb.parsers.base import kb_parser_loader
+from noc.services.web.base.extapplication import ExtApplication, api
+from noc.services.web.base.site import site
 
 
 class RefAppplication(ExtApplication):

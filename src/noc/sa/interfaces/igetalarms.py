@@ -10,12 +10,13 @@ from datetime import datetime
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from .base import (
-    StringParameter,
     DateTimeParameter,
-    StringListParameter,
-    DictParameter,
     DictListParameter,
+    DictParameter,
+    StringListParameter,
+    StringParameter,
 )
 
 

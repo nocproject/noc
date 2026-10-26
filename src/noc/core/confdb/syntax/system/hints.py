@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
 from .aaa.hints import HINTS_SYSTEM_AAA
 

@@ -11,11 +11,10 @@ import re
 from collections import defaultdict
 
 # NOC modules
-from noc.core.validators import is_oid
-from noc.core.fm.event import Event
 from noc.core.fm.enum import EventSource
+from noc.core.fm.event import Event
+from noc.core.validators import is_oid
 from noc.fm.models.ignorepattern import IgnorePattern
-
 
 logger = logging.getLogger(__name__)
 

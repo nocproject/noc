@@ -8,10 +8,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
-import sys
-import subprocess
 import datetime
+import os
+import subprocess
+import sys
 
 # Third-party modules
 from django.db import connection

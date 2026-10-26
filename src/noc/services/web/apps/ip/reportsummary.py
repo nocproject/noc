@@ -6,18 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import math
+
+# Third-party modules
+from django import forms
+
+# NOC modules
+from noc.core.ip import IP
 
 # Django Modules
 from noc.core.translation import ugettext as _
-from django import forms
+from noc.core.validators import ValidationError, check_ipv4_prefix, check_ipv6_prefix
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
 
 # NOC Modules
 from noc.services.web.base.simplereport import SimpleReport, TableColumn
-from noc.ip.models.vrf import VRF
-from noc.ip.models.prefix import Prefix
-from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
-from noc.core.ip import IP
 
 
 class ReportForm(forms.Form):

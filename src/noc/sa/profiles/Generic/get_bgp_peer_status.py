@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.bgp import BGPState
+from noc.core.mib import mib
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbgppeerstatus import IGetBGPPeerStatus
-from noc.core.mib import mib
-from noc.core.bgp import BGPState
 
 
 class Script(BaseScript):

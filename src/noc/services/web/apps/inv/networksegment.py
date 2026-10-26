@@ -10,13 +10,13 @@ from django.db.models import Count
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.core.middleware.tls import get_user
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_objectid
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.core.middleware.tls import get_user
-from noc.core.validators import is_objectid
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class NetworkSegmentApplication(ExtDocApplication):

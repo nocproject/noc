@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

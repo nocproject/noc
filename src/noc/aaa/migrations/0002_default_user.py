@@ -7,9 +7,9 @@
 
 
 # NOC modules
+from noc.config import config
 from noc.core.migration.base import BaseMigration
 from noc.core.password.hasher import make_password
-from noc.config import config
 
 
 class Migration(BaseMigration):

@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import SubclassOfParameter, Parameter, BooleanParameter
+
+from .base import BooleanParameter, Parameter, SubclassOfParameter
 
 
 class IDBPostSave(BaseInterface):

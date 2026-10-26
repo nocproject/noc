@@ -6,28 +6,27 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import argparse
-import re
-import os
-import datetime
 import contextlib
+import datetime
 import gzip
+import logging
+import os
+import re
 
 # Third-party modules
-from fastapi import APIRouter
 import orjson
+from fastapi import APIRouter
 
 # NOC modules
+from noc.core.comp import smart_bytes
+from noc.core.error import ERR_MIB_MISSED
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.fm.models.mib import OIDCollision
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from noc.fm.models.mib import MIB, MIBData
+from noc.fm.models.mib import MIB, MIBData, OIDCollision
 from noc.services.mib.paths.mib import MIBAPI
-from noc.core.error import ERR_MIB_MISSED
-from noc.core.comp import smart_bytes
 
 
 class Command(BaseCommand):

@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from .error import InterfaceTypeError
 
 
@@ -79,6 +78,7 @@ class BaseParameter:
         :type value: Arbitrary python type
         :return: Normalized value
         """
+        # Third-party modules
         from django.forms import ValidationError
 
         if not value and not self.required:

@@ -12,7 +12,6 @@ import pytest
 from noc.core.comp import smart_text
 from noc.core.gridvcs.base import GridVCS
 
-
 SRC_F0 = """interface Gi0/1
     description test
 """

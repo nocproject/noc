@@ -6,10 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication
-from noc.core.translation import ugettext as _
-
 from noc.config import config
+from noc.core.translation import ugettext as _
+from noc.services.web.base.extapplication import ExtApplication
 
 
 class OutageApplication(ExtApplication):

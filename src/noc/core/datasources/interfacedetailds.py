@@ -6,18 +6,19 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, ParamInfo, FieldType, BaseDataSource
 from noc.core.text import list_to_ranges
-from noc.inv.models.interface import Interface
-from noc.inv.models.interface import InterfaceProfile
+from noc.inv.models.interface import Interface, InterfaceProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 
 class InterfaceDetailDS(BaseDataSource):

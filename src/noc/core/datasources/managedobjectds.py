@@ -6,41 +6,43 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 from collections import defaultdict
+from collections.abc import AsyncIterable, Iterable
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
 import polars as pl
-from django.db.models.expressions import Case, When, Value
+from django.db.models.expressions import Case, Value, When
 from django.db.models.fields import BooleanField
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource, caps_dtype_map
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.authprofile import AuthProfile
-from noc.sa.models.profile import Profile
-from noc.main.models.pool import Pool
-from noc.main.models.remotesystem import RemoteSystem
-from noc.inv.models.capability import Capability
-from noc.inv.models.object import Object
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.project.models.project import Project
-from noc.core.models.valuetype import ValueType
-from noc.core.validators import is_objectid
-from noc.core.diagnostic.types import DiagnosticState
 from noc.core.diagnostic.hub import (
-    SNMP_DIAG,
     CLI_DIAG,
     PROFILE_DIAG,
-    SYSLOG_DIAG,
+    SNMP_DIAG,
     SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
 )
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.models.valuetype import ValueType
+from noc.core.validators import is_objectid
+from noc.inv.models.capability import Capability
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.project.models.project import Project
+from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo, caps_dtype_map
 
 
 def get_adm_path_level() -> int:
@@ -342,6 +344,7 @@ class ManagedObjectDS(BaseDataSource):
 
     @staticmethod
     def load_adm_path() -> dict[str, tuple[str, str]]:
+        # Third-party modules
         from django.db import connection as pg_connection
 
         with pg_connection.cursor() as cursor:
@@ -361,6 +364,7 @@ class ManagedObjectDS(BaseDataSource):
 
     @staticmethod
     def get_filter(filters: dict[str, Any]) -> dict[str, Any]:
+        # NOC modules
         from noc.inv.models.resourcegroup import ResourceGroup
 
         r = {}

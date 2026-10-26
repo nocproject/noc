@@ -6,24 +6,25 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import itertools
 import logging
 import random
-from time import perf_counter
-import asyncio
 import threading
+from time import perf_counter
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.http.aio import HttpClient
-from noc.core.perf import metrics
 from noc.config import config
-from noc.core.span import Span, get_current_span
+from noc.core.http.aio import HttpClient
 from noc.core.ioloop.util import run_sync
-from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.perf import metrics
+from noc.core.span import Span, get_current_span
+
+from .error import RPCError, RPCException, RPCHTTPError, RPCNoService, RPCRemoteError
 
 logger = logging.getLogger(__name__)
 

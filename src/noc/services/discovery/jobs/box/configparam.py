@@ -9,9 +9,9 @@
 from typing import Any
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.object import Object
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
+from noc.inv.models.object import Object
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class ConfigParamCheck(DiscoveryCheck):

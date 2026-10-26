@@ -10,14 +10,15 @@ import datetime
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, DateTimeField
+from mongoengine.fields import DateTimeField, IntField, StringField
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from .interface import Interface
-from noc.sa.models.managedobject import ManagedObject
-from .maclog import MACLog
 from noc.core.mac import MAC
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.sa.models.managedobject import ManagedObject
+
+from .interface import Interface
+from .maclog import MACLog
 
 
 class MACDB(Document):

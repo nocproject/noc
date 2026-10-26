@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.dns.models.dnsserver import DNSServer
+from noc.dns.models.dnszoneprofile import DNSZoneProfile
 
 
 @pytest.mark.parametrize(

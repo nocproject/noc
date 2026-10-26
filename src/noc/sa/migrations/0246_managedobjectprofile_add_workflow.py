@@ -6,10 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.model.fields import DocumentReferenceField
-
-# NOC modules
 from noc.core.migration.base import BaseMigration
+from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration(BaseMigration):

@@ -11,7 +11,7 @@ import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
+from noc.inv.models.objectmodel import ModelConnectionsCache, ObjectModel
 from noc.inv.models.protocol import ProtocolVariant
 
 

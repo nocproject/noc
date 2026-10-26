@@ -10,16 +10,15 @@ import enum
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import EnumField, StringField, BooleanField, DictField, DateTimeField
+from mongoengine.fields import BooleanField, DateTimeField, DictField, EnumField, StringField
 
-
-# Python modules
+# NOC modules
+from noc.aaa.models.user import User
 from noc.core.handler import get_handler
 from noc.core.mx import MessageType
+from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.aaa.models.user import User
 
 
 class Effect(enum.Enum):
@@ -81,6 +80,7 @@ class WatchItem(EmbeddedDocument):
         is_update: bool = False,
         dry_run: bool = False,
     ):
+        # NOC modules
         from noc.services.correlator.alarmjob import AlarmJob
 
         match self.effect:

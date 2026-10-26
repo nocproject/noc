@@ -6,17 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
 import xml.etree.ElementTree as ET
+from collections.abc import Iterable
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.inv.models.object import Object
 from noc.core.svg import SVG
-from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
+from noc.inv.models.object import Object
+
 from .box import get_svg_for_box
+from .interaction import Interaction, InteractionAction, InteractionEvent, InteractionItem
 
 GOLDEN_RATIO = 1.6
 

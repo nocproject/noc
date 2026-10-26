@@ -7,19 +7,21 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Any
 from collections.abc import AsyncIterable, Iterable
+from typing import Any
 
 # Third-party modules
+from gufo.snmp import SnmpAuthError, SnmpVersion
+from gufo.snmp import SnmpError as GSNMPError
 from gufo.snmp.async_client import SnmpSession
-from gufo.snmp import SnmpVersion, SnmpError as GSNMPError, SnmpAuthError
-from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
+from gufo.snmp.user import Aes128Key, DesKey, KeyType, Md5Key, Sha1Key, User
 
 # NOC modules
-from .base import BaseChecker, CheckResult, Check, CheckError, DataItem
+from noc.core.mib import mib
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.snmp.error import SNMPErrorCode
-from noc.core.mib import mib
+
+from .base import BaseChecker, Check, CheckError, CheckResult, DataItem
 
 CHECK_OIDS = [mib["SNMPv2-MIB::sysObjectID.0"]]
 SUGGEST_CHECK = "SUGGEST_SNMP"

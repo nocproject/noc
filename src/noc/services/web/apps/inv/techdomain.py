@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.inv.models.techdomain import TechDomain
 from noc.core.translation import ugettext as _
+from noc.inv.models.techdomain import TechDomain
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class TechDomainApplication(ExtDocApplication):

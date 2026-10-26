@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.mrt.service import MRTService
-
 
 if __name__ == "__main__":
     MRTService().start()

@@ -10,8 +10,8 @@ import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
 from noc.core.text import strip_html_tags
+from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
 
 rx_mac = re.compile(
     "(?P<mac>[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2})"

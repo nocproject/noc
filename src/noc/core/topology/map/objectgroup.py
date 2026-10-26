@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import itertools
+import logging
 from collections.abc import Iterable
 
 # Third-party modules
@@ -15,13 +15,13 @@ from bson import ObjectId
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
 from noc.core.topology.base import TopologyBase
 from noc.core.topology.types import MapItem, PathItem
 from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.managedobject import ManagedObject
 
 logger = logging.getLogger(__name__)
 

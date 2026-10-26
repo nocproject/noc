@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, deferable
-from noc.core.confdb.syntax.patterns import INTEGER, IPv4_PREFIX, IPv4_ADDRESS, AS_NUM
-from noc.core.validators import is_ipv4_prefix, is_ipv4
+from noc.core.confdb.normalizer.base import ANY, BaseNormalizer, deferable, match
+from noc.core.confdb.syntax.patterns import AS_NUM, INTEGER, IPv4_ADDRESS, IPv4_PREFIX
+from noc.core.validators import is_ipv4, is_ipv4_prefix
 
 
 class RouterOSNormalizer(BaseNormalizer):

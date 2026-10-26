@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import asyncio
+import os
 
 # NOC modules
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.management.base import BaseCommand
 from noc.core.service.loader import get_dcs
-from noc.core.ioloop.util import get_loop_factory
 
 
 class Command(BaseCommand):

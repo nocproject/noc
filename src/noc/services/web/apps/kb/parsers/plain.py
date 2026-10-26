@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
 from .base import BaseParser
 
 

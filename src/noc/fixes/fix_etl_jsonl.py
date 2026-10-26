@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import csv
+import os
 
 # NOC modules
+from noc.config import config
 from noc.core.compressor.base import compressor_loader
 from noc.core.etl.models.base import etl_model_loader
-from noc.config import config
 
 
 def fix():

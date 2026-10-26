@@ -10,8 +10,8 @@ import json
 
 # Third-party modules
 import bson
-from pymongo.errors import BulkWriteError
 from pymongo import InsertOne
+from pymongo.errors import BulkWriteError
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

@@ -6,9 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from ..vim import VIMScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+# NOC modules
 from noc.core.ip import IPv4
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

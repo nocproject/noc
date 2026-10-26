@@ -6,28 +6,28 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Callable
 import importlib.resources
+from collections.abc import Callable
+from typing import Any
 
 # Third-party modules
-from jinja2 import Template
 from django.http import HttpRequest
+from jinja2 import Template
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.core.translation import ugettext as _
+from noc.aaa.models.permission import Permission
 from noc.aaa.models.user import User
 from noc.config import config
-from noc.aaa.models.permission import Permission
+from noc.core.translation import ugettext as _
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.channel import Channel
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.techdomain import TechDomain
-from noc.inv.models.channel import Channel
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.profile import Profile
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 
 
 class HomeAppplication(ExtApplication):

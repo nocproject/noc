@@ -7,19 +7,19 @@
 
 # Python modules
 import datetime
-from typing import Union, Any
 from collections.abc import Iterable
+from typing import Any, Union
 
 # Third-party modules
 from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
 from noc.core.checkers.base import Check, CheckResult, DataItem
-from noc.core.models.inputsources import InputSource
 from noc.core.handler import get_handler
-from .handler import DiagnosticHandler
-from .types import DiagnosticState, DiagnosticConfig, CheckStatus, DiagnosticValue
+from noc.core.models.inputsources import InputSource
 
+from .handler import DiagnosticHandler
+from .types import CheckStatus, DiagnosticConfig, DiagnosticState, DiagnosticValue
 
 DIAGNOSTIC_CHECK_STATE: dict[bool, DiagnosticState] = {
     True: DiagnosticState("enabled"),

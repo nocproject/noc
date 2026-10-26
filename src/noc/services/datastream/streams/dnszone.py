@@ -5,26 +5,27 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from collections import defaultdict
-from itertools import chain
 from collections.abc import Iterable
+from itertools import chain
 
 # Third-party modules
 from django.db.models import Q
 
 # NOC modules
-from noc.core.ip import IPv6
 from noc.core.datastream.base import DataStream
-from noc.main.models.systemtemplate import SystemTemplate
-from noc.dns.models.dnszone import DNSZone, ZONE_FORWARD, ZONE_REVERSE_IPV4, ZONE_REVERSE_IPV6
-from noc.dns.models.dnszonerecord import DNSZoneRecord
-from ..models.dnszone import DNSZoneDataStreamItem
-from noc.ip.models.address import Address
-from noc.ip.models.addressrange import AddressRange
+from noc.core.dns.encoding import to_idna
 from noc.core.dns.rr import RR
 from noc.core.dns.zonefile import ZoneFile
-from noc.core.dns.encoding import to_idna
+from noc.core.ip import IPv6
+from noc.dns.models.dnszone import ZONE_FORWARD, ZONE_REVERSE_IPV4, ZONE_REVERSE_IPV6, DNSZone
+from noc.dns.models.dnszonerecord import DNSZoneRecord
+from noc.ip.models.address import Address
+from noc.ip.models.addressrange import AddressRange
+from noc.main.models.systemtemplate import SystemTemplate
+
+from ..models.dnszone import DNSZoneDataStreamItem
 
 
 class DNSZoneDataStream(DataStream):

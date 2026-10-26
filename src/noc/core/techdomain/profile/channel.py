@@ -10,9 +10,10 @@ from importlib import import_module
 
 # NOC modules
 from noc.core.runner.models.jobreq import JobRequest
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.endpoint import Endpoint
 from noc.inv.models.object import Object
+from noc.sa.models.managedobject import ManagedObject
+
 from .base import BaseProfileController
 
 

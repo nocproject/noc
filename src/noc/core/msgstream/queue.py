@@ -11,7 +11,6 @@ from collections import deque
 from threading import Lock
 from typing import Any
 
-# NOC modules
 from .message import PublishRequest
 
 

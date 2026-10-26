@@ -6,12 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import json
-import sys
-import pprint
 import argparse
-
-# Third-party modules
+import json
+import pprint
+import sys
 import yaml
 
 # NOC modules

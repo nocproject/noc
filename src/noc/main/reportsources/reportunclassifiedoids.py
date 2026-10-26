@@ -12,10 +12,10 @@ import datetime
 import orjson
 
 # NOC modules
-from noc.core.reporter.reportsource import ReportSource
-from noc.core.reporter.band import Band
-from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.core.clickhouse.connect import connection
+from noc.core.reporter.band import Band
+from noc.core.reporter.reportsource import ReportSource
+from noc.core.reporter.types import BandFormat, ColumnFormat
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 

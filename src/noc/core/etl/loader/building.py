@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.building import Building as BuildingModel
 from noc.gis.models.building import Building
 from noc.gis.models.division import Division
+
+from ..models.building import Building as BuildingModel
+from .base import BaseLoader
 
 
 class BuildingLoader(BaseLoader):

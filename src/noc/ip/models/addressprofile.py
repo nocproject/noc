@@ -5,27 +5,29 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-from functools import partial
+
+# Python modules
 import operator
+from functools import partial
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField
-import cachetools
+from mongoengine.fields import ListField, LongField, StringField
 
 # NOC modules
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.style import Style
-from noc.main.models.label import Label
-from noc.wf.models.workflow import Workflow
-from noc.main.models.template import Template
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.style import Style
+from noc.main.models.template import Template
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 

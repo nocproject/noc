@@ -8,19 +8,19 @@
 # Python modules
 import argparse
 import os
-import tempfile
 import subprocess
-from collections import namedtuple, defaultdict
+import tempfile
+from collections import defaultdict, namedtuple
 
 # NOC modules
+from noc.core.ip import IP
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
-from noc.ip.models.vrf import VRF
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.validators import is_rd
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
-from noc.core.ip import IP
-from noc.core.validators import is_rd
+from noc.ip.models.vrf import VRF
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):

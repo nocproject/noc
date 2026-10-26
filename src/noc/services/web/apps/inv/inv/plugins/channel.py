@@ -6,33 +6,38 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-from collections.abc import Iterable
 from collections import defaultdict
+from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.errors import NotUniqueError
 from django.http import HttpRequest
+from mongoengine.errors import NotUniqueError
 
 # NOC modules
-from noc.inv.models.object import Object
+from noc.core.feature import Feature
 from noc.core.resource import resource_label
-from noc.sa.interfaces.base import (
-    StringParameter,
-    OBJECT_ID,
-    ObjectIdParameter,
-    BooleanParameter,
-    DictParameter,
+from noc.core.techdomain.controller.base import (
+    BaseController,
+    ConstraintSet,
+    Endpoint,
+    controller_loader,
 )
-from noc.core.techdomain.controller.base import controller_loader
-from noc.core.techdomain.controller.base import Endpoint, BaseController, ConstraintSet
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
+from noc.inv.models.object import Object
 from noc.main.models.favorites import Favorites
+from noc.sa.interfaces.base import (
+    OBJECT_ID,
+    BooleanParameter,
+    DictParameter,
+    ObjectIdParameter,
+    StringParameter,
+)
 from noc.sa.models.job import Job
-from noc.core.feature import Feature
-from noc.fm.models.activealarm import ActiveAlarm
+
 from .base import InvPlugin
 
 

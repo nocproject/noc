@@ -5,10 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 import io
 
-# NOC modules
 from .base import BaseCompressor
 
 

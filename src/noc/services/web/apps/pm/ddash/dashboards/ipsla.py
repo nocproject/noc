@@ -6,12 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
+# Third-party modules
 from django.db.models import Q
 
 # NOC modules
-from .jinja import JinjaDashboard
-from noc.sla.models.slaprobe import SLAProbe
 from noc.sa.models.managedobject import ManagedObject
+from noc.sla.models.slaprobe import SLAProbe
+
+from .jinja import JinjaDashboard
 
 
 class IPSLADashboard(JinjaDashboard):

@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import uuid
 
 # NOC modules

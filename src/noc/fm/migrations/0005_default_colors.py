@@ -8,7 +8,6 @@
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
-
 COLORS = {
     "CRITICAL": ("#BB0000", "#FFDDCC"),
     "MAJOR": ("#BB0000", "#FFEEDD"),

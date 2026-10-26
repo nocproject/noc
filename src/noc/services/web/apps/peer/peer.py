@@ -9,14 +9,14 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication, api
-from noc.services.web.base.decorators.state import state_handler
-from noc.peer.models.peer import Peer
-from noc.core.validators import is_prefix
 from noc.core.ip import IP
-from noc.services.web.base.repoinline import RepoInline
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.core.translation import ugettext as _
+from noc.core.validators import is_prefix
+from noc.peer.models.peer import Peer
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter
+from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.extmodelapplication import ExtModelApplication, api
+from noc.services.web.base.repoinline import RepoInline
 
 
 @state_handler

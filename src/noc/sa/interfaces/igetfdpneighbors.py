@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictParameter, ListOfParameter, StringParameter, InterfaceNameParameter
+
+from .base import DictParameter, InterfaceNameParameter, ListOfParameter, StringParameter
 
 
 class IGetFDPNeighbors(BaseInterface):

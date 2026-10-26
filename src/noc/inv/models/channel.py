@@ -5,34 +5,36 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
-import operator
 
+# Python modules
+import operator
+from threading import Lock
 
 # Third-party modules
-from bson import ObjectId
 import cachetools
+from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    LongField,
-    ListField,
     BooleanField,
     EmbeddedDocumentListField,
+    ListField,
+    LongField,
+    StringField,
 )
 
 # NOC modules
 from noc.core.bi.decorator import bi_sync
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.project.models.project import Project
+from noc.core.channel.types import ChannelKind, ChannelTopology
+from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.decorator import on_delete_check
-from noc.core.channel.types import ChannelKind, ChannelTopology
+from noc.project.models.project import Project
+
 from .techdomain import TechDomain
 
 id_lock = Lock()

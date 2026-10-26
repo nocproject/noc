@@ -6,19 +6,19 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-import re
 import json
-from dataclasses import dataclass
-from collections.abc import Iterable
 import logging
+import re
+import time
 from collections import defaultdict
-from pathlib import Path
+from collections.abc import Iterable
+from dataclasses import dataclass
 from itertools import islice
+from pathlib import Path
 
 # Third-party modules
-import mkdocs_gen_files
 import jinja2
+import mkdocs_gen_files
 
 # @todo: Arbitrary ToC depth
 # @todo: en/ru

@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class AlarmSeverityApplication(ExtDocApplication):

@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.administrativedomain import AdministrativeDomain
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainModel
+
+from ..models.administrativedomain import AdministrativeDomain
+from .base import BaseLoader
 
 
 class AdminitstrativeDomainLoader(BaseLoader):

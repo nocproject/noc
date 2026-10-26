@@ -13,15 +13,15 @@
 
 # Python modules
 import argparse
-from importlib import metadata
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import IntEnum, auto
-from collections import defaultdict
+from importlib import metadata
+from pathlib import Path
 
 # NOC modules
 from noc.config import config

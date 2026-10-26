@@ -6,18 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from collections.abc import Iterable, AsyncIterable
+# Python modules
+from collections.abc import AsyncIterable, Iterable
 
 # Third-party modules
 from pymongo import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
 from noc.core.mongo.connection import get_db
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.platform import Platform
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
+
+from .base import BaseDataSource, FieldInfo, FieldType, ParamInfo
 
 
 class LinkDetailDS(BaseDataSource):

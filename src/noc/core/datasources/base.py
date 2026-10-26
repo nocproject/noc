@@ -6,29 +6,29 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
+import enum
 import operator
 import uuid
-import orjson
-from time import perf_counter
+from collections import defaultdict
+from collections.abc import AsyncIterable, Iterable
 from dataclasses import dataclass
 from functools import partial
-from collections import defaultdict
+from time import perf_counter
 from typing import Any
-from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
-from gufo.loader import Loader
+import orjson
 import polars as pl
+from gufo.loader import Loader
 
 # NOC modules
-from noc.core.diagnostic.types import DiagnosticState
+from noc.config import config
 from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.core.clickhouse.error import ClickhouseError
+from noc.core.diagnostic.types import DiagnosticState
 from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model
-from noc.config import config
 
 
 @dataclass
@@ -245,8 +245,9 @@ class BaseDataSource:
         """
         Build Administrative Domain filter
         """
-        from noc.sa.models.useraccess import UserAccess
+        # NOC modules
         from noc.sa.models.administrativedomain import AdministrativeDomain
+        from noc.sa.models.useraccess import UserAccess
 
         ads = set()
         # Normalize administrative domain
@@ -287,6 +288,7 @@ class BaseDataSource:
         :param args: arguments for report query
         :return:
         """
+        # NOC modules
         from noc.core.ioloop.util import run_sync
 
         return run_sync(partial(cls.query, fields, *args, **kwargs))

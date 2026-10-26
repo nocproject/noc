@@ -8,8 +8,7 @@
 # Python modules
 from math import sin
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class SinNode(BaseCDAGNode):

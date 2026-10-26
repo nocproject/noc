@@ -11,23 +11,22 @@ import enum
 from collections.abc import Iterable
 
 # Third-party modules
-from pyVmomi import vim
-from pyVmomi import vmodl
 from pyVim.connect import Disconnect, SmartConnect
+from pyVmomi import vim, vmodl
 
 # NOC modules
 from noc.core.etl.extractor.base import BaseExtractor
+from noc.core.etl.models.fmevent import FMEventObject, RemoteObject, Var
+from noc.core.etl.models.link import Link
+from noc.core.etl.models.managedobject import CapsItem, ManagedObject
+from noc.core.etl.models.object import Object, ObjectData
+from noc.core.etl.models.resourcegroup import ResourceGroup
 from noc.core.etl.models.typing import ETLMapping, MappingItem, RemoteReference
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
-from noc.core.etl.models.managedobject import ManagedObject, CapsItem
-from noc.core.etl.models.resourcegroup import ResourceGroup
-from noc.core.etl.models.object import Object, ObjectData
-from noc.core.etl.models.link import Link
-from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
 from noc.core.fm.event import EventSeverity
-from noc.core.validators import is_ipv4, is_fqdn
 from noc.core.ip import IP
 from noc.core.text import alnum_key
+from noc.core.validators import is_fqdn, is_ipv4
 
 
 class AlarmStatus(enum.Enum):

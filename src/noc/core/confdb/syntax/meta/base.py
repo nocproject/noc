@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ..defs import DEF
-from ..patterns import ANY, INTEGER, IP_ADDRESS, CHOICES
+from ..patterns import ANY, CHOICES, INTEGER, IP_ADDRESS
 
 META_SYNTAX = DEF(
     "meta",

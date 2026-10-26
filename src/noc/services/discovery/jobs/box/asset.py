@@ -5,36 +5,38 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from collections import defaultdict
-import hashlib
+
+# Python modules
 import base64
-from threading import Lock
+import hashlib
 import operator
 import re
-from typing import Any
+from collections import defaultdict
 from collections.abc import Iterable
+from threading import Lock
+from typing import Any
 
 # Third-party modules
 import cachetools
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.main.models.label import Label
-from noc.inv.models.modelinterface import ModelInterface, ModelDataError
-from noc.inv.models.objectmodel import ObjectModel, ConnectionRule, Crossing
-from noc.inv.models.object import Object, ObjectAttr
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.unknownmodel import UnknownModel
-from noc.inv.models.modelmapping import ModelMapping
+from noc.core.comp import smart_bytes
+from noc.core.text import str_dict
+from noc.inv.models.cpe import CPE
 from noc.inv.models.error import ConnectionError
+from noc.inv.models.modelinterface import ModelDataError, ModelInterface
+from noc.inv.models.modelmapping import ModelMapping
+from noc.inv.models.object import Object, ObjectAttr
+from noc.inv.models.objectmodel import ConnectionRule, Crossing, ObjectModel
 from noc.inv.models.sensor import Sensor
 from noc.inv.models.sensorprofile import SensorProfile
-from noc.inv.models.cpe import CPE
-from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
-from noc.core.text import str_dict
-from noc.core.comp import smart_bytes
+from noc.inv.models.unknownmodel import UnknownModel
+from noc.inv.models.vendor import Vendor
+from noc.main.models.label import Label
+from noc.pm.models.measurementunits import DEFAULT_UNITS_NAME, MeasurementUnits
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class AssetCheck(DiscoveryCheck):

@@ -10,12 +10,12 @@ import pytest
 
 # NOC modules
 from noc.core.snmp.render import (
-    render_bin,
-    render_utf8,
+    get_string_renderer,
     get_text_renderer,
+    render_bin,
     render_empty,
     render_mac,
-    get_string_renderer,
+    render_utf8,
 )
 
 DEFAULT_OID = "1.3.6"

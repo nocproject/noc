@@ -13,8 +13,8 @@ from io import StringIO
 from django.db import models
 
 # NOC modules
-from noc.core.model.util import is_related_field
 from noc.core.comp import smart_text
+from noc.core.model.util import is_related_field
 from noc.models import get_model
 
 # CSV import conflict resolution constants

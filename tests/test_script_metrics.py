@@ -10,15 +10,15 @@ import pytest
 
 # NOC modules
 from noc.core.script.metrics import (
+    convert_percent_str,
+    invert0,
+    is1,
     percent,
     percent_invert,
     percent_usage,
-    convert_percent_str,
-    sum,
-    subtract,
-    is1,
-    invert0,
     scale,
+    subtract,
+    sum,
 )
 
 

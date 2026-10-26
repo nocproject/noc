@@ -9,8 +9,8 @@
 from dataclasses import dataclass
 
 # NOC modules
-from noc.core.checkers.base import CheckResult, NODATA
 from noc.config import config
+from noc.core.checkers.base import NODATA, CheckResult
 
 TARGET_CHECK_SEND_INTERVAL = 43000
 

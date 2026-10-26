@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 # Third-party modules
+from pydantic import BaseModel, GetCoreSchemaHandler, StringConstraints
 from pydantic_core import CoreSchema, core_schema
-from pydantic import GetCoreSchemaHandler, BaseModel, StringConstraints
 
 
 class RemoteReference(BaseModel):

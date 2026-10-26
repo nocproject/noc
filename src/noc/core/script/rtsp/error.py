@@ -7,11 +7,12 @@
 
 # NOC modules
 from noc.core.error import (
-    ERR_RTSP_UNKNOWN,
-    ERR_RTSP_CONNECTION_REFUSED,
     ERR_RTSP_AUTH_FAILED,
     ERR_RTSP_BAD_RESPONSE,
+    ERR_RTSP_CONNECTION_REFUSED,
+    ERR_RTSP_UNKNOWN,
 )
+
 from ..cli.error import CLIError
 
 

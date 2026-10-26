@@ -8,17 +8,17 @@
 # Python modules
 import itertools
 import operator
-from pickle import loads, dumps, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, dumps, loads
 
 # Third-party modules
 import bson
-import psycopg2
 import cachetools
+import psycopg2
 
 # NOC modules
+from noc.core.comp import smart_bytes
 from noc.core.migration.base import BaseMigration
 from noc.core.mongo.connection import get_db
-from noc.core.comp import smart_bytes
 
 
 class Migration(BaseMigration):

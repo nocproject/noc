@@ -6,30 +6,30 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import hashlib
 import datetime
-import re
+import hashlib
 import logging
+import re
 from collections import defaultdict
+from collections.abc import Callable, Iterable
+from typing import Any
 
 # Third-party modules
-from gufo.loader import Loader
-import orjson
 import bson
 import bson.errors
-import pymongo
 import dateutil.parser
-from typing import Any
-from collections.abc import Iterable, Callable
+import orjson
+import pymongo
+from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
-from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_text
-from noc.models import get_model
 from noc.core.hash import hash_int
-from noc.core.mx import send_message, MessageType, MX_CHANGE_ID, MX_DATA_ID
+from noc.core.mongo.connection import get_db
+from noc.core.mx import MX_CHANGE_ID, MX_DATA_ID, MessageType, send_message
+from noc.core.perf import metrics
+from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +93,7 @@ class DataStream:
         """Get pymongo Collection object"""
         c_name = cls.get_collection_name(fmt)
         if c_name not in cls._collections_async:
+            # NOC modules
             from noc.core.mongo.connection_async import connect_async, get_db
 
             connect_async()
@@ -759,6 +760,7 @@ class DataStream:
     def update_diagnostic_state(cls, obj_id, is_blocked: bool = False, reason: str | None = None):
         if not cls.DIAGNOSTIC:
             return
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         mo = ManagedObject.objects.filter(id=int(obj_id)).first()

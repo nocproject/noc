@@ -8,27 +8,26 @@
 # Python modules
 import argparse
 import asyncio
+import datetime
 import gzip
 import os
 import random
-import datetime
 import time
-from dateutil.parser import parse
 from collections import defaultdict
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # Third-party modules
 import orjson
+from dateutil.parser import parse
 
 # NOC modules
 from noc.config import config
+from noc.core.cdag.graph import CDAG
+from noc.core.ioloop.util import get_loop_factory
 from noc.core.management.base import BaseCommand
 from noc.core.msgstream.client import MessageStreamClient
-from noc.core.ioloop.util import get_loop_factory
-from noc.core.cdag.graph import CDAG
 from noc.core.service.loader import get_service
-
 
 SQL = """
      SELECT ts, labels, %s FROM %s
@@ -99,6 +98,7 @@ class Command(BaseCommand):
         sla:<SLAPROBE_ID>
         :return:
         """
+        # NOC modules
         from noc.core.mongo.connection import connect
         from noc.sa.models.managedobject import ManagedObject
         from noc.sla.models.slaprobe import SLAProbe
@@ -170,6 +170,7 @@ class Command(BaseCommand):
 
         :return:
         """
+        # NOC modules
         from noc.core.clickhouse.connect import connection
         from noc.pm.models.metrictype import MetricType
 
@@ -341,6 +342,7 @@ class Command(BaseCommand):
             self.print("Register Metric", data)
 
     def from_config_paths(self, paths: list[str]) -> CDAG:
+        # NOC modules
         from noc.core.mongo.connection import connect
 
         connect()
@@ -358,8 +360,9 @@ class Command(BaseCommand):
         return self.from_config_file(path)
 
     def from_metric_action(self, metric_action: str) -> CDAG:
-        from noc.core.mongo.connection import connect
+        # NOC modules
         from noc.core.cdag.factory.config import ConfigCDAGFactory
+        from noc.core.mongo.connection import connect
         from noc.pm.models.metricaction import MetricAction
 
         connect()
@@ -400,6 +403,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def from_config_file_json(cfg: str) -> CDAG:
+        # NOC modules
         from noc.core.cdag.factory.json import JSONCDAGFactory
 
         cdag = CDAG("test", {})
@@ -409,6 +413,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def from_config_file_yaml(cfg: str) -> CDAG:
+        # NOC modules
         from noc.core.cdag.factory.yaml import YAMLCDAGFactory
 
         cdag = CDAG("test", {})
@@ -417,8 +422,9 @@ class Command(BaseCommand):
         return cdag
 
     def from_metric_scope(self, scope_name: str) -> CDAG:
-        from noc.pm.models.metricscope import MetricScope
+        # NOC modules
         from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+        from noc.pm.models.metricscope import MetricScope
 
         ms = MetricScope.objects.filter(name=scope_name).first()
         if not ms:

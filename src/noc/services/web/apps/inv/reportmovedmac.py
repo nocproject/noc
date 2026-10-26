@@ -6,36 +6,36 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
-import datetime
-import csv
 import ast
-import re
 import bisect
-from operator import itemgetter
+import csv
+import datetime
+import logging
+import re
 from io import BytesIO, TextIOWrapper
-from zipfile import ZipFile, ZIP_DEFLATED
+from operator import itemgetter
 from tempfile import TemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 # Third-party modules
 import xlsxwriter
 from django.http import HttpResponse
 
 # NOC modules
+from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.mac import MAC
-from noc.main.models.pool import Pool
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.useraccess import UserAccess
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.macvendor import MACVendor
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.translation import ugettext as _
-from noc.config import config
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.macvendor import MACVendor
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.pool import Pool
+from noc.sa.interfaces.base import BooleanParameter, StringParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 
 logger = logging.getLogger(__name__)
 

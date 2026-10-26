@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.migration.runner import MigrationRunner
 from noc.core.management.base import BaseCommand
+from noc.core.migration.runner import MigrationRunner
 from noc.core.mongo.connection import connect
 
 

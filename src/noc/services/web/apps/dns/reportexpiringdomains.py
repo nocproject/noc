@@ -10,9 +10,9 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, TableColumn
 from noc.config import config
 from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import SimpleReport, TableColumn
 
 
 class ReportForm(forms.Form):

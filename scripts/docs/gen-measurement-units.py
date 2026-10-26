@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import time
-import re
 import json
-from dataclasses import dataclass
-from collections.abc import Iterable
 import logging
+import re
+import time
+from collections.abc import Iterable
+from dataclasses import dataclass
 from pathlib import Path
 
 # Third-party modules

@@ -5,12 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.core.migration.base import BaseMigration
-
 # Third-party modules
 from pymongo import UpdateOne
 from pymongo.errors import OperationFailure
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):

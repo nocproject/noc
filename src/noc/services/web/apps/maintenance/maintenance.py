@@ -7,21 +7,21 @@
 
 # Third-party modules
 import orjson
-from mongoengine.queryset.visitor import Q
 from django.http import HttpRequest
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
+from noc.core.translation import ugettext as _
+from noc.main.models.label import Label
 from noc.maintenance.models.maintenance import (
     Maintenance,
     MaintenanceObject,
     MaintenanceSegment,
 )
-from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.main.models.label import Label
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class MaintenanceApplication(ExtDocApplication):

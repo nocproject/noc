@@ -8,10 +8,12 @@
 # Python modules
 import operator
 
+# NOC modules
+from noc.core.mib import mib
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

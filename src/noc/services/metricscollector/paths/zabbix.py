@@ -6,21 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 import asyncio
 import enum
+import logging
 from http import HTTPStatus
 
 # Third-party modules
 import orjson
-from fastapi import APIRouter, Header, HTTPException, Body
+from fastapi import APIRouter, Body, Header, HTTPException
 from fastapi.responses import JSONResponse
 
 # NOC modules
+from noc.core.etl.models.fmevent import FMEventObject, RemoteObject
+from noc.core.ioloop.util import setup_asyncio
 from noc.core.perf import metrics
 from noc.core.service.loader import get_service
-from noc.core.ioloop.util import setup_asyncio
-from noc.core.etl.models.fmevent import FMEventObject, RemoteObject
 
 router = APIRouter()
 

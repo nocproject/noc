@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
+from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig, InputItem, NodeItem
 from noc.core.cdag.graph import CDAG
-from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig, NodeItem, InputItem
 
 CONFIG = GraphConfig(
     nodes=[

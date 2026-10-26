@@ -9,11 +9,11 @@
 import re
 
 # NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.core.text import parse_table
+from noc.core.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

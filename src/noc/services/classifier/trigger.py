@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import logging
+import re
 
-# Python modules
+# NOC modules
 from noc.core.debug import error_report
 from noc.core.handler import get_handler
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import getpass
 import argparse
+import getpass
 
 # NOC modules
 from noc.core.management.base import BaseCommand

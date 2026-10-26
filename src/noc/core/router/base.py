@@ -6,34 +6,35 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import itertools
 import logging
 import operator
-import itertools
-from time import time_ns
 from collections import defaultdict
-from typing import Any
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterable, Iterator
 from functools import partial
+from time import time_ns
+from typing import Any
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.mx import (
-    MX_MESSAGE_TYPE,
-    MX_SHARDING_KEY,
-    Message,
-    MX_SPAN_ID,
-    MX_SPAN_CTX,
-    MX_FWD_ROUTER,
-)
-from noc.core.service.loader import get_service
-from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.config import get_stream
+from noc.core.mx import (
+    MX_FWD_ROUTER,
+    MX_MESSAGE_TYPE,
+    MX_SHARDING_KEY,
+    MX_SPAN_CTX,
+    MX_SPAN_ID,
+    Message,
+)
+from noc.core.perf import metrics
+from noc.core.service.loader import get_service
 from noc.core.span import Span
-from .route import Route, DefaultNotificationRoute, DefaultJobRoute, DefaultETLEventRoute
+
 from .action import DROP, DUMP, FWD
+from .route import DefaultETLEventRoute, DefaultJobRoute, DefaultNotificationRoute, Route
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ class Router:
 
     def load(self):
         """Load up all the rules and populate the chains"""
+        # NOC modules
         from noc.main.models.messageroute import MessageRoute
 
         num = 0

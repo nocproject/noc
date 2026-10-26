@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from uuid import UUID
 import base64
+from uuid import UUID
 
 # Third-party modules
-from bson.objectid import ObjectId
 from bson.int64 import Int64
+from bson.objectid import ObjectId
 from pymongo import UpdateOne
 
 # NOC modules

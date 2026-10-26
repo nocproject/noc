@@ -8,10 +8,12 @@
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
+
+# NOC modules
 from noc.inv.models.resourcegroup import ResourceGroup
 
 # NOC models
-from noc.models import is_document, get_model_id
+from noc.models import get_model_id, is_document
 
 
 def _apply_dynamic_service_groups(obj):

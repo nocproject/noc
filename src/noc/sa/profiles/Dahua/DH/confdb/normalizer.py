@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.confdb.normalizer.base import ANY, REST, BaseNormalizer, deferable, match
 from noc.core.validators import is_ipv4
 
 

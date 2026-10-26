@@ -8,8 +8,6 @@
 # Python modules
 import asyncio
 import logging
-
-# Third-party modules
 from collections.abc import Callable
 
 # NOC modules
@@ -21,6 +19,7 @@ USE_UVLOOP = False
 
 if config.features.use_uvloop:
     try:
+        # Third-party modules
         import uvloop
 
         USE_UVLOOP = True

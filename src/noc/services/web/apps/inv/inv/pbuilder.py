@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
+from noc.core.inv.path import PathItem, find_path
 from noc.inv.models.object import Object
-from noc.core.inv.path import find_path, PathItem
+from noc.inv.models.objectmodel import ObjectModel, ObjectModelConnection
 
 translation_map = str.maketrans("<>", "><")
 

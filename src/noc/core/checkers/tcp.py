@@ -9,8 +9,7 @@
 import asyncio
 from collections.abc import AsyncIterable
 
-# NOC modules
-from .base import BaseChecker, CheckResult, Check, TCP_CHECK
+from .base import TCP_CHECK, BaseChecker, Check, CheckResult
 
 
 class TCPConnectChecker(BaseChecker):

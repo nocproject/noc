@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import asyncio
+import logging
 
 # Third-party modules
 import orjson
@@ -17,19 +17,17 @@ from fastapi.responses import StreamingResponse
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.core.service.loader import get_service
-from noc.services.mrt.models.mrt import MRTInterfaceScript, MRTCommandScript, MRTAnyScript
-from noc.core.service.deps.user import get_current_user
-
-from noc.core.service.error import RPCRemoteError, RPCError
+from noc.config import config
+from noc.core.debug import error_report
+from noc.core.error import ERR_UNKNOWN
 from noc.core.perf import metrics
+from noc.core.service.deps.user import get_current_user
+from noc.core.service.error import RPCError, RPCRemoteError
+from noc.core.service.loader import get_service
 from noc.core.span import Span
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.core.debug import error_report
-from noc.core.error import ERR_UNKNOWN
-from noc.config import config
-
+from noc.services.mrt.models.mrt import MRTAnyScript, MRTCommandScript, MRTInterfaceScript
 
 logger = logging.getLogger(__name__)
 

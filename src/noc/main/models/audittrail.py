@@ -6,18 +6,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
+import logging
 
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, DateTimeField, EmbeddedDocumentListField
+from mongoengine.fields import DateTimeField, EmbeddedDocumentListField, StringField
 
 # NOC modules
 from noc.config import config
-from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
+from noc.core.middleware.tls import get_user
 from noc.models import get_model_id
 
 logger = logging.getLogger(__name__)

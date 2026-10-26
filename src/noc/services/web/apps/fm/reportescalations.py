@@ -14,12 +14,12 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, PredefinedReport
-from noc.sa.models.useraccess import UserAccess
+from noc.core.translation import ugettext as _
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
+from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.simplereport import PredefinedReport, SimpleReport
 
 
 class ReportForm(forms.Form):

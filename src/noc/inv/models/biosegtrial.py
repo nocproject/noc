@@ -5,24 +5,26 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import datetime
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (
-    StringField,
-    ObjectIdField,
-    IntField,
     BooleanField,
     DateTimeField,
+    IntField,
+    ObjectIdField,
+    StringField,
 )
 
 # NOC modules
+from noc.config import config
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
-from noc.config import config
 
 
 class BioSegTrial(Document):

@@ -8,11 +8,10 @@
 # Python modules
 
 # Third-party modules
-from pydantic import BaseModel
 import numpy as np
+from pydantic import BaseModel
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class MeanNodeState(BaseModel):

@@ -7,25 +7,25 @@
 
 # Python modules
 import enum
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 # Third-party modules
-from pydantic import BaseModel, HttpUrl, ValidationError, StringConstraints, field_validator
+from pydantic import BaseModel, HttpUrl, StringConstraints, ValidationError, field_validator
 
 # NOC modules
+from noc.core.validators import is_fqdn
+from noc.models import get_model, is_document
 from noc.sa.interfaces.base import (
-    IPv4Parameter,
-    IPv6Parameter,
     IPParameter,
-    PrefixParameter,
+    IPv4Parameter,
     IPv4PrefixParameter,
+    IPv6Parameter,
     IPv6PrefixParameter,
     MACAddressParameter,
     OIDParameter,
+    PrefixParameter,
     VLANIDParameter,
 )
-from noc.core.validators import is_fqdn
-from noc.models import get_model, is_document
 
 BOOL_VALUES = frozenset(("t", "true", "yes", "on"))
 REFERENCE_SCOPE_SPLITTER = "::"

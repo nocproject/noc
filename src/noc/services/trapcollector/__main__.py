@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.trapcollector.service import TrapCollectorService
-
 
 if __name__ == "__main__":
     TrapCollectorService().start()

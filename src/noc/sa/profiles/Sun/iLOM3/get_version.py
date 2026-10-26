@@ -6,9 +6,12 @@
 # ---------------------------------------------------------------------
 
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 rx_ver = re.compile(r"SP firmware (?P<version>\S+)")
 

@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import uuid
 from collections import defaultdict
 
 # Third-party modules
 import bson
-import uuid
 import orjson
 from django.db import connection
 from psycopg2.extras import execute_values

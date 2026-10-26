@@ -6,15 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from contextvars import ContextVar
 import uuid
+from contextvars import ContextVar
 
 # NOC modules
-from noc.core.service.client import open_sync_rpc
-from noc.core.service.loader import get_dcs
-from noc.core.dcs.error import ResolutionError
-from noc.core.service.error import RPCNoService
 from noc.config import config
+from noc.core.dcs.error import ResolutionError
+from noc.core.service.client import open_sync_rpc
+from noc.core.service.error import RPCNoService
+from noc.core.service.loader import get_dcs
 
 CALLING_SERVICE = config.script.calling_service
 DEFAULT_IDLE_TIMEOUT = config.script.caller_timeout

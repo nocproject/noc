@@ -9,9 +9,9 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.configuredmap import ConfiguredMap, ObjectFilter
 from noc.core.translation import ugettext as _
+from noc.inv.models.configuredmap import ConfiguredMap, ObjectFilter
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class ConfiguredMapApplication(ExtDocApplication):

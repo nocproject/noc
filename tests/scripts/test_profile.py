@@ -12,8 +12,8 @@ import os
 import pytest
 
 # NOC modules
-from noc.core.profile.loader import loader
 from noc.core.profile.base import BaseProfile
+from noc.core.profile.loader import loader
 
 
 def get_profiles():

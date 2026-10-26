@@ -8,7 +8,6 @@
 # Python modules
 from typing import Any
 
-
 # Third-party modules
 from gufo.loader import Loader
 

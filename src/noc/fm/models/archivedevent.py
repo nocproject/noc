@@ -6,22 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from jinja2 import Template as Jinja2Template
 from mongoengine.document import Document
 from mongoengine.fields import (
     DateTimeField,
-    IntField,
     DictField,
+    EmbeddedDocumentListField,
+    IntField,
     ListField,
     ObjectIdField,
-    EmbeddedDocumentListField,
 )
-from jinja2 import Template as Jinja2Template
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField, RawDictField
-from .eventlog import EventLog
+from noc.sa.models.managedobject import ManagedObject
+
 from .eventclass import EventClass
+from .eventlog import EventLog
 
 
 class ArchivedEvent(Document):

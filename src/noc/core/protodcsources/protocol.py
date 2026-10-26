@@ -8,7 +8,6 @@
 # Python modules
 from collections.abc import Iterable
 
-# NOC modules
 from .base import BaseDiscriminatorSource, DiscriminatorDataItem
 
 

@@ -6,16 +6,19 @@
 # ----------------------------------------------------------------------
 
 # NOC Modules
+# Python modules
 import datetime
 
+# Third-party modules
 # Third-party module
 import orjson
 
 # NOC modules
-from .base import BaseLoader
-from ..models.fmevent import FMEventObject
 from noc.core.fm.event import Event, EventSeverity, MessageType, Var
 from noc.core.service.loader import get_service
+
+from ..models.fmevent import FMEventObject
+from .base import BaseLoader
 
 
 class FMEventLoader(BaseLoader):

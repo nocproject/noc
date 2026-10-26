@@ -10,11 +10,11 @@
 import orjson
 
 # NOC modules
-from noc.core.service.base import BaseService
-from noc.core.msgstream.message import Message
-from noc.core.handler import get_handler
 from noc.core.debug import error_report
+from noc.core.handler import get_handler
+from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 
 
 class WorkerService(BaseService):

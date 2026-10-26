@@ -10,10 +10,10 @@ import importlib
 import os
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.main.refbooks.refbooks import RefBook
-from noc.main.models.refbook import RefBook as RB
 from noc.core.comp import smart_text
+from noc.core.management.base import BaseCommand
+from noc.main.models.refbook import RefBook as RB
+from noc.main.refbooks.refbooks import RefBook
 
 
 class Command(BaseCommand):

@@ -6,28 +6,29 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
 from fastapi import APIRouter
 
 # NOC modules
-from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api, executor
-from noc.core.script.loader import loader
-from noc.core.script.base import BaseScript
-from noc.core.ioloop.snmp import snmp_get, SNMPError
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from noc.core.http.aio import HttpClient
-from noc.core.comp import smart_text
-from noc.core.perf import metrics
-from noc.core.debug import error_report
-from noc.core.checkers.loader import loader as checker_loader
-from noc.core.checkers.base import Check, CheckResult
 from noc.config import config
+from noc.core.checkers.base import Check, CheckResult
+from noc.core.checkers.loader import loader as checker_loader
+from noc.core.comp import smart_text
+from noc.core.debug import error_report
+from noc.core.http.aio import HttpClient
+from noc.core.ioloop.snmp import SNMPError, snmp_get
 from noc.core.jsonutils import iter_chunks
-from ..models.streaming import StreamingConfig
+from noc.core.perf import metrics
+from noc.core.script.base import BaseScript
+from noc.core.script.loader import loader
+from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api, executor
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+
 from ..models.controller import ControllerConfig
+from ..models.streaming import StreamingConfig
 
 router = APIRouter()
 
@@ -258,8 +259,9 @@ class ActivatorAPI(JSONRPCAPI):
         Returns:
             Result as a string, or None, when no response
         """
-        from gufo.snmp import SnmpSession, SnmpVersion, SnmpError
-        from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
+        # Third-party modules
+        from gufo.snmp import SnmpError, SnmpSession, SnmpVersion
+        from gufo.snmp.user import Aes128Key, DesKey, KeyType, Md5Key, Sha1Key, User
 
         auth_proto_map = {"SHA": Sha1Key, "MD5": Md5Key}
         priv_proto_map = {"AES": Aes128Key, "DES": DesKey}

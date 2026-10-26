@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.dns.encoding import from_idna, to_idna, is_idna
+from noc.core.dns.encoding import from_idna, is_idna, to_idna
 
 
 @pytest.mark.parametrize(

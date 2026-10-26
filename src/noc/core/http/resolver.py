@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import asyncio
-import threading
 import random
+import socket
+import threading
 
 # Third-party modules
 import cachetools

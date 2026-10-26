@@ -5,14 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from .meta.base import META_SYNTAX
-from .system.base import SYSTEM_SYNTAX
-from .interfaces.base import INTERFACES_SYNTAX
-from .protocols.base import PROTOCOLS_SYNTAX
-from .virtualrouter.base import VIRTUAL_ROUTER_SYNTAX
-from .media.base import MEDIA_SYNTAX
 from .hints import HINTS_SYNTAX
+from .interfaces.base import INTERFACES_SYNTAX
+from .media.base import MEDIA_SYNTAX
+from .meta.base import META_SYNTAX
+from .protocols.base import PROTOCOLS_SYNTAX
+from .system.base import SYSTEM_SYNTAX
+from .virtualrouter.base import VIRTUAL_ROUTER_SYNTAX
 
 SYNTAX = [
     META_SYNTAX,

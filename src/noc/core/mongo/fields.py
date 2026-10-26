@@ -9,14 +9,15 @@
 import datetime
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.base import get_document
-from mongoengine.fields import BaseField, DateTimeField, DictField
-from mongoengine.base.datastructures import BaseList
-from mongoengine.errors import ValidationError
 from bson import ObjectId
 from django.db.models import Model
+from mongoengine.base import get_document
+from mongoengine.base.datastructures import BaseList
+from mongoengine.document import Document
+from mongoengine.errors import ValidationError
+from mongoengine.fields import BaseField, DateTimeField, DictField
 
+# NOC modules
 # NOC models
 from noc.models import get_model
 

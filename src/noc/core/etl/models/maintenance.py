@@ -12,7 +12,6 @@ from typing import Literal
 # Third-party modules
 from pydantic import BaseModel as _BaseModel
 
-# NOC modules
 from .base import BaseModel
 
 

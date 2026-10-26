@@ -5,35 +5,37 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
 import re
+import threading
 from dataclasses import dataclass
-from typing import NoReturn, Any
 from pathlib import Path
+from typing import Any, NoReturn
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
-    UUIDField,
     BooleanField,
     EmbeddedDocumentListField,
+    StringField,
+    UUIDField,
 )
 from pydantic import BaseModel
-import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
-from noc.pm.models.metrictype import MetricType
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.path import safe_json_path
-from .configurationscope import ConfigurationScope
+from noc.core.prettyjson import to_json
+from noc.pm.models.metrictype import MetricType
 
+from .configurationscope import ConfigurationScope
 
 id_lock = threading.Lock()
 

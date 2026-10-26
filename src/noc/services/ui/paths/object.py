@@ -12,10 +12,11 @@ from fastapi import APIRouter
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.main.models.label import Label
+
 from ..models.object import DefaultObjectItem, FormObjectItem, PointItem
 from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.document import DocumentResourceAPI
-from ..utils.rest.op import RefFilter, FuncFilter
+from ..utils.rest.op import FuncFilter, RefFilter
 
 router = APIRouter()
 

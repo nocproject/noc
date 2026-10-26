@@ -8,8 +8,7 @@
 # Python modules
 from math import atan
 
-# NOC modules
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, Category, ValueType
 
 
 class ATanNode(BaseCDAGNode):

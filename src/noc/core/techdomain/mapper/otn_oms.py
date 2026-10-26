@@ -8,12 +8,13 @@
 # Python modules
 from collections import defaultdict
 
-# Python modules
-from noc.inv.models.endpoint import Endpoint as DBEndpoint
+# NOC modules
 from noc.core.resource import from_resource
+from noc.inv.models.endpoint import Endpoint as DBEndpoint
+
 from ..controller.base import Endpoint, PathItem
-from .base import BaseMapper, Node
 from ..controller.otn_oms import OTNOMSCotroller
+from .base import BaseMapper, Node
 
 
 class OTNOMSMapper(BaseMapper):

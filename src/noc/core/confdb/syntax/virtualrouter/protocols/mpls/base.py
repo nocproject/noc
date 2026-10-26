@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ....defs import DEF
-from ....patterns import UNIT_NAME, ANY, INTEGER, IP_ADDRESS
+from ....patterns import ANY, INTEGER, IP_ADDRESS, UNIT_NAME
 
 MPLS_SYNTAX = DEF(
     "mpls",

@@ -6,10 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.comp import smart_text
 from noc.core.datastream.base import DataStream
 from noc.ip.models.address import Address
+
 from ..models.address import AddressDataStreamItem
-from noc.core.comp import smart_text
 
 
 def qs(s):

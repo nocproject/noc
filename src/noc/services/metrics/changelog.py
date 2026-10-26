@@ -7,18 +7,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
-import orjson
-import logging
 import asyncio
 import datetime
+import logging
 import random
+from typing import Any
+
+# Third-party modules
+import orjson
 
 # NOC modules
-from noc.core.service.loader import get_service
-from noc.core.hash import hash_int
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
+from noc.core.hash import hash_int
+from noc.core.service.loader import get_service
 
 SQL_STATE = """
     SELECT node_id, argMax(state, ts) as state

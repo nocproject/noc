@@ -8,21 +8,21 @@
 # Python modules
 import asyncio
 import logging
+from collections.abc import AsyncIterable
 from functools import partial
 from typing import Any
-from collections.abc import AsyncIterable
 
 # Third-party modules
 import orjson
 
 # NOC modules
+from noc.config import config
 from noc.core.handler import get_handler
 from noc.core.ioloop.util import run_sync
-from .message import Message, PublishRequest
-from .config import get_stream, TEMPORARY_STREAM_PREFIX
-from .metadata import Metadata, PartitionMetadata
-from noc.config import config
 
+from .config import TEMPORARY_STREAM_PREFIX, get_stream
+from .message import Message, PublishRequest
+from .metadata import Metadata, PartitionMetadata
 
 logger = logging.getLogger(__name__)
 

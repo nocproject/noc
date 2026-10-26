@@ -9,19 +9,20 @@
 import random
 
 # NOC modules
-from noc.services.discovery.jobs.base import MODiscoveryJob
-from noc.core.span import Span
+from noc.config import config
 from noc.core.change.policy import change_tracker
+from noc.core.span import Span
+from noc.services.discovery.jobs.base import MODiscoveryJob
+
 from ..box.resolver import ResolverCheck
-from .uptime import UptimeCheck
-from .interfacestatus import InterfaceStatusCheck
-from .mac import MACCheck
 from .alarms import AlarmsCheck
 from .cpestatus import CPEStatusCheck
-from .peerstatus import PeerStatusCheck
 from .diagnostic import DiagnosticCheck
+from .interfacestatus import InterfaceStatusCheck
+from .mac import MACCheck
 from .metrics import MetricsCheck
-from noc.config import config
+from .peerstatus import PeerStatusCheck
+from .uptime import UptimeCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):

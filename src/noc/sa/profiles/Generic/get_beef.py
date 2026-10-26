@@ -6,16 +6,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import uuid
-import datetime
-from collections import OrderedDict
 import codecs
+import datetime
+import uuid
+from collections import OrderedDict
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetbeef import IGetBeef
 from noc.core.comp import smart_bytes, smart_text
+from noc.core.script.base import BaseScript
 from noc.core.snmp.error import SNMPError
+from noc.sa.interfaces.igetbeef import IGetBeef
 
 
 class Script(BaseScript):

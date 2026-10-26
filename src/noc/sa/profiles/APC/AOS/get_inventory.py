@@ -5,12 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import datetime
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.core.text import parse_kv
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):

@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+from noc.core.translation import ugettext as _
+from noc.dns.models.dnszone import DNSZone
+from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.services.web.base.extmodelapplication import ExtModelApplication
 from noc.services.web.base.modelinline import ModelInline
 from noc.services.web.base.repoinline import RepoInline
-from noc.dns.models.dnszone import DNSZone
-from noc.dns.models.dnszonerecord import DNSZoneRecord
-from noc.core.translation import ugettext as _
 
 
 class DNSZoneApplication(ExtModelApplication):

@@ -5,8 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from .encoding import from_idna, to_idna, is_idna
+from .encoding import from_idna, is_idna, to_idna
 from .rr import RR
 
 HEADER = """;;

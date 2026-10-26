@@ -5,9 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from ...defs import DEF
-from ...patterns import IF_NAME, INTEGER, CHOICES
+from ...patterns import CHOICES, IF_NAME, INTEGER
 
 PROTOCOLS_LACP_SYNTAX = DEF(
     "lacp",

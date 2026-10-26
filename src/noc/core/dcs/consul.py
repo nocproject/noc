@@ -6,23 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 import random
 import time
-import orjson
 import uuid
 from urllib.parse import unquote
-import asyncio
 
 # Third-party modules
-from consul.exceptions import NotFound
+import orjson
 from consul.check import Check
+from consul.exceptions import NotFound
 
 # NOC modules
 from noc.config import config
-from noc.core.perf import metrics
-from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text
 from noc.core.consul import ConsulClient, ConsulRepeatableErrors
+from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.perf import metrics
+
 from .base import DCSBase, ResolverBase
 
 

@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import concurrent.futures
 import datetime
 import logging
-import concurrent.futures
 import time
-from pickle import loads, dumps, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, dumps, loads
 
 # Third-party modules
 from mongoengine.document import Document

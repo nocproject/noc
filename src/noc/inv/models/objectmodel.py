@@ -5,54 +5,57 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
 import re
-from uuid import UUID
-from typing import Any
 from collections.abc import Iterable
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
+from threading import Lock
+from typing import Any
+from uuid import UUID
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (
-    StringField,
-    IntField,
-    UUIDField,
-    ListField,
+    BooleanField,
     DynamicField,
     EmbeddedDocumentListField,
-    ObjectIdField,
-    FloatField,
-    BooleanField,
     EnumField,
+    FloatField,
+    IntField,
+    ListField,
+    ObjectIdField,
+    StringField,
+    UUIDField,
 )
-from mongoengine.errors import ValidationError
-from pymongo import InsertOne, DeleteOne
-import cachetools
+from pymongo import DeleteOne, InsertOne
 
 # NOC modules
-from noc.main.models.doccategory import category
-from noc.main.models.label import Label
-from noc.core.mongo.fields import PlainReferenceField
-from noc.core.prettyjson import to_json
-from noc.core.path import safe_json_path
-from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
-from noc.pm.models.measurementunits import MeasurementUnits
 from noc.core.discriminator import discriminator
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.mongo.fields import PlainReferenceField
+from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
+from noc.main.models.doccategory import category
 from noc.main.models.glyph import Glyph
-from .objectconfigurationrule import ObjectConfigurationRule
-from .connectiontype import ConnectionType
+from noc.main.models.label import Label
+from noc.pm.models.measurementunits import MeasurementUnits
+
 from .connectionrule import ConnectionRule
+from .connectiontype import ConnectionType
+from .facade import Facade
+from .objectconfigurationrule import ObjectConfigurationRule
+from .protocol import Protocol
 from .unknownmodel import UnknownModel
 from .vendor import Vendor
-from .protocol import Protocol
-from .facade import Facade
 
 id_lock = Lock()
 

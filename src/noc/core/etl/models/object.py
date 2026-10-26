@@ -8,9 +8,10 @@
 # Python modules
 from typing import Any
 
-# NOC modules
-from .base import BaseModel, Reference, _BaseModel
+# Third-party modules
 from pydantic import Field
+
+from .base import BaseModel, Reference, _BaseModel
 
 
 class ObjectData(_BaseModel):

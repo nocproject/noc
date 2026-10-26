@@ -5,8 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
+
+# Python modules
 import operator
 from threading import Lock
 
@@ -14,12 +16,12 @@ from threading import Lock
 import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, IntField, EmbeddedDocumentListField
+from mongoengine.fields import BooleanField, EmbeddedDocumentListField, IntField, StringField
 
 # NOC modules
 from noc.aaa.models.group import Group
-from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
+from noc.core.mongo.fields import ForeignKeyField
 
 id_lock = Lock()
 

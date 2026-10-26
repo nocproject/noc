@@ -9,11 +9,11 @@
 import re
 
 # NOC modules
-from noc.core.text import parse_table
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.text import parse_table
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

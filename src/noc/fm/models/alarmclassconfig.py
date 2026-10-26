@@ -11,6 +11,7 @@ from mongoengine.fields import IntField
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+
 from .alarmclass import AlarmClass
 
 

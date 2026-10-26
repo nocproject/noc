@@ -7,8 +7,8 @@
 
 # NOC modules
 from noc.config import config
-from .base import Histogram
 
+from .base import Histogram
 
 hists = {}
 

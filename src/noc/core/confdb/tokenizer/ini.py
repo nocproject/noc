@@ -8,7 +8,6 @@
 # Python modules
 from configparser import RawConfigParser
 
-# NOC modules
 from .base import BaseTokenizer
 
 

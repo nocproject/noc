@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, cast
 import importlib
-import os
 import operator
+import os
+from typing import Any, cast
 
-# NOC modules
 from .fields import BaseField
 
 __all__ = ["Dictionary"]

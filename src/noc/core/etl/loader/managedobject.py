@@ -9,24 +9,27 @@
 import enum
 from typing import Any
 
-# Third-party module
-from mongoengine.document import Document
+# Third-party modules
 from django.db.models.base import Model
 
+# Third-party module
+from mongoengine.document import Document
+
 # NOC modules
-from .base import BaseLoader
-from ..models.managedobject import ManagedObject
-from noc.core.purgatorium import register, CapsItem
-from noc.main.models.pool import Pool
-from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
-from noc.sa.models.profile import Profile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.authprofile import AuthProfile
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.core.purgatorium import CapsItem, register
 from noc.inv.models.capability import Capability
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.ip.models.vrf import VRF
+from noc.main.models.pool import Pool
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.profile import Profile
+
+from ..models.managedobject import ManagedObject
+from .base import BaseLoader
 
 
 class ManagedObjectLoader(BaseLoader):

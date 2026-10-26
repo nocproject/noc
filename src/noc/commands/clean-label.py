@@ -15,9 +15,8 @@ from pymongo import UpdateMany
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.models import get_model
 from noc.main.models.label import Label
-
+from noc.models import get_model
 
 models = [
     ("fm.ActiveAlarm", "labels"),

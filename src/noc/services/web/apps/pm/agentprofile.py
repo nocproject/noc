@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.pm.models.agentprofile import AgentProfile
 from noc.core.translation import ugettext as _
+from noc.pm.models.agentprofile import AgentProfile
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class AgentProfileApplication(ExtDocApplication):

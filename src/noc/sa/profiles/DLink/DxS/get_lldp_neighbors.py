@@ -8,40 +8,39 @@
 # Python modules
 import re
 
-# NOC modiles
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.sa.interfaces.base import IPv4Parameter
-from noc.core.mac import MAC
+# NOC modules
 from noc.core.comp import smart_text
-from noc.core.snmp.render import render_utf8
-from noc.core.snmp.render import render_bin
-from noc.core.snmp.render import render_mac
 from noc.core.lldp import (
-    LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
-    LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
-    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
-    LLDP_CHASSIS_SUBTYPE_MAC,
-    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
-    LLDP_CHASSIS_SUBTYPE_LOCAL,
-    LLDP_PORT_SUBTYPE_ALIAS,
-    LLDP_PORT_SUBTYPE_COMPONENT,
-    LLDP_PORT_SUBTYPE_MAC,
-    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
-    LLDP_PORT_SUBTYPE_NAME,
-    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
-    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_OTHER,
     LLDP_CAP_REPEATER,
-    LLDP_CAP_BRIDGE,
-    LLDP_CAP_WLAN_ACCESS_POINT,
     LLDP_CAP_ROUTER,
-    LLDP_CAP_TELEPHONE,
-    LLDP_CAP_DOCSIS_CABLE_DEVICE,
     LLDP_CAP_STATION_ONLY,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
 )
+from noc.core.mac import MAC
+
+# NOC modiles
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_bin, render_mac, render_utf8
+from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):

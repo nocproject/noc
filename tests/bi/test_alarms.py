@@ -9,8 +9,8 @@
 import pytest
 
 # NOC modules
-from noc.core.clickhouse.fields import BaseField
 from noc.bi.models.alarms import Alarms
+from noc.core.clickhouse.fields import BaseField
 
 MODEL = Alarms
 

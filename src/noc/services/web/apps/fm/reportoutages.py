@@ -11,15 +11,15 @@ from collections import defaultdict
 
 # Third-party modules
 from django import forms
-from mongoengine.queryset.visitor import Q
 from django.http import HttpRequest
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import PredefinedReport, SimpleReport, TableColumn
 
 
 class ReportForm(forms.Form):

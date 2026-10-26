@@ -5,52 +5,53 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import operator
+
+# Python modules
 import logging
+import operator
+from collections.abc import Callable, Iterable
 from threading import Lock
 from typing import Any
-from collections.abc import Callable, Iterable
-
-# from pathlib import Path
 
 # Third-party modules
+# from pathlib import Path
 import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.queryset.visitor import Q as m_q
 from mongoengine.fields import (
-    StringField,
     BooleanField,
+    EmbeddedDocumentListField,
+    EnumField,
+    IntField,
     ListField,
     LongField,
-    IntField,
-    UUIDField,
     ReferenceField,
-    EnumField,
-    EmbeddedDocumentListField,
+    StringField,
+    UUIDField,
 )
+from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.handler import Handler
-from noc.main.models.label import Label
-from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.capability import Capability
-from noc.sa.models.action import Action
-from noc.wf.models.state import State
-from noc.models import get_model
-from noc.core.models.cfgactions import ActionType
-from noc.core.matcher import build_matcher
-from noc.core.runner.job import JobRequest
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.change.model import ChangeItem
 from noc.core.change.policy import REACTION_MODELS
-from noc.core.model.decorator import tree, on_delete_check
+from noc.core.matcher import build_matcher
+from noc.core.model.decorator import on_delete_check, tree
+from noc.core.models.cfgactions import ActionType
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.runner.job import JobRequest
+from noc.inv.models.capability import Capability
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.handler import Handler
+from noc.main.models.label import Label
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
+from noc.models import get_model
+from noc.sa.models.action import Action
+from noc.wf.models.state import State
 
 id_lock = Lock()
 rule_lock = Lock()

@@ -9,22 +9,22 @@
 from typing import Any
 
 # Third-party modules
+from django.db import connection as pg_conn
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
-from django.db import connection as pg_conn
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.useraccess import UserAccess
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.models import get_model
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.models import get_model
-from ..models.managedobject import VariablePayloadItem, QueryPayloadItem
-from ..jsonds import JsonDSAPI
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 
+from ..jsonds import JsonDSAPI
+from ..models.managedobject import QueryPayloadItem, VariablePayloadItem
 
 router = APIRouter()
 

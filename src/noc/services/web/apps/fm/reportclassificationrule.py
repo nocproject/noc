@@ -13,10 +13,10 @@ from django import forms
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow
-from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.translation import ugettext as _
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.services.web.base.simplereport import SectionRow, SimpleReport
 
 
 class ReportForm(forms.Form):

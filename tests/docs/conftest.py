@@ -7,14 +7,12 @@
 
 # Python modules
 import re
-from pathlib import Path
+import yaml
 from collections.abc import Iterable
-
+from pathlib import Path
 
 # Third-party modules
 import pytest
-import yaml
-
 
 DOCS_DIR = Path("docs")
 SUMMARY_FILENAME = "SUMMARY.md"

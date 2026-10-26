@@ -10,13 +10,13 @@ from django.db.models import Q as d_Q
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
-from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
+from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.interfaces.base import DictParameter, IPv4Parameter, ListOfParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
+from noc.services.web.base.extapplication import ExtApplication, api
 
 JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
 

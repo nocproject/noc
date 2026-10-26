@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Cisco.IOS.get_cdp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
+from noc.sa.profiles.Cisco.IOS.get_cdp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):

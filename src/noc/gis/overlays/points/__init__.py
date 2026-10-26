@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.gis.overlays.base import OverlayHandler
 from noc.core.mongo.connection import get_db
+from noc.gis.overlays.base import OverlayHandler
 
 
 class PointsOverlay(OverlayHandler):

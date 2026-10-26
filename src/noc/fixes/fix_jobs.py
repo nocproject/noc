@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
 
 
 def fix():

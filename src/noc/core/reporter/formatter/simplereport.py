@@ -13,13 +13,13 @@ from xlsxwriter.workbook import Workbook
 
 # NOC modules
 from noc.core.reporter.formatter.base import DataFormatter
-from noc.core.reporter.types import OutputType, BandFormat, HEADER_BAND
+from noc.core.reporter.types import HEADER_BAND, BandFormat, OutputType
 from noc.services.web.base.simplereport import (
     Report,
-    TextSection,
-    TableSection,
     SectionRow,
     TableColumn,
+    TableSection,
+    TextSection,
 )
 
 

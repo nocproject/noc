@@ -7,16 +7,17 @@
 
 # Python modules
 import inspect
-import re
 import os
-from typing import Any, cast
-from collections.abc import Iterable
+import re
 import warnings
+from collections.abc import Iterable
+from typing import Any, cast
 
 # NOC modules
 from noc.core.typing import SENTINEL
+
+from .backends.base import BaseConfigBackend, from_url
 from .params import BaseParameter
-from .backends.base import from_url, BaseConfigBackend
 
 
 class ConfigurationError(Exception):

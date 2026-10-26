@@ -6,38 +6,38 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import argparse
-import pprint
-import datetime
-import re
-from collections import namedtuple
-import yaml
 import codecs
+import datetime
+import os
+import pprint
+import re
 import uuid
+import yaml
+from collections import namedtuple
 from pathlib import Path
 
 # Third-party modules
 import orjson
 
 # NOC modules
+from noc.core.comp import smart_bytes, smart_text
 from noc.core.management.base import BaseCommand
-from noc.core.validators import is_int
-from noc.core.span import get_spans, Span
-from noc.core.script.loader import loader
-from noc.core.script.beef import Beef
-from noc.core.script.scheme import (
-    CLI_PROTOCOLS,
-    HTTP_PROTOCOLS,
-    PROTOCOLS,
-    BEEF,
-    TELNET,
-    SSH,
-    HTTP,
-    HTTPS,
-)
 from noc.core.mongo.connection import connect
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.script.beef import Beef
+from noc.core.script.loader import loader
+from noc.core.script.scheme import (
+    BEEF,
+    CLI_PROTOCOLS,
+    HTTP,
+    HTTP_PROTOCOLS,
+    HTTPS,
+    PROTOCOLS,
+    SSH,
+    TELNET,
+)
+from noc.core.span import Span, get_spans
+from noc.core.validators import is_int
 from noc.services.activator.models.controller import ControllerConfig
 
 BEEF_FORMAT = "1"
@@ -159,6 +159,7 @@ class Command(BaseCommand):
         if pretty:
             pprint.pprint(result)
         elif yaml_o:
+            # Python modules
             import sys
 
             yaml.dump(result, sys.stdout)
@@ -178,8 +179,11 @@ class Command(BaseCommand):
         if object_name.endswith(".json") and os.path.isfile(object_name):
             return JSONObject(object_name)
 
-        from noc.sa.models.managedobject import ManagedObject
+        # Third-party modules
         from django.db.models import Q
+
+        # NOC modules
+        from noc.sa.models.managedobject import ManagedObject
 
         connect()
 
@@ -288,6 +292,7 @@ class Command(BaseCommand):
         :param script: BaseScript instance
         :return:
         """
+        # NOC modules
         from noc.dev.models.quiz import Quiz
         from noc.dev.models.spec import Spec, SpecAnswer
         from noc.sa.models.profile import Profile

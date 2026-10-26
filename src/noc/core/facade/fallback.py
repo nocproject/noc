@@ -12,8 +12,8 @@ from threading import Lock
 from cachetools import cached
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.facade import Facade
+from noc.inv.models.objectmodel import ObjectModel
 
 _fallback_cache = {}
 _fallback_lock = Lock()

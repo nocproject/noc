@@ -8,6 +8,7 @@
 # Python modules
 
 # Pytest modules
+# Third-party modules
 import pytest
 
 # NOC modules

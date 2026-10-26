@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import math
 from collections import deque
-from typing import Any
 from collections.abc import Iterable
 from threading import Lock
-import math
+from typing import Any
 
 # Third-party modules
 import orjson
 
-# Python modules
-from noc.core.mx import Message
+# NOC modules
 from noc.config import config
+from noc.core.mx import Message
 
 
 class MBuffer:

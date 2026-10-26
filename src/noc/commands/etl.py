@@ -7,19 +7,19 @@
 
 # Python modules
 import argparse
-import os
 import datetime
+import os
 import time
+import yaml
 
 # Third-party modules
-import yaml
 import orjson
 
 # NOC modules
-from noc.core.mongo.connection import connect
-from noc.core.management.base import BaseCommand
-from noc.main.models.remotesystem import RemoteSystem
 from noc.core.etl.loader.chain import LoaderChain
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
+from noc.main.models.remotesystem import RemoteSystem
 
 CLEANUP_SAFE_FILES_COUNT = 3
 
@@ -177,6 +177,7 @@ class Command(BaseCommand):
             yield model(**d)
 
     def handle_db_diff(self, *args, **options):
+        # NOC modules
         from noc.sa.models.managedobject import ManagedObject
 
         remote_system = RemoteSystem.get_by_name(options["system"])

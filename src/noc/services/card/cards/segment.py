@@ -9,11 +9,12 @@
 import operator
 
 # NOC modules
-from .base import BaseCard
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+
+from .base import BaseCard
 
 
 class SegmentCard(BaseCard):

@@ -14,7 +14,6 @@ from gufo.loader import Loader
 # NOC modules
 from noc.config import config
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -47,6 +46,7 @@ class BaseAuthBackend:
     def ensure_user(
         self, username, is_active=True, first_name=None, last_name=None, email=None, **kwargs
     ):
+        # NOC modules
         from noc.aaa.models.user import User
 
         changed = False

@@ -6,14 +6,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from logging import getLogger
 from functools import partial
+from logging import getLogger
 
 # NOC modules
-from noc.models import is_document, get_model_id
 from noc.core.model.decorator import _on_init_handler
-from .policy import change_tracker
+from noc.models import get_model_id, is_document
+
 from .model import ChangeField
+from .policy import change_tracker
 
 logger = getLogger(__name__)
 
@@ -32,6 +33,7 @@ def get_domains(instance, changed_fields=None) -> list[tuple[str, str]] | None:
 
 def get_applied_rules(instance, op: str, changed_fields=None) -> list[str] | None:
     """Build reaction rules"""
+    # NOC modules
     from noc.sa.models.reactionrule import ReactionRule
 
     if hasattr(instance, "get_matcher_ctx"):
@@ -64,6 +66,7 @@ def _track_document(model):
     """
     Setup document change tracking
     """
+    # Third-party modules
     from mongoengine import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
@@ -76,6 +79,7 @@ def _track_model(model):
     """
     Setup model change tracking
     """
+    # Third-party modules
     from django.db.models import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))

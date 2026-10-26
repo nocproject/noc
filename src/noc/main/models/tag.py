@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, ListField
+from mongoengine.fields import IntField, ListField, StringField
 
 
 class Tag(Document):

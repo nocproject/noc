@@ -5,12 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 from typing import Any
 
 # NOC modules
-from noc.core.hash import dict_hash_int
 from noc.core.confdb.engine.base import Engine
+from noc.core.hash import dict_hash_int
 
 
 def check_query(query: str, args: dict[str, Any], expected: list[dict[str, Any]]) -> bool:

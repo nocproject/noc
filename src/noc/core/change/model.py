@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Literal
 from dataclasses import dataclass, field, replace
+from typing import Any, Literal
 
 
 @dataclass(frozen=True)
@@ -92,6 +92,7 @@ class ChangeItem:
 
     @property
     def instance(self):
+        # NOC modules
         from noc.models import get_object
 
         return get_object(self.model_id, self.item_id)

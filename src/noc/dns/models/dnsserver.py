@@ -5,19 +5,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
 
-# Third-party modules modules
-from noc.core.translation import ugettext as _
+# Third-party modules
 from django.db import models
 
 # NOC modules
+from noc.config import config
+from noc.core.change.decorator import change
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
-from noc.config import config
 from noc.core.model.fields import INETField
-from noc.core.change.decorator import change
+
+# Third-party modules modules
+from noc.core.translation import ugettext as _
 
 
 @on_init

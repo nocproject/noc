@@ -13,7 +13,8 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.serviceinstanceconfig import InstanceType
-from .utils import StateItem, ProjectItem, RemoteSystemItem, RemoteMapItem
+
+from .utils import ProjectItem, RemoteMapItem, RemoteSystemItem, StateItem
 
 
 class CapabilitiesItem(BaseModel):

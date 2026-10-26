@@ -12,23 +12,22 @@ from collections import defaultdict
 # Third-party modules
 from aiokafka import AIOKafkaProducer
 from aiokafka.errors import (
-    KafkaError,
     KafkaConnectionError,
+    KafkaError,
     KafkaTimeoutError,
-    RequestTimedOutError,
     NodeNotReadyError,
+    RequestTimedOutError,
 )
 from atomicl import AtomicLong
 
 # NOC modules
 from noc.config import config
-from noc.core.service.base import BaseService
-from noc.core.perf import metrics
-from noc.core.msgstream.message import Message
-from noc.core.mx import MX_TO, MX_SHARDING_KEY, KAFKA_PARTITION
 from noc.core.comp import smart_text
+from noc.core.msgstream.message import Message
+from noc.core.mx import KAFKA_PARTITION, MX_SHARDING_KEY, MX_TO
+from noc.core.perf import metrics
+from noc.core.service.base import BaseService
 from noc.core.timeout import retry_timeout
-
 
 KAFKASENDER_STREAM = "kafkasender"
 

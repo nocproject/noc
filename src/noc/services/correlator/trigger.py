@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 import logging
+import re
 
+# NOC modules
 # NOC Modules
 from noc.core.handler import get_handler
 

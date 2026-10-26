@@ -10,13 +10,13 @@
 import contextlib
 import threading
 
-# NOC modules
-from noc.core.service.base import BaseService
-from noc.main.models.pool import Pool
-from noc.config import config
-
 # Third-party modules
 from psycopg2.pool import ThreadedConnectionPool
+
+# NOC modules
+from noc.config import config
+from noc.core.service.base import BaseService
+from noc.main.models.pool import Pool
 
 
 class SAEService(BaseService):

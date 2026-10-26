@@ -9,13 +9,14 @@
 from typing import Any
 
 # NOC modules
+from noc.core.models.inputsources import InputSource
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceprofile import ServiceProfile
-from noc.core.models.inputsources import InputSource
+
+from ..models.service import Instance, Service
 from .base import BaseLoader
-from ..models.service import Service, Instance
 
 
 class ServiceLoader(BaseLoader):

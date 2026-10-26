@@ -9,14 +9,14 @@
 from functools import partial
 
 # Third-party modules
-from django.db.models import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import connection
-from mongoengine.fields import ListField, EmbeddedDocumentListField
+from django.db.models import JSONField
+from mongoengine.fields import EmbeddedDocumentListField, ListField
 
 # NOC modules
-from noc.models import get_model, get_model_id
 from noc.core.model.fields import ObjectIDArrayField
+from noc.models import get_model, get_model_id
 
 
 def is_document(klass):
@@ -82,10 +82,12 @@ def on_save(cls):
     """
     if hasattr(cls, "on_save"):
         if is_document(cls):
+            # Third-party modules
             from mongoengine import signals as mongo_signals
 
             mongo_signals.post_save.connect(_on_document_save_handler, sender=cls)
         else:
+            # Third-party modules
             from django.db.models import signals as django_signals
 
             django_signals.post_save.connect(_on_model_save_handler, sender=cls)
@@ -115,10 +117,12 @@ def on_delete(cls):
     """
     if hasattr(cls, "on_delete"):
         if is_document(cls):
+            # Third-party modules
             from mongoengine import signals as mongo_signals
 
             mongo_signals.pre_delete.connect(_on_document_delete_handler, sender=cls)
         else:
+            # Third-party modules
             from django.db.models import signals as django_signals
 
             django_signals.pre_delete.connect(_on_model_delete_handler, sender=cls)
@@ -147,10 +151,12 @@ def on_init(cls):
            ...
     """
     if is_document(cls):
+        # Third-party modules
         from mongoengine import signals as mongo_signals
 
         mongo_signals.post_init.connect(_on_init_handler, sender=cls)
     else:
+        # Third-party modules
         from django.db.models import signals as django_signals
 
         django_signals.post_init.connect(_on_init_handler, sender=cls)
@@ -314,11 +320,13 @@ def on_delete_check(
             or cfg["clean_lazy_labels"]
         ):
             if is_document(cls):
+                # Third-party modules
                 from mongoengine import signals as mongo_signals
 
                 mongo_signals.pre_delete.connect(on_delete_handler, sender=cls, weak=False)
                 setup["is_document"] = True
             else:
+                # Third-party modules
                 from django.db.models import signals as django_signals
 
                 django_signals.pre_delete.connect(
@@ -363,13 +371,15 @@ def tree(cls=None, *, field="parent"):
 
     if hasattr(cls, field):
         if is_document(cls):
+            # Third-party modules
             from mongoengine import signals as mongo_signals
             from mongoengine.errors import ValidationError
 
             mongo_signals.pre_save.connect(tree_recursion_check_handler, sender=cls, weak=False)
         else:
-            from django.db.models import signals as django_signals
+            # Third-party modules
             from django.core.exceptions import ValidationError
+            from django.db.models import signals as django_signals
 
             django_signals.pre_save.connect(tree_recursion_check_handler, sender=cls, weak=False)
 

@@ -6,8 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC Modules
-from ..vim import VIMScript
+# NOC modules
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+from ..vim import VIMScript
 
 
 class Script(VIMScript):

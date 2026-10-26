@@ -11,20 +11,19 @@ from collections import namedtuple
 from typing import Any, ClassVar
 
 # Third-party modules
-from fastapi import APIRouter, Header, Depends
-from fastapi.responses import JSONResponse
 import orjson
+from fastapi import APIRouter, Depends, Header
+from fastapi.responses import JSONResponse
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.core.service.deps.user import get_current_user
 from noc.config import config
 from noc.core.debug import error_report
 from noc.core.error import NOCError
+from noc.core.service.deps.user import get_current_user
 from noc.core.service.loader import get_service
 from noc.core.service.models.jsonrpc import JSONRemoteProcedureCall, JSONRPCResponse
 from noc.core.span import Span
-
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
 

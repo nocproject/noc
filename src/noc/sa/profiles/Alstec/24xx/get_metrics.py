@@ -6,8 +6,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from noc.core.text import parse_table
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.sa.profiles.Generic.get_metrics import metrics
 
 
 def convert_string(v):

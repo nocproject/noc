@@ -9,9 +9,10 @@
 import asyncio
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.service.error import RPCError
-from .base import BaseAction, ActionError
+from noc.sa.models.managedobject import ManagedObject
+
+from .base import ActionError, BaseAction
 
 
 class ActionCommands(BaseAction):

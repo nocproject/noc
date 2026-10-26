@@ -8,11 +8,9 @@
 # Python modules
 import importlib
 import logging
-from threading import Lock
-
-# Third-party modules
-from typing import Any
 from collections.abc import Callable
+from threading import Lock
+from typing import Any
 
 # NOC modules
 from noc.config import config

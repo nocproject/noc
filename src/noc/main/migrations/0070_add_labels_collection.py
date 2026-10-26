@@ -5,10 +5,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from pymongo import UpdateOne
-from noc.core.migration.base import BaseMigration
+# Python modules
 import uuid
+
+# Third-party modules
+from pymongo import UpdateOne
+
+# NOC modules
+from noc.core.migration.base import BaseMigration
 
 MONGO_CHUNK = 500
 

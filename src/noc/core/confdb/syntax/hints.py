@@ -5,7 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
 from .defs import DEF
 from .interfaces.hints import INTERFACES_HINTS_SYNTAX
 from .protocols.hints import PROTOCOLS_HINTS_SYNTAX

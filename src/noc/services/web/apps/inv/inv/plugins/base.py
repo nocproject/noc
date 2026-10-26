@@ -14,8 +14,9 @@ from gufo.loader import Loader
 
 # NOC modules
 from noc.config import config
-from noc.inv.models.object import Object
 from noc.core.feature import Feature
+from noc.inv.models.object import Object
+
 from ..views import InvApplication
 
 

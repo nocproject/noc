@@ -6,23 +6,23 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.remotesystem import RemoteSystem
+from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.clickhouse.fields import (
+    ArrayField,
+    BooleanField,
     DateField,
     DateTimeField,
-    BooleanField,
-    StringField,
     IPv4Field,
-    ReferenceField,
     MapField,
-    ArrayField,
     MaterializedField,
+    ReferenceField,
+    StringField,
     UInt64Field,
 )
-from noc.core.clickhouse.engines import ReplacingMergeTree
-from noc.core.bi.dictionaries.pool import Pool
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.remotesystem import RemoteSystem
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

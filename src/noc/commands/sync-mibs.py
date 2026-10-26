@@ -6,22 +6,22 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
-import gzip
-import re
-import datetime
-import time
 import argparse
+import datetime
+import gzip
+import os
+import re
+import time
 
 # Third-party modules
 import orjson
 
 # NOC modules
-from noc.core.management.base import BaseCommand
-from noc.fm.models.mib import MIB
 from noc.config import config
-from noc.core.mongo.connection import connect
 from noc.core.comp import smart_text
+from noc.core.management.base import BaseCommand
+from noc.core.mongo.connection import connect
+from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):

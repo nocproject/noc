@@ -7,8 +7,8 @@
 
 # Python modules
 import logging
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # NOC modules
 from noc.config import config

@@ -13,19 +13,19 @@ import orjson
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
+from noc.bi.models.events import Events
+from noc.config import config
+from noc.core.clickhouse.connect import connection
+from noc.core.fm.event import Event, EventSeverity, EventSource, MessageType, Target, Var
+from noc.core.service.loader import get_service
+from noc.core.translation import ugettext as _
 from noc.fm.models.eventclass import EventClass
+from noc.inv.models.networksegment import NetworkSegment
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.inv.models.networksegment import NetworkSegment
-from noc.bi.models.events import Events
-from noc.main.models.remotesystem import RemoteSystem
-from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, MessageType, Target, EventSeverity, EventSource, Var
-from noc.core.clickhouse.connect import connection
-from noc.config import config
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extapplication import ExtApplication, api
 
 EVENTS_DEFAULT_WINDOW = config.web.events_windows
 

@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extmodelapplication import ExtModelApplication
-from noc.services.web.base.modelinline import ModelInline
+from noc.core.translation import ugettext as _
 from noc.main.models.customfieldenumgroup import CustomFieldEnumGroup
 from noc.main.models.customfieldenumvalue import CustomFieldEnumValue
-from noc.core.translation import ugettext as _
+from noc.services.web.base.extmodelapplication import ExtModelApplication
+from noc.services.web.base.modelinline import ModelInline
 
 
 class CustomFieldEnumGroupApplication(ExtModelApplication):

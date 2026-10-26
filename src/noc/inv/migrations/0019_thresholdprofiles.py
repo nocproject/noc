@@ -14,8 +14,8 @@ import bson
 import cachetools
 
 # NOC modules
-from noc.core.mongo.connection import get_db
 from noc.core.migration.base import BaseMigration
+from noc.core.mongo.connection import get_db
 
 
 class Migration(BaseMigration):

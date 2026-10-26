@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.dev.models.quiz import Quiz
 from noc.core.translation import ugettext as _
+from noc.dev.models.quiz import Quiz
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class QuizApplication(ExtDocApplication):

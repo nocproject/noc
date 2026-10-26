@@ -5,8 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.services.web.service import WebService
-
 
 if __name__ == "__main__":
     WebService().start()

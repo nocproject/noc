@@ -7,19 +7,17 @@
 
 # Python modules
 from collections import defaultdict
-
-# Third-party modules
 from typing import Any
 
 # NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.serviceinstance import ServiceInstance
-from noc.sa.models.servicesummary import ServiceSummary
+from noc.core.change.policy import change_tracker
+from noc.core.ip import IP
+from noc.core.models.inputsources import InputSource
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.core.change.policy import change_tracker
-from noc.core.models.inputsources import InputSource
-from noc.core.ip import IP
+from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class NRIServiceCheck(DiscoveryCheck):

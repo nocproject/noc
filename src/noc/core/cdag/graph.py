@@ -9,9 +9,7 @@
 import itertools
 from typing import Any
 
-# NOC modules
-from .node.base import BaseCDAGNode, ConfigProxy
-from .node.base import node_loader
+from .node.base import BaseCDAGNode, ConfigProxy, node_loader
 from .tx import Transaction
 
 

@@ -7,10 +7,9 @@
 
 
 # Python modules
-import io
 import bz2
+import io
 
-# NOC modules
 from .base import BaseCompressor
 
 

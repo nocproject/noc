@@ -7,11 +7,11 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField
+from mongoengine.fields import BooleanField, StringField
 
 # NOC modules
-from noc.inv.models.objectmodel import ObjectModel
 from noc.core.mongo.fields import PlainReferenceField
+from noc.inv.models.objectmodel import ObjectModel
 
 
 class ModelMapping(Document):

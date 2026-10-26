@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.sa.models.managedobject import ManagedObject
 
 
 class BaseConstraint:

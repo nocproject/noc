@@ -10,22 +10,22 @@ import re
 from typing import Any
 
 # Third-party modules
-from django.http import HttpRequest
 import orjson
+from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtApplication, api
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.mac import MAC
-from noc.core.clickhouse.connect import connection
-from noc.core.validators import is_mac
-from noc.core.translation import ugettext as _
-from noc.main.models.pool import Pool
-from noc.config import config
-from noc.bi.models.macdb import MACDB
 from noc.bi.models.mac import MAC as MACHISTORY
+from noc.bi.models.macdb import MACDB
+from noc.config import config
+from noc.core.clickhouse.connect import connection
+from noc.core.mac import MAC
+from noc.core.translation import ugettext as _
+from noc.core.validators import is_mac
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.main.models.pool import Pool
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.web.base.extdocapplication import ExtApplication, api
 
 
 class MACApplication(ExtApplication):

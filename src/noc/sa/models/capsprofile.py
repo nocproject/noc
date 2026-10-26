@@ -5,27 +5,29 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-import threading
+
+# Python modules
 import operator
+import threading
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
     DynamicField,
-    ReferenceField,
     EmbeddedDocumentListField,
+    ReferenceField,
+    StringField,
 )
-import cachetools
 
 # NOC modules
 from noc.core.caps.types import CapsConfig
-from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
 

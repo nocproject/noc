@@ -7,25 +7,25 @@
 
 # Python modules
 import operator
-from threading import Lock
 from dataclasses import dataclass
+from threading import Lock
 
 # Third-party modules
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    StringField,
-    IntField,
-    EmbeddedDocumentListField,
-    ListField,
-    BooleanField,
-)
 from mongoengine.errors import ValidationError
+from mongoengine.fields import (
+    BooleanField,
+    EmbeddedDocumentListField,
+    IntField,
+    ListField,
+    StringField,
+)
 from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, CLI_PROTOCOLS
+from noc.core.script.scheme import CLI_PROTOCOLS, CLICredential, Protocol, SNMPCredential
 from noc.core.validators import is_oid
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile

@@ -7,16 +7,17 @@
 
 # Python modules
 import logging
-from typing import Any
 from collections.abc import Iterable
+from typing import Any
 
 # NOC modules
-from noc.models import is_document, get_model_id
-from noc.core.models.inputsources import InputSource
-from noc.core.change.policy import change_tracker
+from noc.core.change.decorator import get_applied_rules, get_datastreams, get_domains
 from noc.core.change.model import ChangeField
-from noc.core.change.decorator import get_datastreams, get_domains, get_applied_rules
-from .types import CapsValue, CapsConfig
+from noc.core.change.policy import change_tracker
+from noc.core.models.inputsources import InputSource
+from noc.models import get_model_id, is_document
+
+from .types import CapsConfig, CapsValue
 
 caps_logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ def iter_model_caps(
     self, scope: str | None = None, include_default: bool = False
 ) -> Iterable[CapsValue]:
     """Iterate over Model Capabilities"""
+    # NOC modules
     from noc.inv.models.capability import Capability
 
     configs = self.get_caps_config()
@@ -69,6 +71,7 @@ def iter_document_caps(
     self, scope: str | None = None, include_default: bool = False
 ) -> Iterable[CapsValue]:
     """Iterate over document Capabilities"""
+    # NOC modules
     from noc.inv.models.capability import Capability
 
     configs = self.get_caps_config()
@@ -112,6 +115,7 @@ def save_document_caps(
     changed_fields: list[ChangeField] | None = None,
 ):
     """"""
+    # NOC modules
     from noc.inv.models.capsitem import CapsItem
 
     prev_labels, caps_labels, new_caps = set(), set(), []
@@ -247,6 +251,7 @@ def set_caps(self, key: str, value: Any, source: str = "manual", scope: str | No
         source: Source setting value
         scope: Capability value scope
     """
+    # NOC modules
     from noc.inv.models.capability import Capability
 
     new_caps: list[CapsValue] = []
@@ -349,6 +354,7 @@ def update_caps(
         dry_run: Not save changes
         bulk: Changes aggregator
     """
+    # NOC modules
     from noc.inv.models.capability import Capability
 
     o_label = f"{scope or ''}|{self}|{source}"

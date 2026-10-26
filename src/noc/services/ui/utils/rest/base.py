@@ -6,26 +6,26 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import typing
-from typing import Any
-from collections.abc import Callable, Iterable
 import inspect
-from http import HTTPStatus
+import typing
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
+from collections.abc import Callable, Iterable
+from http import HTTPStatus
+from typing import Any
 
 # Third-party modules
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, Security
 from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException, Security, Response, Depends, Query
 
 # NOC modules
-from noc.config import config
 from noc.aaa.models.user import User
+from noc.config import config
 from noc.core.service.deps.user import get_user_scope
-from ...models.utils import LabelItem, SummaryItem
-from ...models.status import StatusResponse
-from .op import ListOp
 
+from ...models.status import StatusResponse
+from ...models.utils import LabelItem, SummaryItem
+from .op import ListOp
 
 GET = ["GET"]
 POST = ["POST"]

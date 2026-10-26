@@ -12,6 +12,7 @@ from pygments.lexers import get_lexer_by_name
 
 # NOC modules
 from noc.core.profile.loader import loader as profile_loader
+
 from .base import BaseMacro
 
 

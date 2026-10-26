@@ -6,10 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from pathlib import Path
 import re
+from pathlib import Path
 
-# NOC modules
 from .text import cyr_to_lat
 
 _rx_safe_path = re.compile(r"[^a-z0-9\-\+]+", re.IGNORECASE)

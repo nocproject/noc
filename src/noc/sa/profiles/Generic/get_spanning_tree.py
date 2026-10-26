@@ -8,11 +8,11 @@
 # Python modules
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.core.mib import mib
-from noc.core.snmp.render import render_bin
 from noc.core.mac import MAC
+from noc.core.mib import mib
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_bin
+from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
 
 class Script(BaseScript):

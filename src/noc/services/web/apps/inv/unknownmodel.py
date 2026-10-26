@@ -9,10 +9,10 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.unknownmodel import UnknownModel
-from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.core.translation import ugettext as _
+from noc.inv.models.unknownmodel import UnknownModel
+from noc.sa.interfaces.base import DocumentParameter, ListOfParameter
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 class UnknownModelApplication(ExtDocApplication):

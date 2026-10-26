@@ -6,8 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import progressbar
 import time
+
+# Third-party modules
+import progressbar
 
 # NOC modules
 from noc.inv.models.link import Link

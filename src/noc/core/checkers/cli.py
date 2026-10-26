@@ -6,13 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable, AsyncIterable
+from collections.abc import AsyncIterable, Iterable
 
 # NOC modules
-from .base import BaseChecker, CheckResult, Check, CheckError
-from noc.core.script.scheme import Protocol, CLICredential
-from noc.core.script.loader import loader
 from noc.core.perf import metrics
+from noc.core.script.loader import loader
+from noc.core.script.scheme import CLICredential, Protocol
+
+from .base import BaseChecker, Check, CheckError, CheckResult
 
 
 class CLIProtocolChecker(BaseChecker):

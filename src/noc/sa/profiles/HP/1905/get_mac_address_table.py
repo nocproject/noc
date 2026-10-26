@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.core.snmp.render import render_mac
 from noc.core.mac import MAC
+from noc.core.script.base import BaseScript
+from noc.core.snmp.render import render_mac
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):

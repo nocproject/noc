@@ -18,11 +18,10 @@ from bson.objectid import ObjectId
 
 # NOC modules
 from noc.config import config
-from noc.core.management.base import BaseCommand
 from noc.core.datastream.base import data_stream_loader
+from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.models import get_model, get_model_id
-from noc.models import is_document
+from noc.models import get_model, get_model_id, is_document
 
 BATCH_SIZE = 20000
 
@@ -164,6 +163,7 @@ class Command(BaseCommand):
         report_interval = max(total // STEP, 1)
         next_report = report_interval
         if jobs:
+            # Python modules
             from multiprocessing.pool import ThreadPool
 
             pool = ThreadPool(jobs)
@@ -178,6 +178,7 @@ class Command(BaseCommand):
 
         if not self.no_progressbar:
             # Disable logging
+            # NOC modules
             from noc.core.datastream.base import logger
 
             logger.setLevel(logging.CRITICAL)

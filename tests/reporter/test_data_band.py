@@ -9,7 +9,7 @@
 import polars as pl
 
 # NOC modules
-from noc.core.reporter.band import Band, ROOT_BAND, DataSet
+from noc.core.reporter.band import ROOT_BAND, Band, DataSet
 
 
 def test_get_children() -> None:

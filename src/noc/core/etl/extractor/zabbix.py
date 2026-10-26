@@ -6,24 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
+import enum
 from collections import defaultdict
 from collections.abc import Iterable
 
 # Third-party modules
 from pydantic import BaseModel, Field
-from zabbix_utils import ZabbixAPI, ProcessingError
+from zabbix_utils import ProcessingError, ZabbixAPI
 
 # NOC modules
 from noc.core.etl.extractor.base import BaseExtractor
-from noc.core.etl.remotesystem.base import BaseRemoteSystem
-from noc.core.etl.models.managedobjectprofile import ManagedObjectProfile
-from noc.core.etl.models.typing import ETLMapping
-from noc.core.etl.models.managedobject import ManagedObject
 from noc.core.etl.models.authprofile import AuthProfile
+from noc.core.etl.models.fmevent import FMEventObject, RemoteObject, Var
+from noc.core.etl.models.managedobject import ManagedObject
+from noc.core.etl.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.etl.models.resourcegroup import ResourceGroup
-from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
+from noc.core.etl.models.typing import ETLMapping
+from noc.core.etl.remotesystem.base import BaseRemoteSystem
 from noc.core.fm.event import EventSeverity
 
 

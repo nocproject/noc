@@ -5,9 +5,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import uuid
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
-import uuid
 
 
 class Migration(BaseMigration):

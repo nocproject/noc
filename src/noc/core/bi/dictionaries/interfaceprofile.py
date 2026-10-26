@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField, UInt8Field
+from noc.core.clickhouse.model import DictionaryModel
 from noc.inv.models.interfaceprofile import InterfaceProfile as InterfaceProfileModel
 
 

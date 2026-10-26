@@ -9,10 +9,11 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extapplication import ExtApplication, api
-from .dashboards.loader import loader
-from .dashboards.base import BaseDashboard
 from noc.core.translation import ugettext as _
+from noc.services.web.base.extapplication import ExtApplication, api
+
+from .dashboards.base import BaseDashboard
+from .dashboards.loader import loader
 
 
 class DynamicDashboardApplication(ExtApplication):

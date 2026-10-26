@@ -5,7 +5,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 import datetime
 import re
 
@@ -14,12 +14,12 @@ from django import forms
 from django.utils.html import escape
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, SectionRow, SafeString
-from noc.main.models.audittrail import AuditTrail
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
-from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.core.translation import ugettext as _
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.main.models.audittrail import AuditTrail
+from noc.services.web.base.simplereport import SafeString, SectionRow, SimpleReport
 
 
 class ReportHistoryApplication(SimpleReport):

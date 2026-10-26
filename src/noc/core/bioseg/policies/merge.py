@@ -7,7 +7,6 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseBioSegPolicy
 from .eat import EatBioSegPolicy
 from .feed import FeedBioSegPolicy

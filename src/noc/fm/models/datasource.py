@@ -10,7 +10,7 @@ from typing import Any
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, DictField
+from mongoengine.fields import DictField, StringField
 
 
 class DataSource(EmbeddedDocument):

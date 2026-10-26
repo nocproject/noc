@@ -6,14 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import argparse
 import ast
 import os
 import subprocess
-import argparse
 
 # NOC modules
-from noc.core.management.base import BaseCommand
 from noc.config import config
+from noc.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

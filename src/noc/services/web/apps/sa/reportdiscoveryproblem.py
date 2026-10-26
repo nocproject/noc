@@ -10,16 +10,15 @@ from django import forms
 from pymongo import ReadPreference
 
 # NOC modules
-from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.mongo.connection import get_db
+from noc.core.translation import ugettext as _
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
-from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.profile import GENERIC_PROFILE, Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from noc.services.web.base.simplereport import PredefinedReport, SectionRow, SimpleReport
 
 
 class ReportDiscoveryProblem:

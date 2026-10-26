@@ -7,9 +7,9 @@
 
 # Python modules
 import argparse
-import time
 import datetime
 import os
+import time
 from collections import defaultdict
 
 # NOC modules
@@ -126,6 +126,7 @@ class Command(BaseCommand):
                 iface.unlink()
 
     def handle_ttl_policy(self, ttl=10, dry_run=True, with_empty_ls=False, *args, **options):
+        # NOC modules
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.fm.models.alarmclass import AlarmClass
 

@@ -6,24 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import operator
 from importlib.resources import files
 from threading import Lock
-import operator
 from urllib.parse import unquote
 
 # Third-party modules
 import cachetools
+import orjson
 from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from jinja2 import Template
-import orjson
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.core.debug import error_report, ErrorReport
+from noc.core.debug import ErrorReport, error_report
 from noc.core.perf import metrics
-from noc.services.card.cards.base import BaseCard, card_loader
 from noc.services.card.base import BaseAPI
+from noc.services.card.cards.base import BaseCard, card_loader
 
 user_lock = Lock()
 

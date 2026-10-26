@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import uuid
+
 # Third-party modules
 import bson
-import uuid
-from pymongo import InsertOne, DeleteOne
+from pymongo import DeleteOne, InsertOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration

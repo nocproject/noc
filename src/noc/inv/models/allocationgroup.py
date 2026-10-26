@@ -5,23 +5,25 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from threading import Lock
+
+# Python modules
 import operator
+from threading import Lock
 
 # Third-party modules
 import bson
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField
 import cachetools
+from mongoengine.document import Document
+from mongoengine.fields import ListField, LongField, StringField
 
 # NOC modules
-from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.label import Label
-from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 

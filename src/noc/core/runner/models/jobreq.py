@@ -6,12 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Literal
 import datetime
+from typing import Literal
+
+# Third-party modules
+from bson import ObjectId
 
 # Third party modules
 from pydantic import BaseModel, Field
-from bson import ObjectId
 
 # NOC modules
 from noc.core.service.pub import publish

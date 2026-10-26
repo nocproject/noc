@@ -11,8 +11,8 @@ from time import sleep
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.core.validators import is_int
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
 class Script(BaseScript):

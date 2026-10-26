@@ -7,7 +7,6 @@
 
 # Python modules
 
-# NOC modules
 from .base import BaseCollator
 
 

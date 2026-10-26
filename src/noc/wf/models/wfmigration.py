@@ -6,22 +6,23 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
-    StringField,
     BooleanField,
-    ReferenceField,
-    UUIDField,
     EmbeddedDocumentListField,
+    ReferenceField,
+    StringField,
+    UUIDField,
 )
 
 # NOC modules
 from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
+
 from .state import State
 
 

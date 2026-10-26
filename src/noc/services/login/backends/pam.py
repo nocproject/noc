@@ -10,6 +10,7 @@ import pam
 
 # NOC modules
 from noc.config import config
+
 from .base import BaseAuthBackend
 
 

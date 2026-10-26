@@ -9,23 +9,23 @@
 from functools import reduce
 
 # Third-party modules
-from django.db.models.fields import CharField, BooleanField, IntegerField, FloatField, related
 from django.db.models import Q
+from django.db.models.fields import BooleanField, CharField, FloatField, IntegerField, related
 from django.db.utils import IntegrityError
 
 # NOC modules
+from noc.core.comp import smart_text
+from noc.core.model.fields import TextArrayField
+from noc.core.validators import is_int
 from noc.sa.interfaces.base import (
     BooleanParameter,
-    IntParameter,
     FloatParameter,
+    IntParameter,
     ModelParameter,
-    TagsParameter,
-    StringListParameter,
     NoneParameter,
+    StringListParameter,
+    TagsParameter,
 )
-from noc.core.validators import is_int
-from noc.core.model.fields import TextArrayField
-from noc.core.comp import smart_text
 
 
 class ModelInline:
@@ -156,6 +156,7 @@ class ModelInline:
             del self.clean_fields[self.parent_rel]
 
     def get_custom_fields(self):
+        # NOC modules
         from noc.main.models.customfield import CustomField
 
         return list(CustomField.table_fields(self.model._meta.db_table))
@@ -166,6 +167,7 @@ class ModelInline:
         :type field: Field
         :return:
         """
+        # NOC modules
         from noc.core.model.fields import AutoCompleteTagsField
 
         if isinstance(field, BooleanField):

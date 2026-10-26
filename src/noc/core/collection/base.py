@@ -6,43 +6,43 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import zlib
 import csv
-import shutil
 import hashlib
-from uuid import UUID
+import operator
+import shutil
 import sys
 import threading
-import operator
+import zlib
 from base64 import b85decode
-from pathlib import Path
-from typing import Any
 from collections.abc import Iterable
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+from uuid import UUID
 
 # Third-party modules
-import orjson
 import bson
+import cachetools
+import orjson
+from django.db.utils import IntegrityError
+from mongoengine.document import Document
+from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (
-    ListField,
-    EmbeddedDocumentField,
     BinaryField,
+    EmbeddedDocumentField,
     EmbeddedDocumentListField,
+    ListField,
     ReferenceField,
 )
-from mongoengine.errors import NotUniqueError
-from mongoengine.document import Document
 from pymongo import UpdateOne
-import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModelBase
-from noc.core.fileutils import safe_rewrite
 from noc.config import config
-from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_bytes
+from noc.core.fileutils import safe_rewrite
+from noc.core.model.base import NOCModelBase
+from noc.core.mongo.connection import get_db
 from noc.models import is_document
-from django.db.utils import IntegrityError
 
 state_lock = threading.Lock()
 
@@ -92,6 +92,7 @@ class Collection:
 
     @classmethod
     def iter_collections(cls) -> "Iterable[Collection]":
+        # NOC modules
         from noc.models import COLLECTIONS, get_model
 
         for c in COLLECTIONS:

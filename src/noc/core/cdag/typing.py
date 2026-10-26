@@ -9,7 +9,7 @@
 from typing import Any
 
 # Third-party modules
-from pydantic import StrictInt, StrictFloat
+from pydantic import StrictFloat, StrictInt
 
 ValueType = int | float
 StrictValueType = StrictInt | StrictFloat

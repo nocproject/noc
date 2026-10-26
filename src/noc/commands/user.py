@@ -6,13 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import random
 import argparse
+import random
 
 # NOC modules
-from noc.core.management.base import BaseCommand, CommandError
-from noc.aaa.models.user import User
 from noc.aaa.models.permission import Permission
+from noc.aaa.models.user import User
+from noc.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):

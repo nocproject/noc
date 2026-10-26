@@ -11,10 +11,10 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
-from noc.main.models.timepattern import TimePattern
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
-from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.timepattern import TimePattern
 
 
 class EventTrigger(NOCModel):

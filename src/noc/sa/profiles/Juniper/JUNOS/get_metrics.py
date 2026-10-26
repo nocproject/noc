@@ -6,19 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python Modules
+# Python modules
 import enum
 
 # NOC modules
+from noc.core.mib import mib
+from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.core.script.metrics import scale
+from noc.sa.profiles.Generic.get_metrics import (
+    MetricConfig,
+    ProfileMetricConfig,
+    metrics,
+)
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
-    metrics,
-    ProfileMetricConfig,
-    MetricConfig,
 )
-from noc.core.models.cfgmetrics import MetricCollectorConfig
+
 from .oidrules.slot import SlotRule
-from noc.core.mib import mib
-from noc.core.script.metrics import scale
 
 
 class RPMMeasurement(enum.Enum):

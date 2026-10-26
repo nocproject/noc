@@ -6,35 +6,35 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.model import Model
-from noc.core.clickhouse.fields import (
-    DateField,
-    DateTimeField,
-    UInt16Field,
-    Int32Field,
-    BooleanField,
-    StringField,
-    Float32Field,
-    Float64Field,
-    ReferenceField,
-    IPv4Field,
-    ArrayField,
-)
-from noc.core.clickhouse.engines import MergeTree
+from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
+from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.bi.dictionaries.objectprofile import ObjectProfile
+from noc.core.bi.dictionaries.platform import Platform
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.bi.dictionaries.profile import Profile
-from noc.core.bi.dictionaries.objectprofile import ObjectProfile
-from noc.core.bi.dictionaries.vendor import Vendor
-from noc.core.bi.dictionaries.platform import Platform
-from noc.core.bi.dictionaries.version import Version
-from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
-from noc.core.bi.dictionaries.networksegment import NetworkSegment
-from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.project import Project
+from noc.core.bi.dictionaries.vendor import Vendor
+from noc.core.bi.dictionaries.version import Version
+from noc.core.clickhouse.engines import MergeTree
+from noc.core.clickhouse.fields import (
+    ArrayField,
+    BooleanField,
+    DateField,
+    DateTimeField,
+    Float32Field,
+    Float64Field,
+    Int32Field,
+    IPv4Field,
+    ReferenceField,
+    StringField,
+    UInt16Field,
+)
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
+from noc.sa.models.useraccess import UserAccess
 
 
 class ManagedObject(Model):

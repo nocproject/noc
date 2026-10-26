@@ -9,15 +9,15 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
 from noc.aaa.models.modelprotectionprofile import (
-    ModelProtectionProfile,
-    FieldAccess,
     FIELD_PERMISSIONS,
+    FieldAccess,
+    ModelProtectionProfile,
 )
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 from noc.models import get_model, is_document
-from noc.core.comp import smart_text
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 IGNORED_FIELDS = {"id", "bi_id"}
 

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections.abc import Iterable
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from contextvars import ContextVar
 
 DEFAULT_TTL = 60.0

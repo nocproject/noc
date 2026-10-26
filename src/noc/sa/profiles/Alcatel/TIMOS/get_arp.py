@@ -3,9 +3,12 @@
 # ----------------------------------------------------------------------
 # Writen by Boba boba@boba.su
 
+# Python modules
+import re
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):

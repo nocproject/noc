@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.change.policy import change_tracker, SimpleChangeTrackerPolicy
+from noc.core.change.policy import SimpleChangeTrackerPolicy, change_tracker
 
 
 def test_change_tracker_stack() -> None:

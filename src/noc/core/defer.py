@@ -9,17 +9,19 @@
 import datetime
 import logging
 import warnings
-import orjson
 from threading import Lock
 
+# Third-party modules
+import orjson
+
 # NOC modules
+from noc.config import config
+from noc.core.deprecations import RemovedInNOC2102Warning
+from noc.core.hash import dict_hash_int_args
+from noc.core.ioloop.util import run_sync
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.scheduler import Scheduler
-from noc.core.hash import dict_hash_int_args
-from noc.core.deprecations import RemovedInNOC2102Warning
 from noc.core.service.loader import get_service
-from noc.core.ioloop.util import run_sync
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 

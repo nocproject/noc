@@ -9,10 +9,11 @@
 import logging
 
 # NOC modules
-from noc.core.translation import ugettext as _
 from noc.core.middleware.tls import get_user
-from .application import Application, view
+from noc.core.translation import ugettext as _
+
 from .access import Permission
+from .application import Application, view
 
 __all__ = ["ReportApplication", "view"]
 
@@ -144,6 +145,7 @@ class ReportByConfigApplication(Application):
         Return Report Config by Report Id
         :return:
         """
+        # NOC modules
         from noc.main.models.report import Report
 
         if not cls.report_config:
@@ -195,6 +197,7 @@ class ReportPermit(Permission):
     """
 
     def check(self, app: "ReportByConfigApplication", user, obj=None) -> bool:
+        # NOC modules
         from noc.main.models.report import Report
 
         reports = Report.get_effective_permissions(user)

@@ -9,8 +9,8 @@
 from django.db import models
 
 # NOC modules
-from noc.core.vpn import get_vpn_id
 from noc.core.migration.base import BaseMigration
+from noc.core.vpn import get_vpn_id
 
 
 class Migration(BaseMigration):

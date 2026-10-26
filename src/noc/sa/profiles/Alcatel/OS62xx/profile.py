@@ -7,6 +7,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

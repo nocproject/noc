@@ -9,7 +9,6 @@
 import io
 import lzma
 
-# NOC modules
 from .base import BaseCompressor
 
 

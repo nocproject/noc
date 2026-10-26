@@ -6,21 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import logging
 import operator
 import threading
-import logging
 
 # Third-party modules
 import cachetools
 from gufo.http import DEFLATE, GZIP
-from pymongo.errors import BulkWriteError
-from pymongo import UpdateOne, InsertOne, DeleteOne
 from mongoengine.document import Document
 from mongoengine.fields import StringField
+from pymongo import DeleteOne, InsertOne, UpdateOne
+from pymongo.errors import BulkWriteError
+
+# NOC modules
+from noc.config import config
 
 # NOC Modules
 from noc.core.http.sync import HttpClient
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 id_lock = threading.Lock()

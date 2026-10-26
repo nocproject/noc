@@ -6,23 +6,24 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
+import atexit
 import logging
 import threading
 from collections import defaultdict
-import asyncio
-from typing import Any
 from functools import partial
-import atexit
+from typing import Any
 
 # NOC modules
-from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.config import config
-from noc.core.msgstream.client import MessageStreamClient
-from noc.core.msgstream.queue import MessageStreamQueue
-from noc.core.msgstream.error import MsgStreamError
+from noc.core.dcs.loader import DEFAULT_DCS, get_dcs
 from noc.core.ioloop.util import run_sync
+from noc.core.msgstream.client import MessageStreamClient
+from noc.core.msgstream.error import MsgStreamError
+from noc.core.msgstream.queue import MessageStreamQueue
 from noc.core.mx import MX_STREAM, MessageType
 from noc.core.router.base import Router
+
 from .rpc import RPCProxy
 
 

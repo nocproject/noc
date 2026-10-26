@@ -6,8 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
 from noc.core.error import NOCError
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.ilogin import ILogin
 
 

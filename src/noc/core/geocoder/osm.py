@@ -6,13 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from urllib.parse import quote as urllib_quote
 from collections.abc import Iterator
+from urllib.parse import quote as urllib_quote
 
 # Third-party modules
 import orjson
 
-# NOC modules
 from .base import BaseGeocoder, GeoCoderResult
 from .errors import GeoCoderError
 

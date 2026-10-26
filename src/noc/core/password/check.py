@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.translation import ugettext as _
 from noc.config import config
+from noc.core.translation import ugettext as _
+
 from .hasher import check_password
 
 

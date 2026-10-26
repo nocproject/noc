@@ -6,19 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
 from bson import ObjectId
 from django.http import HttpRequest
 
 # NOC modules
-from noc.inv.models.object import Object
-from noc.inv.models.channel import Channel
-from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.activealarm import ActiveAlarm, PathCode
 from noc.core.feature import Feature
+from noc.fm.models.activealarm import ActiveAlarm, PathCode
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.inv.models.channel import Channel
+from noc.inv.models.object import Object
+
 from .base import InvPlugin
 
 

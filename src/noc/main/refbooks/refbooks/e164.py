@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.main.refbooks.refbooks import RefBook, Field
+from noc.main.refbooks.refbooks import Field, RefBook
 
 
 # IEEE OUI Refbook

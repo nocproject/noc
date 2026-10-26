@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.error import NOCError, ERR_SA_NO_PROFILE
+from noc.core.error import ERR_SA_NO_PROFILE, NOCError
 
 
 class SANoProfileError(NOCError):

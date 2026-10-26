@@ -8,27 +8,27 @@
 
 # Python modules
 import asyncio
-from typing import Any
-from time import perf_counter_ns
 from collections import defaultdict
+from time import perf_counter_ns
+from typing import Any
 
 # Third-party modules
 import orjson
-from pydantic import TypeAdapter, ValidationError
 from bson import ObjectId
+from pydantic import TypeAdapter, ValidationError
 from pymongo import InsertOne, UpdateOne
 
 # NOC modules
-from noc.core.service.base import BaseService
+from noc.config import config
+from noc.core.debug import ErrorReport
+from noc.core.mongo.connection_async import connect_async, get_db
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
-from noc.core.runner.runner import Runner
 from noc.core.runner.job import Job
-from noc.core.mongo.connection_async import get_db, connect_async
-from noc.config import config
+from noc.core.runner.runner import Runner
+from noc.core.service.base import BaseService
 from noc.sa.models.job import JobStatus
-from noc.services.runner.models.runnerreq import RunnerRequest, JobRequest
-from noc.core.debug import ErrorReport
+from noc.services.runner.models.runnerreq import JobRequest, RunnerRequest
 
 ta_RunnerRequest = TypeAdapter(RunnerRequest)
 STREAM = "submit"

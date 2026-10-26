@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from noc.core.clickhouse.fields import StringField, UInt8Field, UInt64Field
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField, UInt64Field, UInt8Field
-from noc.inv.models.interface import Interface
 from noc.core.text import ch_escape
+from noc.inv.models.interface import Interface
 
 
 class InterfaceAttributes(DictionaryModel):

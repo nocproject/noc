@@ -6,36 +6,37 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import re
-import functools
-from functools import reduce
 import asyncio
-from typing import Any
+import functools
+import re
 from collections.abc import Callable
+from functools import reduce
+from typing import Any
 
 # NOC modules
-from noc.core.text import replace_re_group
 from noc.config import config
-from noc.core.span import Span
-from noc.core.perf import metrics
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.ioloop.util import IOLoopContext
+from noc.core.perf import metrics
+from noc.core.span import Span
+from noc.core.text import replace_re_group
+
+from .base import BaseCLI
 from .error import (
-    CLIError,
     CLIAuthFailed,
-    CLINoSuperCommand,
-    CLILowPrivileges,
     CLIConnectionRefused,
     CLIConnectionReset,
-    CLIStartTimeout,
-    CLISetupTimeout,
-    CLIUsernameTimeout,
+    CLIError,
+    CLILowPrivileges,
+    CLINoSuperCommand,
     CLIPasswordTimeout,
+    CLISetupTimeout,
+    CLIStartTimeout,
+    CLISuperPasswordTimeout,
     CLISuperTimeout,
     CLISuperUsernameTimeout,
-    CLISuperPasswordTimeout,
+    CLIUsernameTimeout,
 )
-from .base import BaseCLI
 
 
 class CLI(BaseCLI):

@@ -54,6 +54,7 @@ def setup_urllib_proxies():
     if not SYSTEM_PROXIES:
         return
     proxies = {k: f"{k}://{SYSTEM_PROXIES[k][0]}:{SYSTEM_PROXIES[k][1]}" for k in SYSTEM_PROXIES}
+    # Python modules
     from urllib.request import ProxyHandler, build_opener, install_opener
 
     proxy_handler = ProxyHandler(proxies)

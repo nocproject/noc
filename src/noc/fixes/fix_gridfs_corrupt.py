@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.gridvcs.utils import REPOS
 from noc.core.gridvcs.base import GridVCS
+from noc.core.gridvcs.utils import REPOS
 
 
 def fix():

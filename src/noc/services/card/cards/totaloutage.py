@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
+
+from .base import BaseCard
 
 
 class TotalOutageCard(BaseCard):

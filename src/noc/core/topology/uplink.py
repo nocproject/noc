@@ -9,14 +9,15 @@
 import logging
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
-from noc.core.debug import ErrorReport
 from noc.config import config
+from noc.core.debug import ErrorReport
+from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
 
 logger = logging.getLogger(__name__)
 
 
 def update_uplinks(**kwargs):
+    # NOC modules
     from noc.services.topo.topo import Topo
     from noc.services.topo.types import ObjectSnapshot
 

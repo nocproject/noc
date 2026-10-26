@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication
-from noc.main.models.glyph import Glyph
 from noc.core.translation import ugettext as _
+from noc.main.models.glyph import Glyph
+from noc.services.web.base.extdocapplication import ExtDocApplication
 
 
 class GlyphApplication(ExtDocApplication):

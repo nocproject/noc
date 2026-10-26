@@ -9,14 +9,14 @@
 from django.http import HttpRequest
 
 # NOC modules
-from noc.services.web.base.extdocapplication import ExtDocApplication, api
-from noc.inv.models.channel import Channel
-from noc.inv.models.endpoint import Endpoint, UsageItem, ConstraintItem
-from noc.core.translation import ugettext as _
-from noc.services.web.base.docinline import DocInline
+from noc.core.feature import Feature
 from noc.core.resource import resource_label
 from noc.core.techdomain.mapper.base import mapper_loader
-from noc.core.feature import Feature
+from noc.core.translation import ugettext as _
+from noc.inv.models.channel import Channel
+from noc.inv.models.endpoint import ConstraintItem, Endpoint, UsageItem
+from noc.services.web.base.docinline import DocInline
+from noc.services.web.base.extdocapplication import ExtDocApplication, api
 
 
 def get_usage(v: list[UsageItem] | None) -> list[dict[str, str]]:

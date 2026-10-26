@@ -6,9 +6,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from .base import BaseLoader
-from ..models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile as ManagedObjectProfileModel
+
+from ..models.managedobjectprofile import ManagedObjectProfile
+from .base import BaseLoader
 
 
 class ManagedObjectProfileLoader(BaseLoader):

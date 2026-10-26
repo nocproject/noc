@@ -10,9 +10,8 @@
 # Third-party modules
 import orjson
 
-# NOC modules
 from .base import CDAG
-from .config import ConfigCDAGFactory, GraphConfig, FactoryCtx
+from .config import ConfigCDAGFactory, FactoryCtx, GraphConfig
 
 
 class JSONCDAGFactory(ConfigCDAGFactory):

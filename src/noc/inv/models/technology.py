@@ -5,23 +5,25 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
+# Future imports
 from __future__ import annotations
-from pathlib import Path
+
+# Python modules
 import operator
 import threading
+from pathlib import Path
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, BooleanField, LongField
-import cachetools
+from mongoengine.fields import BooleanField, LongField, StringField, UUIDField
 
 # NOC modules
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
-from noc.core.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 from noc.core.path import safe_json_path
+from noc.core.prettyjson import to_json
 
 id_lock = threading.Lock()
 

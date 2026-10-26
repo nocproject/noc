@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from pymongo import UpdateOne
 import bson
+from pymongo import UpdateOne
 
 # NOC modules
-from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.migration.base import BaseMigration
 
 PG_CHUNK = 500
 MONGO_CHUNK = 500

@@ -10,10 +10,9 @@
 # Third-party modules
 from pydantic import IPvAnyAddress, field_validator
 
-# NOC modules
 from .base import BaseModel
-from .typing import Reference, MappingItem, CapsItem, DomainName
 from .managedobject import ManagedObject
+from .typing import CapsItem, DomainName, MappingItem, Reference
 
 
 class PMAgent(BaseModel):

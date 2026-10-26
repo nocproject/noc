@@ -11,6 +11,7 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import TextArrayField
+
 from .refbook import RefBook
 
 

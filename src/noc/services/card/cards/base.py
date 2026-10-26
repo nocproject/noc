@@ -9,17 +9,17 @@
 import datetime
 import operator
 from importlib.resources import files
+from typing import Any
 
 # Third-party modules
 from gufo.loader import Loader
-from jinja2 import Template, Environment
-from typing import Any
+from jinja2 import Environment, Template
 
 # NOC modules
 from noc.config import config
+from noc.core.perf import metrics
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
-from noc.core.perf import metrics
 
 
 class BaseCard:
@@ -207,10 +207,12 @@ class BaseCard:
             return ""
         r = []
         if "subscriber" in s:
+            # NOC modules
             from noc.crm.models.subscriberprofile import SubscriberProfile
 
             r.append(get_summary(s["subscriber"], SubscriberProfile))
         if "service" in s:
+            # NOC modules
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r.append(get_summary(s["service"], ServiceProfile))
@@ -226,6 +228,7 @@ class BaseCard:
         """
         Returns managed object location
         """
+        # NOC modules
         from noc.inv.models.object import Object
 
         if isinstance(object, dict) and "container" in object:

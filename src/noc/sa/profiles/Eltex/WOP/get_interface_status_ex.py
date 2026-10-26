@@ -5,13 +5,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
+# Python modules
 import codecs
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
-from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
+from noc.sa.profiles.Generic.get_interface_status_ex import Script as BaseScript
 
 
 class Script(BaseScript):

@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_interface_properties import Script as BaseScript
 from noc.sa.interfaces.igetinterfaceproperties import IGetInterfaceProperties
+from noc.sa.profiles.Generic.get_interface_properties import Script as BaseScript
 
 
 class Script(BaseScript):

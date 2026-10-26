@@ -7,10 +7,11 @@
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, IntField, DateTimeField, EmbeddedDocumentListField
+from mongoengine.fields import DateTimeField, EmbeddedDocumentListField, IntField, StringField
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+
 from .peeringpoint import PeeringPoint
 
 

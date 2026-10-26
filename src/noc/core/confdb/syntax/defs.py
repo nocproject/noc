@@ -9,7 +9,6 @@
 from dataclasses import dataclass
 from xmlrpc.client import boolean
 
-# NOC modules
 from .patterns import BasePattern
 
 
